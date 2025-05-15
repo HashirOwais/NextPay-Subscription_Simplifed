@@ -108,14 +108,16 @@ State the known limitations of the solution.
 
 ### Meeting 1
 
-**Time**: Month Date, Year, hh:mm am/pm – hh:mm am/pm  
-**Agenda**: Distribution of Project Tasks
+**Time**: May 12, 2025, 12:15pm – 12:55pm  
+**Agenda**: Project Idea Discusssion
 
 | Team Member     | Previous Task | Completion State | Next Task |
 |------------------|----------------|------------------|------------|
-| Team member 1 | N/A            | N/A              | Task 1     |
-| Team member 2 | N/A            | N/A              | Task 2     |
-| Team member 3 | N/A            | N/A              | Task 3     |
+| Hashir Owais | N/A            | N/A              | Create repository and share with Dr Sharma     |
+| Muhammad Tariq | N/A            | N/A              | Add REPORT.md into repository    |
+| Simran Gahra | N/A            | N/A              | Ensure timelines are being met/ make note of deadlines     |
+
+**Meeting Outcome**:The outcome of this meeting was us finalzing the idea for the project. We concluded that our application will be a subscription tracking app.
 
 ### Meeting 2
 
