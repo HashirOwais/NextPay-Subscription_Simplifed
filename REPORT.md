@@ -51,7 +51,8 @@ Give the reader an overview of what is in the next sections.
 
 ### 2.1 Problem Definition
 
-Write a problem statement of the project. 
+Write a problem statement of the project. <br>
+**Subscription Tracker App.**
 
 ### 2.2 Design Requirements
 
