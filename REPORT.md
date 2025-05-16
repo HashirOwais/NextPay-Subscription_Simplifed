@@ -1,5 +1,4 @@
 # ENSE 375 – Software Testing and Validation
-![alt text](image.png)
 ## Project Title
 
 Hashir Owais (200483044)  
