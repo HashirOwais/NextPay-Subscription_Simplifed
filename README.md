@@ -1,6 +1,6 @@
-# NextPay: Your Subscriptions, Simplified
-![University of Regina Logo](https://www.uregina.ca/communications-marketing/assets/visual-identity/tagline-urlogo-white-background/ur_logo-w-1-line-tagline_horiz_full-colour_rgb.png)
 
+![University of Regina Logo](https://www.uregina.ca/communications-marketing/assets/visual-identity/tagline-urlogo-white-background/ur_logo-w-1-line-tagline_horiz_full-colour_rgb.png)
+# NextPay: Your Subscriptions, Simplified
 
 Hashir Owais (200483044)  
 Muhammad Tariq (200464392)<br>
