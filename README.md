@@ -1,5 +1,6 @@
-# ENSE 375 – Software Testing and Validation
-## NextPay: Your Subscriptions, Simplified
+# NextPay: Your Subscriptions, Simplified
+![University of Regina Logo](https://www.uregina.ca/communications-marketing/assets/visual-identity/tagline-urlogo-white-background/ur_logo-w-1-line-tagline_horiz_full-colour_rgb.png)
+
 
 Hashir Owais (200483044)  
 Muhammad Tariq (200464392)<br>
