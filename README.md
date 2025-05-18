@@ -1,5 +1,5 @@
 # ENSE 375 – Software Testing and Validation
-## Project Title
+## NextPay: Your Subscriptions, Simplified
 
 Hashir Owais (200483044)  
 Muhammad Tariq (200464392)<br>
