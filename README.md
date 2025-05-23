@@ -89,7 +89,6 @@ The Subscription Tracking Application will include a set of core features aimed 
 - **Importing from a Excel sheet**  
   The application will also allow importing data from Excel structured files, saving time during setup.
 
-
 #### 2.2.2 Objectives
 
 - **User-friendly**  
@@ -101,34 +100,25 @@ The Subscription Tracking Application will include a set of core features aimed 
 - **Reliable**  
   The application must function consistently and correctly, maintaining data accuracy and stability throughout use.
 
-- **Minimal**  
-  The design should avoid unnecessary complexity or overloading the user with features, focusing only on what is essential.
-
 - **Functioning**  
   All features described in the design must be implemented fully and operate as expected in real-world scenarios.
 
 - **Passes software tests**  
   The system should be validated through unit testing to ensure that all components work as intended and handle edge cases properly.
 
-
 #### 2.2.3 Constraints
 
-The project must operate within the following limitations, which may affect certain design or implementation choices:
+- **Limited development and testing experience**  
+  The team has limited prior experience with Java and formal software testing, which may affect implementation depth and testing coverage.
 
-- **Lack of Java experience**  
-  The NextPay team has limited proficiency in Java, which could slow down progress or restrict advanced feature integration.
+- **Application must be developed in a Java-based environment**  
+  The entire application must be developed using Java, and all testing must be conducted with the JUnit framework to meet project requirements.
 
-- **Lack of software testing experience**  
-  Team members are new to formal testing practices, which may impact the thoroughness of validation unless extra learning is undertaken.
+- **Must follow systematic testing principles as described in the project description**  
+  Testing methodologies such as path testing, boundary value testing, equivalence class testing, and use case testing must be employed as part of the development lifecycle.
 
-- **Must be console-based**  
-  The application is required to run entirely in a command-line environment with no graphical user interface.
-
-- **Must use JUnit**  
-  All testing must be performed using the JUnit framework to ensure standardized and automated test coverage.
-
-- **Must follow structured development design principles**  
-  The application must adhere to good software engineering practices, outlined in the ENSE 375 course work.
+- **All data must be stored locally**  
+  The application will store all user and subscription data on the local machine - no external or cloud storage is permitted.
 
 ---
 
