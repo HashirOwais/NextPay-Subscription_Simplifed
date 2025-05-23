@@ -60,15 +60,75 @@ The goal of this project is to design and implement a Subscription Tracking Appl
 
 #### 2.2.1 Functions
 
-List the functions of the design (use verbs).
+The Subscription Tracking Application will include a set of core features aimed at simplifying subscription management for users:
+
+- **Add and remove subscriptions**  
+  Users are be able to easily add new subscriptions by entering details such as name, cost, billing, and renewal date. Subscriptions that are no longer needed are removable with a simple command.
+
+- **Account creation**  
+  The system will allow users to create individual accounts so that personal subscription data is stored separately.
+
+- **View previous subscriptions**  
+  Users can access a history of previously tracked subscriptions, in turn helping in analyzing long-term expenditure.
+
+- **Sorting feature**  
+  Subscriptions can be sorted based on the defined criteria to improve organization and readability.
+
+- **Filtering feature**  
+  Users will be able to filter subscriptions by dates and costs.
+
+- **Countdown till next payment**  
+  The application will be capable display the number of days remaining until the next scheduled payment.
+
+- **Calculate total/monthly/yearly cost**  
+  The system will automatically calculate and display the total cost of all active subscriptions, broken down by monthly and yearly values.
+
+- **Exporting to a Excel sheet**  
+  Users can export their subscription data Excel formats, enabling easy backup.
+
+- **Importing from a Excel sheet**  
+  The application will also allow importing data from Excel structured files, saving time during setup.
+
 
 #### 2.2.2 Objectives
 
-List the objectives of the design (use adjectives).
+- **User-friendly**  
+  The system should be intuitive and simple to use, even for users with limited technical background.
+
+- **Efficient**  
+  Features should execute quickly, with minimal input required to perform essential actions like adding or updating a subscription.
+
+- **Reliable**  
+  The application must function consistently and correctly, maintaining data accuracy and stability throughout use.
+
+- **Minimal**  
+  The design should avoid unnecessary complexity or overloading the user with features, focusing only on what is essential.
+
+- **Functioning**  
+  All features described in the design must be implemented fully and operate as expected in real-world scenarios.
+
+- **Passes software tests**  
+  The system should be validated through unit testing to ensure that all components work as intended and handle edge cases properly.
+
 
 #### 2.2.3 Constraints
 
-List constraints. These should be binary (either satisfied or not).
+The project must operate within the following limitations, which may affect certain design or implementation choices:
+
+- **Lack of Java experience**  
+  The NextPay team has limited proficiency in Java, which could slow down progress or restrict advanced feature integration.
+
+- **Lack of software testing experience**  
+  Team members are new to formal testing practices, which may impact the thoroughness of validation unless extra learning is undertaken.
+
+- **Must be console-based**  
+  The application is required to run entirely in a command-line environment with no graphical user interface.
+
+- **Must use JUnit**  
+  All testing must be performed using the JUnit framework to ensure standardized and automated test coverage.
+
+- **Must follow structured development design principles**  
+  The application must adhere to good software engineering practices, outlined in the ENSE 375 course work.
 
 ---
 
