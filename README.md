@@ -114,7 +114,7 @@ The Subscription Tracking Application will include a set of core features aimed 
 - **Application must be developed in a Java-based environment**  
   The entire application must be developed using Java, and all testing must be conducted with the JUnit framework to meet project requirements.
 
-- **Must follow systematic testing principles as described in the project description**  
+- **Must follow systematic testing principles**  
   Testing methodologies such as path testing, boundary value testing, equivalence class testing, and use case testing must be employed as part of the development lifecycle.
 
 - **All data must be stored locally**  
