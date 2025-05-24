@@ -118,7 +118,7 @@ The Subscription Tracking Application will include a set of core features aimed 
   Testing methodologies such as path testing, boundary value testing, equivalence class testing, and use case testing must be employed as part of the development lifecycle.
 
 - **All data must be stored locally**  
-  The application will store all user and subscription data on the local machine - no external or cloud storage is permitted.
+  The application will store all user and subscription data on the local machine - no external or cloud storage is permitted.  
 
 ---
 
