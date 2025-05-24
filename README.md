@@ -173,14 +173,15 @@ State the known limitations of the solution.
 
 ### Meeting 2
 
-**Time**: Month Date, Year, hh:mm am/pm – hh:mm am/pm  
-**Agenda**: Review of Individual Progress
+**Time**: May 22, 2025, 04:35pm – 05:pm 
+**Agenda**: Completion of Deliverables
 
-| Team Member     | Previous Task | Completion State | Next Task      |
-|------------------|----------------|------------------|----------------|
-| Team member 1 | Task 1         | 80%              | Task 1, Task 5 |
-| Team member 2 | Task 2         | 50%              | Task 2         |
-| Team member 3 | Task 3         | 100%             | Task 6         |
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Created the repository and shared it with Dr. Sharma | Completed        | Schedule a meeting with Yogesh Sharma to discuss the project design and assist in finalizing the design section of the report. |
+| Muhammad Tariq   | Added `REPORT.md` to the repository                | Completed        | Collaborate on completing the project design section of the report.                            |
+| Simran Gahra     | Tracked deadlines and ensured timeline adherence   | Completed        | Review and finalize the project design section, proofread it, and ensure it is pushed to GitHub before the submission deadline. |
+
 
 ### Meeting 3
 
