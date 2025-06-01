@@ -6,7 +6,11 @@ Hashir Owais (200483044)
 Muhammad Tariq (200464392)<br>
 Simran Gahra (200484408)  
 
----
+<div align="center">
+  <img src="Assets/companylogo.png" height="450">
+</div>
+
+
 
 ## Table of Contents
 
