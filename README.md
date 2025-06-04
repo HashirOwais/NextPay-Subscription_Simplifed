@@ -129,15 +129,22 @@ The Subscription Tracking Application will include a set of core features aimed 
 ## 3. Solution
 
 This section details various brainstormed solutions, their testing potential, and the rationale for the final choice.
+Testing
 
-### 3.1 Solution 1
+### 3.1 Solution 1 (Website)
 
-Briefly describe the first solution and explain why it was not chosen (focus on testability).
+Our initial solution was to develop a full featured web application that provided a graphical user interface (GUI) for users to interact with the system. This would include user authentication with hashed credentials, allowing for secure access to features such as viewing, adding, and modifying subscription data.
 
-### 3.2 Solution 2
+This stack would have consisted of Java Spring Boot for the backend, React.js for the frontend, PostgreSQL as the database, and Hibernate as the ORM. The application would have been deployed using AWS infrastructure.
 
-Describe the second, improved solution and its testing-related aspects.
+However, this solution was not selected due to the time constraints of our project timeline. Implementing a web-based interface along with secure authentication and front-end functionality would require extensive development and testing efforts. Given the scope of the course and the limited timeframe, we prioritized a simpler implementation that allowed us to focus more on core logic and testability, rather than UI complexity and integration testing.
 
+### 3.2 Solution 2 (Mobile Application)
+
+Our second proposed solution was to develop a mobile application using frameworks like React Native or Android Studio, providing users with a clean and accessible interface. It would have communicated with a backend service built in Java Spring Boot and stored data locally or remotely.
+
+However, this approach was not chosen due to the added complexity in testing and deployment. Mobile apps require extensive UI testing across devices, emulators, and operating systems, making it harder to focus on core logic. Given our project timeline, we prioritized a simpler implementation that allowed for more effective unit testing and faster development.
+ 
 ### 3.3 Final Solution
 
 Explain why this solution was selected over others. You may include a comparison table.
