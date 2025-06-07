@@ -131,19 +131,43 @@ The Subscription Tracking Application will include a set of core features aimed 
 This section details various brainstormed solutions, their testing potential, and the rationale for the final choice.
 Testing
 
-### 3.1 Solution 1 (Website)
+### 3.1 Solution 1 (Web Application)
 
-Our initial solution was to develop a full featured web application that provided a graphical user interface (GUI) for users to interact with the system. This would include user authentication with hashed credentials, allowing for secure access to features such as viewing, adding, and modifying subscription data.
+Our first proposed solution involved building a full-stack web application with the following architecture:
+  -    Frontend: React.js
+  -    Backend: Java Spring Boot
+  -    Database: PostgreSQL
+  -    ORM: Hibernate
+  - Deployment: AWS Infrastructure
 
-This stack would have consisted of Java Spring Boot for the backend, React.js for the frontend, PostgreSQL as the database, and Hibernate as the ORM. The application would have been deployed using AWS infrastructure.
+While this solution provided a scalable, modern, and user-friendly platform, it introduced substantial complexity in terms of testing. To properly validate this architecture, we would have required multiple testing tools and strategies:
+  -    UI Testing using Jest, Selenium, or React Testing Library
+  -    Backend API Testing with Spring Boot Test, Postman, and Mockito
+  -    Database Integration Testing using containers (e.g., TestContainers)
+   -    End-to-End Testing to validate full workflows
 
-However, this solution was not selected due to the time constraints of our project timeline. Implementing a web-based interface along with secure authentication and front-end functionality would require extensive development and testing efforts. Given the scope of the course and the limited timeframe, we prioritized a simpler implementation that allowed us to focus more on core logic and testability, rather than UI complexity and integration testing.
+Due to this layered complexity, conducting focused JUnit-based unit testing on the core logic became more difficult and would detract from meeting the course’s emphasis on systematic, isolated testing techniques such as:
+  -    **Boundary Value Testing**
+  -    **Equivalence Class Testing**
+  -    **Use Case Testing**
+
+Furthermore, setting up and validating test environments across frontend, backend, and deployment layers would significantly slow down development. Given the limited timeframe and scope of ENSE 375, we decided not to proceed with this solution.
 
 ### 3.2 Solution 2 (Mobile Application)
+The second idea was to build a mobile application using either React Native or Android Studio (Java/Kotlin). This would provide an intuitive interface and better portability for users.
 
-Our second proposed solution was to develop a mobile application using frameworks like React Native or Android Studio, providing users with a clean and accessible interface. It would have communicated with a backend service built in Java Spring Boot and stored data locally or remotely.
+However, similar to solution 1 this design came with its own testing challenges:
+- Testing across multiple devices and operating systems reduces repeatability.
+- UI workflows would rely on tools like Espresso or Detox, which are out of scope for this project.
+- Core logic would still require JUnit testing, but isolating logic from UI in mobile development adds extra overhead.
+- Integration and state validation are harder to automate due to simulator/emulator reliance.
 
-However, this approach was not chosen due to the added complexity in testing and deployment. Mobile apps require extensive UI testing across devices, emulators, and operating systems, making it harder to focus on core logic. Given our project timeline, we prioritized a simpler implementation that allowed for more effective unit testing and faster development.
+This architecture limited our ability to apply structured testing techniques, particularly:
+- Performing boundary and equivalence class testing without direct access to raw data inputs
+- Executing repeatable use case tests in a headless/automated way
+
+Since ENSE 375 places strong emphasis on test-driven development using JUnit and clear, structured testing strategies, this solution did not align well with our goals. We therefore chose not to implement the mobile architecture.
+
  
 ### 3.3 Final Solution
 
