@@ -221,7 +221,7 @@ State the known limitations of the solution.
 ### Meeting 3
 
 **Time**: June 4thn 2025, 12:15pm – 1:15:pm 
-**Agenda**: Completion of Deliverables
+**Agenda**: Solutions Delegation Session
 
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
 |------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
