@@ -220,7 +220,14 @@ State the known limitations of the solution.
 
 ### Meeting 3
 
-_Provide similar table and info as above._
+**Time**: June 4thn 2025, 12:15pm – 1:15:pm 
+**Agenda**: Completion of Deliverables
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Schedule a meeting with Yogesh Sharma to discuss the project design and assist in finalizing the design section of the report. | Completed        | Assist team to work on section 3 and determine what solutions can be approached. |
+| Muhammad Tariq   | Collaborate on completing the project design section of the report.                | Completed        | Collaborate with the team to work on section 3 and push the updated report to the repository by the deadline.                            |
+| Simran Gahra     | Review and finalize the project design section, proofread it, and ensure it is pushed to GitHub before the submission deadline.   | Completed        | Work with team to brainstorm new ideas for section 3. |
 
 ### Meeting 4
 
