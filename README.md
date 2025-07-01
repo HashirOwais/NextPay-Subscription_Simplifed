@@ -339,8 +339,8 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
 |------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
 | Hashir Owais     | Complete the pending tasks and start the MVP for the project to better visualize user flow. |  In Progress - 60%    | Complete current and previous assigned tasks. |
-| Muhammad Tariq   | Complete current tasks, assist team with any pending tasks and start making the ERD for the relational database.. |   In Progress - 70%      |             Complete current assigned tasks.                |
-| Simran Gahra     | Wrap up current task and assist with MVPs and ERD's.  |    In Progress - 70%     | Complete current assigned tasks. |
+| Muhammad Tariq   | Complete current tasks, assist team with any pending tasks and start making the ERD for the relational database.. |   In Progress - 70%      |             Complete current and previous assigned tasks.                |
+| Simran Gahra     | Wrap up current task and assist with MVPs and ERD's.  |    In Progress - 70%     | Complete current and previous assigned tasks. |
 
 ---
 ## 5. Project Management
