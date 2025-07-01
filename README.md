@@ -11,7 +11,6 @@ Simran Gahra (200484408)
 </div>
 
 
-
 ## Table of Contents
 
 1. [Introduction](#1-introduction)  
@@ -144,7 +143,7 @@ While this solution provided a scalable, modern, and user-friendly platform, it 
   -    UI Testing using Jest, Selenium, or React Testing Library
   -    Backend API Testing with Spring Boot Test, Postman, and Mockito
   -    Database Integration Testing using containers (e.g., TestContainers)
-   -    End-to-End Testing to validate full workflows
+  -    End-to-End Testing to validate full workflows
 
 Due to this layered complexity, conducting focused JUnit-based unit testing on the core logic became more difficult and would detract from meeting the course’s emphasis on systematic, isolated testing techniques such as:
   -    **Boundary Value Testing**
@@ -171,23 +170,113 @@ Since ENSE 375 places strong emphasis on test-driven development using JUnit and
  
 ### 3.3 Final Solution
 
-Explain why this solution was selected over others. You may include a comparison table.
+After evaluating the web and mobile application designs, we selected a Command-Line Interface (CLI) Java Application with an SQLite local database as our final solution. This decision was driven primarily by the project’s focus on test-driven development (TDD) using Maven and structured testing techniques such as:
+  - Boundary value testing
+  - Equivalence class testing
+  - Use case testing
 
-#### Components
+Compared to the other solutions, the CLI approach provides the simplest and most controllable environment for systematic testing while meeting all functional requirements.
 
-List the components used, their purposes, and the testing methods applied. Include a block diagram labeled as **Fig. 1**.
+##### Comparison Table
 
-#### Features
+| Criteria                  | Solution 1 (Web App)      | Solution 2 (Mobile)     | Final Solution (CLI App) |
+|---------------------------|---------------------------|--------------------------|---------------------------|
+| Ease of JUnit Testing     | Low                       | Medium                   | High                      |
+| Testing Complexity        | High                      | High                     | Low                       |
+| Setup/Deployment Complexity | High (AWS, Docker)       | Medium                   | Low (local only)          |
+| Data Storage              | PostgreSQL                | SQLite/Local             | SQLite (Local)            |
+| User Interface            | GUI (Web)                 | GUI (Mobile)             | CLI (Text-based)          |
+| Meets Course Constraints  | Partially                 | Partially                | Fully                     |
+| Learning Curve for Team   | High                      | Medium                   | Low                       |
+| Development Time          | High                      | Medium                   | Low                       |
 
-_(Placeholder section; add content as needed.)_
+---
 
-#### Environmental, Societal, Safety, and Economic Considerations
+#### 3.3.1 Components
 
-Discuss how the design addresses these aspects. Mention any decisions made to enhance reliability, safety, and cost-effectiveness.
+- **Java Classes**: App logic (CRUD, login, filters)  
+  → JUnit: unit, path, data flow, boundary, equivalence, state
 
-#### Limitations
+- **SQLite DB**: Local data storage  
+  → Integration testing (DAO)
 
-State the known limitations of the solution.
+- **CLI Interface**: User interaction  
+  → Use case + manual testing
+
+- **File I/O (CSV)**: Import/export subs  
+  → Boundary + use case testing
+
+Block Diagram (Fig. 1)
+
+                +------------------+
+                |   CLI Interface   |
+                +---------+--------+
+                          |
+              +-----------v-----------+
+              |   Application Logic    | (CRUD, Filters, Login)
+              +-----------+-----------+
+                          |
+              +-----------v-----------+
+              |  Database Manager      | (SQLite)
+              +------------------------+
+
+
+---
+
+#### 3.3.2 Features
+
+- User Account Creation & Login
+- CRUD for Subscriptions (Add, Edit, Delete, View)
+- Filter and Sort Subscriptions by Date, Cost, or Name
+- Countdown to Next Payment
+- Monthly and Yearly Cost Summaries
+- Export to CSV (Excel-compatible)
+- Import from CSV
+- Local Data Storage using SQLite
+
+---
+
+#### 3.3.3 Environmental, Societal, Safety, and Economic Considerations
+
+- **Environmental**: Local application—no server deployment reduces energy use compared to cloud-hosted solutions.
+- **Societal**: Enhances user financial literacy and control over digital spending; accessible due to its lightweight CLI format.
+- **Safety**: Local data storage mitigates data breach risks associated with cloud-based services.
+- **Economic**: Free, open-source tools (Java, SQLite) with zero deployment costs; designed for personal finance management.
+- **Reliability**: Fully tested with systematic unit and integration tests to ensure correctness and stability.
+
+---
+
+#### 3.3.4 Limitations
+
+- No Graphical User Interface (GUI) – Might be less intuitive for non-technical users.
+- No Cloud Backup – All data is local; risk of data loss without manual backups.
+- Single-User Local Storage – No multi-user online support.
+- Limited Error Handling – Basic error handling for CLI; advanced validation could be improved.
+- Manual Export/Import for Backup – Automation for backups is not implemented.
+
+---
+
+### Solution Overview:
+
+Our final solution is a Java-based Command Line Interface (CLI) application backed by an SQLite database. This approach was selected because it allows us to apply rigorous JUnit-based testing techniques without the complexity introduced by front-end frameworks, mobile environments, or web deployment layers. It aligns perfectly with ENSE 375’s focus on systematic testing, including boundary value analysis, equivalence class testing, use case testing, decision tables, state transition testing, path testing, and data flow testing.
+
+The CLI design minimizes setup overhead, improves development speed, and makes the core logic highly testable in isolation. Our solution is efficient, reliable, cost-effective, environmentally sustainable (due to no server resources), and safe with localized data storage.
+
+While the lack of a graphical user interface is a limitation, the focus on correctness, functionality, and systematic testing fully satisfies the course requirements.
+#### Final Considerations Comparison Table
+
+| Criterion                        | Solution 1 (Web App)                                                  | Solution 2 (Mobile App)                                              | Final Solution (CLI App)                                                  |
+|----------------------------------|------------------------------------------------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| Environmental Impact         | High – Cloud hosting and deployment use more energy                   | Medium – Device-dependent, moderate energy use                         | Low – Local app, no server deployment                                 |
+| Societal Benefit             | Moderate – GUI accessible, but high complexity                        | High – User-friendly interface, good accessibility                     | High – Improves financial literacy via lightweight CLI                 |
+| Safety (Data Security)       | Moderate – Hosted DB with potential breach risks                      | Moderate – App data stored locally, but less secure                    | High – Local storage reduces breach risks                              |
+| Economic Cost                | High – Requires cloud infra, devops, third-party tools                | Medium – Platform-dependent, some free tools used                      | Low – Open-source tools, no deployment costs                           |
+| Reliability (Testing)        | Low – Complex integration makes systematic testing harder             | Medium – Some automated testing, but emulator/device issues            | High – Fully tested with JUnit and structured techniques               |
+| GUI Availability             | Yes – Web GUI                                                         | Yes – Mobile GUI                                                       | No – CLI only                                                          |
+| Cloud Backup                 | Yes – Built-in through hosting                                        | Partial – Depends on implementation                                    | No – Local only; manual backups required                               |
+| Multi-User Support           | Yes – Account-based via backend                                       | Partial – Some mobile apps support this                                | No – Single-user local only                                            |
+| Error Handling               | Moderate – Backend can handle exceptions                              | Moderate – Platform-dependent                                          | Basic – CLI-based, limited validation                                  |
+| Automation for Backups       | Possible – Through backend scripts                                    | Limited – Could be automated with OS tools                             | Not Implemented – Manual export/import required                        |
 
 ---
 
@@ -208,7 +297,7 @@ State the known limitations of the solution.
 
 ### Meeting 2
 
-**Time**: May 22, 2025, 04:35pm – 05:pm 
+**Time**: May 22, 2025, 04:35pm – 05:pm <br>
 **Agenda**: Completion of Deliverables
 
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
@@ -220,7 +309,7 @@ State the known limitations of the solution.
 
 ### Meeting 3
 
-**Time**: June 4thn 2025, 12:15pm – 1:15:pm 
+**Time**: June 4th 2025, 12:15pm – 1:15:pm <br>
 **Agenda**: Solutions Delegation Session
 
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
@@ -231,10 +320,29 @@ State the known limitations of the solution.
 
 ### Meeting 4
 
-_Provide similar table and info as above._
+**Time**: June 20th 2025, 3:15pm – 4:15pm <br>
+**Agenda**: Finalize solution for project and do comparisons with other solutions.
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Assist team to work on section 3 and determine what solutions can be approached. | In Progress - 75%        | Complete the pending tasks and start the MVP for the project to better visualize user flow. |
+| Muhammad Tariq   | Collaborate with the team to work on section 3 and push the updated report to the repository by the deadline.                | In Progress - 75%        |   Complete current tasks, assist team with any pending tasks and start making the ERD for the relational database.                         |
+| Simran Gahra     | Work with team to brainstorm new ideas for section 3.   | In Progress - 80%    |Wrap up current task and assist with MVPs and ERD's. |
 
 ---
 
+### Meeting 5
+
+**Time**: June 30th, 2025, 6:15pm - 8:00pm <br>
+**Agenda**: Initial Project 
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Complete the pending tasks and start the MVP for the project to better visualize user flow. |  In Progress - 60%    | Complete current and previous assigned tasks. |
+| Muhammad Tariq   | Complete current tasks, assist team with any pending tasks and start making the ERD for the relational database.. |   In Progress - 70%      |             Complete current assigned tasks.                |
+| Simran Gahra     | Wrap up current task and assist with MVPs and ERD's.  |    In Progress - 70%     | Complete current assigned tasks. |
+
+---
 ## 5. Project Management
 
 Include a Gantt chart outlining all tasks, their predecessors, slack time, and critical path.
