@@ -86,11 +86,9 @@ The Subscription Tracking Application will include a set of core features aimed 
 - **Calculate total/monthly/yearly cost**  
   The system will automatically calculate and display the total cost of all active subscriptions, broken down by monthly and yearly values.
 
-- **Exporting to a Excel sheet**  
+- **Exporting to a CSV**  
   Users can export their subscription data Excel formats, enabling easy backup.
 
-- **Importing from a Excel sheet**  
-  The application will also allow importing data from Excel structured files, saving time during setup.
 
 #### 2.2.2 Objectives
 
