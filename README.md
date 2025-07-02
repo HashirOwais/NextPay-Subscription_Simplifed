@@ -332,13 +332,26 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 ### Meeting 5
 
 **Time**: June 30th, 2025, 6:15pm - 8:00pm <br>
-**Agenda**: Initial Project 
+**Agenda**: Initial Project Config
 
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
 |------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| Hashir Owais     | Complete the pending tasks and start the MVP for the project to better visualize user flow. |  In Progress - 60%    | Complete current and previous assigned tasks. |
-| Muhammad Tariq   | Complete current tasks, assist team with any pending tasks and start making the ERD for the relational database.. |   In Progress - 70%      |             Complete current and previous assigned tasks.                |
-| Simran Gahra     | Wrap up current task and assist with MVPs and ERD's.  |    In Progress - 70%     | Complete current and previous assigned tasks. |
+| Hashir Owais | Complete the pending tasks and start the MVP for the project to better visualize user flow. | In Progress - 60% | Complete current and previous assigned tasks. |
+| Muhammad Tariq   | Complete current tasks, assist team with any pending tasks and start making the ERD for the relational database. |   In Progress - 70% | Complete current and previous assigned tasks. |
+| Simran Gahra     | Wrap up current task and assist with MVPs and ERD's. | In Progress - 70% | Complete current and previous assigned tasks. |
+
+---
+
+### Meeting 6
+
+**Time**: July 02th, 2025, 12:15pm - 3:10pm <br>
+**Agenda**: Junit Project Config and Module Brainstorm
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Complete current and previous assigned tasks. | Completed | Lead the discussions for project structure and mangement. |
+| Muhammad Tariq   | Complete current and previous assigned tasks. | Completed | Initialized Maven project and setup modules. |
+| Simran Gahra     | Complete current and previous assigned tasks. | Completed | Brainsorm methods/modules for Nextpay and assist with Maven folder structure. |
 
 ---
 ## 5. Project Management
