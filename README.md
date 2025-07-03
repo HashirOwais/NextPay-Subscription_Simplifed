@@ -123,7 +123,8 @@ The Subscription Tracking Application will include a set of core features aimed 
   - Equivalence Class Testing
   - Decision Tables Testing
   - State Transition Testing
-  - Use Case Testing <br>
+  - Use Case Testing 
+  - Integration Testing<br>
   
   In addition to these, **Path Testing** and **Data Flow Testing** must also be employed for certain individual functions.
 
