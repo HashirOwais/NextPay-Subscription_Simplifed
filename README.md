@@ -116,7 +116,15 @@ The Subscription Tracking Application will include a set of core features aimed 
   The entire application must be developed using Java, and all testing must be conducted with the JUnit framework to meet project requirements.
 
 - **Must follow systematic testing principles**  
-  Testing methodologies such as path testing, boundary value testing, equivalence class testing, and use case testing must be employed as part of the development lifecycle.
+  All testing must follow the systematic testing principles and be integrated throughout the development lifecycle. The following testing methodoligies must be applied where applicable:
+  - Boundary Value Testing
+  - Equivalence Class Testing
+  - Decision Tables Testing
+  - State Transition Testing
+  - Use Case Testing 
+  - Integration Testing<br>
+  
+  In addition to these, **Path Testing** and **Data Flow Testing** must also be employed for certain individual functions.
 
 - **All data must be stored locally**  
   The application will store all user and subscription data on the local machine - no external or cloud storage is permitted.  
