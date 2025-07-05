@@ -67,8 +67,7 @@ public class db_module {
         }
     }
     public boolean deleteSubscription (int SubscriptionID){
-
-
+        return true;
         
     }
 
