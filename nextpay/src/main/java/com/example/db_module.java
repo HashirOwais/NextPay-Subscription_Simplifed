@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.*;
+
+import com.example.models.Subscription;
 
 public class db_module {
 
@@ -57,6 +60,40 @@ public class db_module {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+
+
+    //HELPER METHOD!!
+    public Subscription findSubscriptionById(int id) {
+        String sql = "SELECT * FROM Subscriptions WHERE SubscriptionID = ?";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                // Map the row to a Subscription object
+                Subscription s = new Subscription(
+                    rs.getInt("SubscriptionID"),
+                    rs.getString("SubscriptionsName"),
+                    rs.getDouble("Cost"),
+                    rs.getBoolean("IsRecurring"),
+                    rs.getString("BillingCycleType"),
+                    LocalDate.parse(rs.getString("BillingCycleDate")),
+                    rs.getInt("UserID")
+                );
+                return s; // Found and mapped
+            } else {
+                return null; // No record found
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
