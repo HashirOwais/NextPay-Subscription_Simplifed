@@ -29,20 +29,26 @@ public class db_moduleTest {
 
 
     @Test
-    public void dbConnectionTest()
-    {
+public void updateSubscription_ValidUpdate_ReturnsTrue() { 
 
-        //create a subsciption
+    Subscription sub = new Subscription(
+        0, // SubscriptionID will be assigned by DB
+        "Netflix",
+        10.99,
+        true,
+        "monthly",
+        LocalDate.now(),
+        1
+    );
+    db_module.addSubscription(sub);
 
-        Subscription subscription = new Subscription();
-        //first add a subscrfiption
+    //mocking an update
 
-        // then update them
+    sub.setSubscriptionsName("UpdatedSub");
+    sub.setCost(15.49);
 
-        //assert true
+        assertTrue(db_module.updateSubscription(sub));
 
-
-        assertTrue(db_module.updateSubscription(subscription));
 
     }
 
@@ -67,7 +73,6 @@ public class db_moduleTest {
         Subscription s = new Subscription(0, "", 8.99, true, "Monthly", LocalDate.parse("2025-07-05"), 1);
         assertFalse(db.addSubscription(s));
     }
-
 
 
 
