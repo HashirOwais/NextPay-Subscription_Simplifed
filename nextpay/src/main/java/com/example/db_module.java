@@ -26,7 +26,7 @@ public class db_module {
                                      "SubscriptionsName TEXT NOT NULL, " +
                                      "Cost REAL NOT NULL, " +
                                      "IsRecurring BOOLEAN NOT NULL, " +
-                                     "BillingCycleType TEXT NOT NULL, " +  // No CHECK constraint
+                                     "BillingCycleType TEXT NOT NULL, " + 
                                      "BillingCycleDate DATE NOT NULL, " +
                                      "UserID INTEGER NOT NULL, " +
                                      "FOREIGN KEY (UserID) REFERENCES Users(UserID)" +
