@@ -2,8 +2,11 @@ package com.example;
 import com.example.models.Subscription;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 public class db_module {
 
@@ -44,6 +47,9 @@ public class db_module {
 
         String sql = "INSERT INTO Subscriptions " +"(SubscriptionsName, Cost, IsRecurring, BillingCycleType, BillingCycleDate, UserID) " +"VALUES (?, ?, ?, ?, ?, ?)";
 
+        if (s.getSubscriptionsName() == null || s.getSubscriptionsName().trim().isEmpty()) {
+            return false;
+        }
         try (Connection conn = DriverManager.getConnection(url);
             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -51,7 +57,7 @@ public class db_module {
             pstmt.setDouble(2, s.getCost());
             pstmt.setBoolean(3, s.isRecurring());
             pstmt.setString(4, s.getBillingCycleType());
-            pstmt.setString(5, s.getBillingCycleDate().toString());  // convert LocalDate to String
+            pstmt.setString(5, s.getBillingCycleDate().toString());  
             pstmt.setInt(6, s.getUserID());
 
             return pstmt.executeUpdate() > 0;
@@ -60,5 +66,36 @@ public class db_module {
             return false;
         }
     }
+//HELPER METHOD!!
+public Subscription findSubscriptionById(int id) {
+    String sql = "SELECT * FROM Subscriptions WHERE SubscriptionID = ?";
+
+    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setInt(1, id);
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            // Map the row to a Subscription object
+            Subscription s = new Subscription(
+                rs.getInt("SubscriptionID"),
+                rs.getString("SubscriptionsName"),
+                rs.getDouble("Cost"),
+                rs.getBoolean("IsRecurring"),
+                rs.getString("BillingCycleType"),
+                LocalDate.parse(rs.getString("BillingCycleDate")),
+                rs.getInt("UserID")
+            );
+            return s; // Found and mapped
+        } else {
+            return null; // No record found
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+    }
+}
 
 }
