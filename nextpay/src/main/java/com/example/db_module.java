@@ -1,5 +1,5 @@
 package com.example;
-
+import com.example.models.Subscription;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -39,4 +39,26 @@ public class db_module {
             return false;
         }
     }
+    public boolean addSubscription(Subscription s) {
+        String url = "jdbc:sqlite:nextpay.db";
+
+        String sql = "INSERT INTO Subscriptions " +"(SubscriptionsName, Cost, IsRecurring, BillingCycleType, BillingCycleDate, UserID) " +"VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(url);
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, s.getSubscriptionsName());
+            pstmt.setDouble(2, s.getCost());
+            pstmt.setBoolean(3, s.isRecurring());
+            pstmt.setString(4, s.getBillingCycleType());
+            pstmt.setString(5, s.getBillingCycleDate().toString());  // convert LocalDate to String
+            pstmt.setInt(6, s.getUserID());
+
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
