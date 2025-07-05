@@ -66,6 +66,24 @@ public class db_module {
             return false;
         }
     }
+    public boolean deleteSubscription (int SubscriptionID){
+
+
+        
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 //HELPER METHOD!!
 public Subscription findSubscriptionById(int id) {
     String sql = "SELECT * FROM Subscriptions WHERE SubscriptionID = ?";
