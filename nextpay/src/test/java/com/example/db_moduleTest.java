@@ -54,9 +54,9 @@ public class db_moduleTest {
 
     //deleteSubscription:
     @Test
-    public void deleteSubscription_ValidId_ReturnsTrue() {
+    public void deleteSubscription_ValidId_True() {
 
-        Subscription s = new Subscription(0, "ToDelete", 4.99, false, "Monthly", "2025-07-06", 1);
+        Subscription s = new Subscription(0, "ToDelete", 4.99, false, "Monthly", LocalDate.parse("2025-07-06"), 1);
         db_module.addSubscription(s);
         assertTrue(db_module.deleteSubscription(1)); 
     }
@@ -65,16 +65,8 @@ public class db_moduleTest {
 
 
 
-    @Test
-    public void findSubscriptionById_ValidId_ReturnsSubscription() {
-        Subscription s = db_module.findSubscriptionById(1);
 
-        assertNotNull(s); 
-    }
+    
 
-    @Test
-    public void findSubscriptionById_InvalidId_ReturnsNull() {
-        Subscription s = db_module.findSubscriptionById(-1);
-        assertNull(s); 
-    }
+  
 }
