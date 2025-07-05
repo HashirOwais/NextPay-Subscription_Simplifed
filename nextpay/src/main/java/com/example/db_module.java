@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.*;
 
 import com.example.models.Subscription;
 
@@ -51,29 +52,36 @@ public boolean updateSubscription(Subscription s) {
 
 }
 
-public Subscription findSubscrptionById(int id)
-{
-try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
-             Statement stmt = conn.createStatement()) {
 
+//HELPER METHOD!!
+public Subscription findSubscriptionById(int id) {
+    String sql = "SELECT * FROM Subscriptions WHERE SubscriptionID = ?";
 
-                String sql = ""; // here find the sub by id
-                ResultSet rs = stmt.executeQuery(sql);
+    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-                if(rs.next())
-                {
+        pstmt.setInt(1, id);
+        ResultSet rs = pstmt.executeQuery();
 
-                }
-
-
-
-
-       
-        return true;
+        if (rs.next()) {
+            // Map the row to a Subscription object
+            Subscription s = new Subscription(
+                rs.getInt("SubscriptionID"),
+                rs.getString("SubscriptionsName"),
+                rs.getDouble("Cost"),
+                rs.getBoolean("IsRecurring"),
+                rs.getString("BillingCycleType"),
+                LocalDate.parse(rs.getString("BillingCycleDate")),
+                rs.getInt("UserID")
+            );
+            return s; // Found and mapped
+        } else {
+            return null; // No record found
+        }
 
     } catch (Exception e) {
-         e.printStackTrace();
-            return null;
+        e.printStackTrace();
+        return null;
     }
 }
 
