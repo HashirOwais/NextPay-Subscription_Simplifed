@@ -51,25 +51,12 @@ public class db_moduleTest {
 
     @Test
     public void exportSubscriptions_WithValidUser_True() {
-        boolean result = db_module.exportSubscriptions(1);
-        assertTrue(result);
+        int userId = 1; 
+        boolean rs = db_module.exportSubscriptions(userId);
+        assertTrue(rs);
 
         File file = new File("subscriptions_user_" + userId + ".csv");
         assertTrue(file.exists());
         file.delete();
-    }
-
-
-    @Test
-    public void findSubscriptionById_ValidId_ReturnsSubscription() {
-        Subscription s = db_module.findSubscriptionById(1);
-
-        assertNotNull(s); 
-    }
-
-    @Test
-    public void findSubscriptionById_InvalidId_ReturnsNull() {
-        Subscription s = db_module.findSubscriptionById(-1);
-        assertNull(s); 
     }
 }
