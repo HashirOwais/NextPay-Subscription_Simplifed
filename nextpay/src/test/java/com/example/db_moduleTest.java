@@ -22,7 +22,7 @@ public class db_moduleTest {
     }
 
     @Test
-    public void VaildUserTestTrue(){
+    public void Vaild_User_True(){
         boolean isValid = db_module.isUserValid("alice", "password123");
         assertTrue(isValid);
     }
