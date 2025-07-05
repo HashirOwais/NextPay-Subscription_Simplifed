@@ -51,6 +51,16 @@ public class db_moduleTest {
         assertFalse(db.addSubscription(s));
     }
 
+
+    //deleteSubscription:
+    @Test
+    public void deleteSubscription_ValidId_ReturnsTrue() {
+
+        Subscription s = new Subscription(0, "ToDelete", 4.99, false, "Monthly", "2025-07-06", 1);
+        db_module.addSubscription(s);
+        assertTrue(db_module.deleteSubscription(1)); 
+    }
+
     
 
 
