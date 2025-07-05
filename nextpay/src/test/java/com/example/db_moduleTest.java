@@ -27,4 +27,11 @@ public class db_moduleTest {
         assertTrue(isValid);
     }
     
+    @Test
+    public void Vaild_User_False(){
+        boolean isValid = db_module.isUserValid("bob", "wrongpassword");
+        assertTrue(!isValid);
+    }
+
+    
 }
