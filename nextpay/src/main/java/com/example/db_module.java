@@ -8,6 +8,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.*;
 
+import com.opencsv.CSVWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.*;
+
 import com.example.models.Subscription;
 
 public class db_module {
@@ -62,6 +67,49 @@ public class db_module {
             return false;
         }
     }
+
+    public boolean exportSubscriptions(int userId) {
+        String sql = "SELECT * FROM Subscriptions WHERE UserID = ?";
+        String fileName = "subscriptions_user_" + userId + ".csv";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            // CSV header
+            String[] header = { "SubscriptionID", "SubscriptionsName", "Cost", "IsRecurring", "BillingCycleType",
+                    "BillingCycleDate", "UserID" };
+            writer.writeNext(header);
+
+            boolean hasResults = false;
+            while (rs.next()) {
+                hasResults = true;
+                String[] row = {
+                        String.valueOf(rs.getInt("SubscriptionID")),
+                        rs.getString("SubscriptionsName"),
+                        String.valueOf(rs.getDouble("Cost")),
+                        String.valueOf(rs.getBoolean("IsRecurring")),
+                        rs.getString("BillingCycleType"),
+                        rs.getString("BillingCycleDate"),
+                        String.valueOf(rs.getInt("UserID"))
+                };
+                writer.writeNext(row);
+            }
+
+            return hasResults;
+
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
+
 
 
 
