@@ -2,8 +2,12 @@ package com.example;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import com.example.models.Subscription;
 
 public class db_module {
 
@@ -39,4 +43,39 @@ public class db_module {
             return false;
         }
     }
+
+
+public boolean updateSubscription(Subscription s) {
+
+    return true;
+
+}
+
+public Subscription findSubscrptionById(int id)
+{
+try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+             Statement stmt = conn.createStatement()) {
+
+
+                String sql = ""; // here find the sub by id
+                ResultSet rs = stmt.executeQuery(sql);
+
+                if(rs.next())
+                {
+
+                }
+
+
+
+
+       
+        return true;
+
+    } catch (Exception e) {
+         e.printStackTrace();
+            return null;
+    }
+}
+
+
 }
