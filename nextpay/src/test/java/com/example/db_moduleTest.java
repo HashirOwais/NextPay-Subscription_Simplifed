@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -72,6 +73,17 @@ public class db_moduleTest {
     public void deleteSubscription_IDasZero_False(){
         boolean result = db_module.deleteSubscription(0);
         assertFalse(result);
+    }
+
+    //viewSubscription
+    @Test
+    public void viewSubscription_ValidUserId_ReturnsList() {
+        
+        Subscription sub1 = new Subscription(0, "Netflix", 10.99, true, "Monthly", LocalDate.parse("2025-07-01"), 1);
+        db_module.addSubscription(sub1);
+
+        List<Subscription> results = db_module.viewSubscription(1);
+        assertNotNull(results);
     }
 
     
