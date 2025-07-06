@@ -1,4 +1,5 @@
-target/
+nextpay/target/
+nextpay/nextpay.db/
 # Compiled class file
 *.class
 
