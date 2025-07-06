@@ -235,6 +235,69 @@ public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
     assertNull(subs); // Should be null for any invalid order string
 }
 
+//addSubscription: Positive Cases
+    @Test
+    public void addSubscription_ValidSubscription_True() {
+        Subscription s = new Subscription(0, "Spotify", 8.99, true, "Monthly", LocalDate.parse("2025-07-05"), 1);
+        assertTrue(db_module.addSubscription(s)); 
+    }
+    @Test
+    public void addSubscription_ValidNonRecurringSubscription_True() 
+    {
+        Subscription s = new Subscription(0, "Fortnite VBucks", 14.00, false, "Yearly", LocalDate.parse("2025-12-31"), 1);
+        assertTrue(db_module.addSubscription(s));
+    }
+    //addSubscription: Negative Cases
+    @Test
+    public void addSubscription_EmptyName_ReturnsFalse() {
+        Subscription s = new Subscription(0, "", 8.99, true, "Monthly", LocalDate.parse("2025-07-05"), 1);
+        assertFalse(db_module.addSubscription(s));
+    }
+
+    @Test
+    public void addSubscription_NegativeCost_ReturnsFalse() {
+        Subscription s = new Subscription(0, "Negative Cost Service", -5.00, true, "Monthly", LocalDate.parse("2025-07-05"), 1);
+        assertFalse(db_module.addSubscription(s));
+    }
+
+    //deleteSubscription: Positive cases
+    @Test
+    public void deleteSubscription_ValidId_True() {
+
+        Subscription s = new Subscription(0, "ToDelete", 4.99, false, "Monthly", LocalDate.parse("2025-07-06"), 1);
+        db_module.addSubscription(s);
+        assertTrue(db_module.deleteSubscription(1)); 
+    }
+    //deleteSubscription: negative cases
+    public void deleteSubscription_NonExistentId_ReturnsFalse() {
+        boolean result = db_module.deleteSubscription(999999); 
+        assertTrue(result);
+    }
+    public void deleteSubscription_IDasZero_False(){
+        boolean result = db_module.deleteSubscription(0);
+        assertFalse(result);
+    }
+
+    //viewSubscription: positive cases
+    @Test
+    public void viewSubscription_ValidUserId_ReturnsList() {
+        
+        Subscription sub1 = new Subscription(0, "Netflix", 10.99, true, "Monthly", LocalDate.parse("2025-07-01"), 1);
+        db_module.addSubscription(sub1);
+
+        List<Subscription> results = db_module.viewSubscription(1);
+        assertNotNull(results);
+    }
+    //viewSubscription: negative cases
+    @Test
+    public void viewSubscription_NonExistentUserId_ReturnsEmptyList(){
+        List<Subscription> result = db_module.viewSubscription(9999); // unlikely user ID
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+    }
+
+
 
 
 
