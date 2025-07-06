@@ -1,5 +1,10 @@
 package com.example;
 import com.example.models.Subscription;
+import java.sql.Statement;
+
+
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.time.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,13 +20,51 @@ import com.example.models.Subscription;
 public class db_moduleTest {
     static db_module db_module;
 
-    @BeforeAll
-    static void setupDatabase(){
-        db_module = new db_module();
-        db_module.DBConnection();        
-    }
+@BeforeAll
+static void setupDatabase(){
+    db_module = new db_module();
+    db_module.DBConnection();
 
-    
+    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+         Statement stmt = conn.createStatement()) {
+
+        // DROP tables if they exist
+        stmt.executeUpdate("DROP TABLE IF EXISTS Subscriptions;");
+        stmt.executeUpdate("DROP TABLE IF EXISTS Users;");
+
+        // RECREATE tables (same as your schema)
+        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Users (" +
+                           "UserID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                           "Username TEXT NOT NULL, " +
+                           "Password TEXT NOT NULL" +
+                           ");");
+
+        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Subscriptions (" +
+                           "SubscriptionID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                           "SubscriptionsName TEXT NOT NULL, " +
+                           "Cost REAL NOT NULL, " +
+                           "IsRecurring BOOLEAN NOT NULL, " +
+                           "BillingCycleType TEXT NOT NULL, " +
+                           "BillingCycleDate DATE NOT NULL, " +
+                           "UserID INTEGER NOT NULL, " +
+                           "FOREIGN KEY (UserID) REFERENCES Users(UserID)" +
+                           ");");
+
+        // Seed user
+        stmt.executeUpdate("INSERT INTO Users (UserID, Username, Password) VALUES (1, 'testuser', 'password123');");
+
+        // Seed two subscriptions for update tests
+        stmt.executeUpdate("INSERT INTO Subscriptions (SubscriptionsName, Cost, IsRecurring, BillingCycleType, BillingCycleDate, UserID) " +
+                           "VALUES ('ForNegativeCost', 10.00, 1, 'monthly', '2025-07-06', 1);");
+
+        stmt.executeUpdate("INSERT INTO Subscriptions (SubscriptionsName, Cost, IsRecurring, BillingCycleType, BillingCycleDate, UserID) " +
+                           "VALUES ('ForEmptyName', 20.00, 1, 'yearly', '2025-08-10', 1);");
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 
 
 
@@ -33,7 +76,7 @@ public void updateSubscription_ValidUpdate_ReturnsTrue() {
 
     Subscription sub = new Subscription(
         0, // SubscriptionID will be assigned by DB
-        "Netflix",
+        "Netflixxx",
         10.99,
         true,
         "monthly",
@@ -42,8 +85,6 @@ public void updateSubscription_ValidUpdate_ReturnsTrue() {
     );
     db_module.addSubscription(sub);
 
-    //mocking an update
-
     sub.setSubscriptionsName("UpdatedSub");
     sub.setCost(15.49);
 
@@ -51,6 +92,32 @@ public void updateSubscription_ValidUpdate_ReturnsTrue() {
 
 
     }
+
+
+    @Test
+public void updateSubscription_NegativeCost_ReturnsFalse() {
+    // Get subscription with ID 1 (ForNegativeCost)
+    Subscription sub = db_module.findSubscriptionById(1);
+
+    // Set to negative cost (invalid)
+    sub.setCost(-100.0);
+
+    // Attempt to update, should fail
+    assertFalse(db_module.updateSubscription(sub));
+}
+
+@Test
+public void updateSubscription_EmptyName_ReturnsFalse() {
+    // Get subscription with ID 2 (ForEmptyName)
+    Subscription sub = db_module.findSubscriptionById(2);
+
+    // Set to empty name (invalid)
+    sub.setSubscriptionsName("");
+
+    // Attempt to update, should fail
+    assertFalse(db_module.updateSubscription(sub));
+}
+
 
     //addSubscription: Positive Cases
     @Test
@@ -74,18 +141,20 @@ public void updateSubscription_ValidUpdate_ReturnsTrue() {
         assertFalse(db.addSubscription(s));
     }
 
-
-
     @Test
-    public void findSubscriptionById_ValidId_ReturnsSubscription() {
-        Subscription s = db_module.findSubscriptionById(1);
+public void findSubscriptionById_ValidId_ReturnsSubscription() {
+    Subscription s = db_module.findSubscriptionById(1);
 
-        assertNotNull(s); 
-    }
+    assertNotNull(s); 
+}
 
-    @Test
-    public void findSubscriptionById_InvalidId_ReturnsNull() {
-        Subscription s = db_module.findSubscriptionById(-1);
-        assertNull(s); 
-    }
+@Test
+public void findSubscriptionById_InvalidId_ReturnsNull() {
+    Subscription s = db_module.findSubscriptionById(-1);
+    assertNull(s); 
+}
+
+
+
+
 }

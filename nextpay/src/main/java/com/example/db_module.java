@@ -47,36 +47,76 @@ public class db_module {
 
 
 public boolean updateSubscription(Subscription s) {
+    String sql = "UPDATE Subscriptions SET " +
+                 "SubscriptionsName = ?, " +
+                 "Cost = ?, " +
+                 "IsRecurring = ?, " +
+                 "BillingCycleType = ?, " +
+                 "BillingCycleDate = ?, " +
+                 "UserID = ? " +
+                 "WHERE SubscriptionID = ?";
 
-    return true;
+    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            if (s.getSubscriptionsName() == null || s.getSubscriptionsName().trim().isEmpty()) {
+        return false;
+    }
+    if (s.getCost() < 0) {
+        return false;
+    }
+
+        pstmt.setString(1, s.getSubscriptionsName());
+        pstmt.setDouble(2, s.getCost());
+        pstmt.setBoolean(3, s.isRecurring());
+        pstmt.setString(4, s.getBillingCycleType());
+        pstmt.setString(5, s.getBillingCycleDate().toString());
+        pstmt.setInt(6, s.getUserID());
+        pstmt.setInt(7, s.getSubscriptionID());
+
+        int rows = pstmt.executeUpdate();
+        return rows > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
 }
 
 
-    public boolean addSubscription(Subscription s) {
-        String url = "jdbc:sqlite:nextpay.db";
 
-        String sql = "INSERT INTO Subscriptions " +"(SubscriptionsName, Cost, IsRecurring, BillingCycleType, BillingCycleDate, UserID) " +"VALUES (?, ?, ?, ?, ?, ?)";
+public boolean addSubscription(Subscription s) {
+    String url = "jdbc:sqlite:nextpay.db";
+    String sql = "INSERT INTO Subscriptions (SubscriptionsName, Cost, IsRecurring, BillingCycleType, BillingCycleDate, UserID) VALUES (?, ?, ?, ?, ?, ?)";
 
-        if (s.getSubscriptionsName() == null || s.getSubscriptionsName().trim().isEmpty()) {
-            return false;
-        }
-        try (Connection conn = DriverManager.getConnection(url);
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, s.getSubscriptionsName());
-            pstmt.setDouble(2, s.getCost());
-            pstmt.setBoolean(3, s.isRecurring());
-            pstmt.setString(4, s.getBillingCycleType());
-            pstmt.setString(5, s.getBillingCycleDate().toString());  
-            pstmt.setInt(6, s.getUserID());
-
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    if (s.getSubscriptionsName() == null || s.getSubscriptionsName().trim().isEmpty()) {
+        return false;
     }
+    try (Connection conn = DriverManager.getConnection(url);
+         PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+        pstmt.setString(1, s.getSubscriptionsName());
+        pstmt.setDouble(2, s.getCost());
+        pstmt.setBoolean(3, s.isRecurring());
+        pstmt.setString(4, s.getBillingCycleType());
+        pstmt.setString(5, s.getBillingCycleDate().toString());  
+        pstmt.setInt(6, s.getUserID());
+
+        int rows = pstmt.executeUpdate();
+
+        // Set the ID on the object
+        try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                s.setSubscriptionID(generatedKeys.getInt(1));
+            }
+        }
+
+        return rows > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
 //HELPER METHOD!!
 public Subscription findSubscriptionById(int id) {
     String sql = "SELECT * FROM Subscriptions WHERE SubscriptionID = ?";
