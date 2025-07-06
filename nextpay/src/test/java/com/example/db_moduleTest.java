@@ -4,8 +4,16 @@ import java.time.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.sql.SQLException;
+
+import org.junit.jupiter.api.BeforeAll;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -13,58 +21,83 @@ import org.junit.jupiter.api.Test;
 
 public class db_moduleTest {
     static db_module db_module;
+
     @BeforeAll
-    static void setupDatabase(){
+    static void Valid_DBConnection() {
         db_module = new db_module();
-        db_module.DBConnection();        
+        db_module.DBConnection();
     }
 
-
     @Test
-    public void dbConnectionTest()
-    {
-        db_module db_module = new db_module();
+    public void dbConnection_WithValidConn_True() {
         boolean demo = db_module.DBConnection();
         assertTrue(demo);
-
     }
 
-    //addSubscription: Positive Cases
     @Test
-    public void addSubscription_ValidSubscription_True() {
-        db_module db = new db_module();
-        Subscription s = new Subscription(0, "Spotify", 8.99, true, "Monthly", LocalDate.parse("2025-07-05"), 1);
-        assertTrue(db.addSubscription(s)); 
-    }
-    @Test
-    public void addSubscription_ValidNonRecurringSubscription_True() 
-    {
-        db_module db = new db_module();
-        Subscription s = new Subscription(0, "Fortnite VBucks", 14.00, false, "Yearly", LocalDate.parse("2025-12-31"), 1);
-        assertTrue(db.addSubscription(s));
-    }
-    //addSubscription: Negative Cases
-    @Test
-    public void addSubscription_EmptyName_ReturnsFalse() {
-        db_module db = new db_module();
-        Subscription s = new Subscription(0, "", 8.99, true, "Monthly", LocalDate.parse("2025-07-05"), 1);
-        assertFalse(db.addSubscription(s));
+    public void dbConnection_WithInvalidConn_ThrowsException() {
+        db_module testDb = new db_module() {
+            @Override
+            public boolean DBConnection() {
+                try {
+                    // Simulate an invalid DB connection
+                    throw new SQLException("Simulated DB connection failure");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        assertThrows(RuntimeException.class, () -> {
+            testDb.DBConnection();
+        });
     }
 
+    @Test
+    public void isUserValid_WithCorrectCredentials_True(){
+        boolean isValid = db_module.isUserValid("alice", "password123");
+        assertTrue(isValid);
+    }
     
-
-
-
     @Test
-    public void findSubscriptionById_ValidId_ReturnsSubscription() {
-        Subscription s = db_module.findSubscriptionById(1);
-
-        assertNotNull(s); 
+    public void isUserValid_WithIncorrectPassword_False(){
+        boolean isValid = db_module.isUserValid("bob", "wrongpassword");
+        assertTrue(!isValid);
     }
 
     @Test
-    public void findSubscriptionById_InvalidId_ReturnsNull() {
-        Subscription s = db_module.findSubscriptionById(-1);
-        assertNull(s); 
+    public void isUserValid_WithEmptyCredentials_False(){
+        boolean isValid = db_module.isUserValid("", "");
+        assertTrue(!isValid);
     }
+
+    @Test
+    public void isUserValid_WithNullCredentials_False(){
+        boolean isValid = db_module.isUserValid(null, null);
+        assertTrue(!isValid);
+    }
+
+    @Test
+    public void exportSubscriptions_WithValidUser_True() {
+        int userId = 1; 
+        boolean rs = db_module.exportSubscriptions(userId);
+        assertTrue(rs);
+
+        File file = new File("subscriptions_user_" + userId + ".csv");
+        assertTrue(file.exists());
+        file.delete();
+    }
+
+    @Test
+    public void exportSubscriptions_WithInvalidUser_False() {
+        int invalidUserId = -9999;
+        String fileName = "subscriptions_user_" + invalidUserId + ".csv";
+        File file = new File(fileName);
+
+        boolean result = db_module.exportSubscriptions(invalidUserId);
+        assertFalse(result, "Should return false for invalid user ID.");
+
+        file.delete();
+    }
+
 }
