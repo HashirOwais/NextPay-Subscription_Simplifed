@@ -56,13 +56,22 @@ public class db_moduleTest {
 
 
 
-    //deleteSubscription:
+    //deleteSubscription: Positive cases
     @Test
     public void deleteSubscription_ValidId_True() {
 
         Subscription s = new Subscription(0, "ToDelete", 4.99, false, "Monthly", LocalDate.parse("2025-07-06"), 1);
         db_module.addSubscription(s);
         assertTrue(db_module.deleteSubscription(1)); 
+    }
+    //deleteSubscription: negative cases
+    public void deleteSubscription_NonExistentId_ReturnsFalse() {
+        boolean result = db_module.deleteSubscription(999999); 
+        assertTrue(result);
+    }
+    public void deleteSubscription_IDasZero_False(){
+        boolean result = db_module.deleteSubscription(0);
+        assertFalse(result);
     }
 
     
