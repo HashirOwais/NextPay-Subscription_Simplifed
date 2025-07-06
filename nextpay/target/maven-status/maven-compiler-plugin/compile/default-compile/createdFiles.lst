@@ -1,0 +1,5 @@
+com/example/UI.class
+com/example/models/User.class
+com/example/db_module.class
+com/example/models/Subscription.class
+com/example/subscriptions_module.class
