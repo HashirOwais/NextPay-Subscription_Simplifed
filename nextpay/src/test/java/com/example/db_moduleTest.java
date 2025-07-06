@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.List;
+
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -86,8 +86,8 @@ public class db_moduleTest {
         String fileName = "subscriptions_user_" + invalidUserId + ".csv";
         File file = new File(fileName);
 
-        boolean result = db_module.exportSubscriptions(invalidUserId);
-        assertFalse(result, "Should return false for invalid user ID.");
+        boolean rs = db_module.exportSubscriptions(invalidUserId);
+        assertFalse(rs, "Should return false for invalid user ID.");
 
         file.delete();
     }
