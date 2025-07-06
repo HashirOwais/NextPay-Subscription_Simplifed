@@ -4,18 +4,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.*;
 
 import com.opencsv.CSVWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.*;
 
-import com.example.models.Subscription;
 import java.time.LocalDate;
 
 public class db_module {
