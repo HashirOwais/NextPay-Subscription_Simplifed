@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -154,6 +155,45 @@ public void findSubscriptionById_InvalidId_ReturnsNull() {
     assertNull(s); 
 }
 
+@Test
+public void getAllSubscriptionsSortedByDate_Asc_ReturnsAscendingOrder() {
+    List<Subscription> subs = db_module.getAllSubscriptionsSortedByDate("asc");
+    boolean isSorted = true;
+
+    for (int i = 0; i < subs.size() - 1; i++) {
+        LocalDate current = subs.get(i).getBillingCycleDate();
+        LocalDate next = subs.get(i + 1).getBillingCycleDate();
+        if (current.isAfter(next)) {
+            isSorted = false;
+            break;
+        }
+    }
+
+    assertTrue(isSorted);
+}
+
+@Test
+public void getAllSubscriptionsSortedByDate_Desc_ReturnsDescendingOrder() {
+    List<Subscription> subs = db_module.getAllSubscriptionsSortedByDate("desc");
+    boolean isSorted = true;
+
+    for (int i = 0; i < subs.size() - 1; i++) {
+        LocalDate current = subs.get(i).getBillingCycleDate();
+        LocalDate next = subs.get(i + 1).getBillingCycleDate();
+        if (current.isBefore(next)) {
+            isSorted = false;
+            break;
+        }
+    }
+
+    assertTrue(isSorted);
+}
+
+@Test
+public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
+    List<Subscription> subs = db_module.getAllSubscriptionsSortedByDate("notValid");
+    assertNull(subs); // Should be null for any invalid order string
+}
 
 
 
