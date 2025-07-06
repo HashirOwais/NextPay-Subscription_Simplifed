@@ -293,7 +293,7 @@ public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
     public void viewSubscription_NonExistentUserId_ReturnsEmptyList(){
         List<Subscription> result = db_module.viewSubscription(9999); // unlikely user ID
         assertNotNull(result);
-        assertFalse(result.isEmpty());
+        assertTrue(result.isEmpty());
 
     }
 
