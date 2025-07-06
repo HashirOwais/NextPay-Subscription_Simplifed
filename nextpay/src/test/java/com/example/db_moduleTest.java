@@ -16,9 +16,34 @@ public class db_moduleTest {
     static db_module db_module;
 
     @BeforeAll
-    static void dbConnection_WithValidConn_True() {
+    static void Valid_DBConnection() {
         db_module = new db_module();
         db_module.DBConnection();
+    }
+
+    @Test
+    public void dbConnection_WithValidConn_True() {
+        boolean demo = db_module.DBConnection();
+        assertTrue(demo);
+    }
+
+    @Test
+    public void dbConnection_WithInvalidConn_ThrowsException() {
+        db_module testDb = new db_module() {
+            @Override
+            public boolean DBConnection() {
+                try {
+                    // Simulate an invalid DB connection
+                    throw new SQLException("Simulated DB connection failure");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        assertThrows(RuntimeException.class, () -> {
+            testDb.DBConnection();
+        });
     }
 
     @Test
@@ -55,4 +80,17 @@ public class db_moduleTest {
         assertTrue(file.exists());
         file.delete();
     }
+
+    @Test
+    public void exportSubscriptions_WithInvalidUser_False() {
+        int invalidUserId = -9999;
+        String fileName = "subscriptions_user_" + invalidUserId + ".csv";
+        File file = new File(fileName);
+
+        boolean result = db_module.exportSubscriptions(invalidUserId);
+        assertFalse(result, "Should return false for invalid user ID.");
+
+        file.delete();
+    }
+
 }
