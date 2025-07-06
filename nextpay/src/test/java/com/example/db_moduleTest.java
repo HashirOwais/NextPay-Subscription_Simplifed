@@ -266,7 +266,7 @@ public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
 
         Subscription s = new Subscription(0, "ToDelete", 4.99, false, "Monthly", LocalDate.parse("2025-07-06"), 1);
         db_module.addSubscription(s);
-        assertTrue(db_module.deleteSubscription(1)); 
+        assertTrue(db_module.deleteSubscription(5)); 
     }
     //deleteSubscription: negative cases
     public void deleteSubscription_NonExistentId_ReturnsFalse() {
