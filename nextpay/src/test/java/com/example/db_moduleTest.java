@@ -75,7 +75,7 @@ public class db_moduleTest {
         assertFalse(result);
     }
 
-    //viewSubscription
+    //viewSubscription: positive cases
     @Test
     public void viewSubscription_ValidUserId_ReturnsList() {
         
@@ -85,6 +85,15 @@ public class db_moduleTest {
         List<Subscription> results = db_module.viewSubscription(1);
         assertNotNull(results);
     }
+    //viewSubscription: negative cases
+    @Test
+    public void viewSubscription_NonExistentUserId_ReturnsEmptyList(){
+        List<Subscription> result = db_module.viewSubscription(9999); // unlikely user ID
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+    }
+
 
     
 

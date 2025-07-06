@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class db_module {
 
@@ -45,10 +47,13 @@ public class db_module {
     public boolean addSubscription(Subscription s) {
     String url = "jdbc:sqlite:nextpay.db";
     String sql = "INSERT INTO Subscriptions (SubscriptionsName, Cost, IsRecurring, BillingCycleType, BillingCycleDate, UserID) VALUES (?, ?, ?, ?, ?, ?)";
+    String sqlLastId = "SELECT last_insert_rowid()";
 
-    if (s.getSubscriptionsName() == null || s.getSubscriptionsName().trim().isEmpty()) {
+    if (s.getSubscriptionsName() == null || s.getSubscriptionsName().trim().isEmpty() || s.getCost() < 0) {
         return false;
     }
+   
+
     try (Connection conn = DriverManager.getConnection(url);
          PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -62,9 +67,13 @@ public class db_module {
         int rows = pstmt.executeUpdate();
 
         // Set the ID on the object
-        try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-            if (generatedKeys.next()) {
-                s.setSubscriptionID(generatedKeys.getInt(1));
+        if (rows > 0) {
+            // Fetch the last inserted ID manually
+            try (Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlLastId)) {
+                if (rs.next()) {
+                    s.setSubscriptionID(rs.getInt(1));
+                }
             }
         }
 
@@ -88,10 +97,37 @@ public class db_module {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return true; 
+            return false; 
         }
     }
 
+    public List<Subscription> viewSubscription(int userId) {
+        List<Subscription> subscriptions = new ArrayList<>();
+        String sql = "SELECT * FROM Subscriptions WHERE UserID = ?";
 
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Subscription s = new Subscription(
+                    rs.getInt("SubscriptionID"),
+                    rs.getString("SubscriptionsName"),
+                    rs.getDouble("Cost"),
+                    rs.getBoolean("IsRecurring"),
+                    rs.getString("BillingCycleType"),
+                    LocalDate.parse(rs.getString("BillingCycleDate")),
+                    rs.getInt("UserID")
+                );
+                subscriptions.add(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return subscriptions;
+    }
 
 }
