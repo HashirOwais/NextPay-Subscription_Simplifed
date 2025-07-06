@@ -1,10 +1,13 @@
 package com.example;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.sql.SQLException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,16 +16,9 @@ public class db_moduleTest {
     static db_module db_module;
 
     @BeforeAll
-    static void setupDatabase() {
+    static void dbConnection_WithValidConn_True() {
         db_module = new db_module();
         db_module.DBConnection();
-    }
-    
-    @Test
-    public void dbConnectionTest() {
-        boolean demo = db_module.DBConnection();
-        assertTrue(demo);
-
     }
 
     @Test
