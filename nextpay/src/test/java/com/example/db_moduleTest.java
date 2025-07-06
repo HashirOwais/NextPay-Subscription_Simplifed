@@ -51,6 +51,13 @@ public class db_moduleTest {
         assertFalse(db.addSubscription(s));
     }
 
+    @Test
+    public void addSubscription_NegativeCost_ReturnsFalse() {
+        Subscription s = new Subscription(0, "Negative Cost Service", -5.00, true, "Monthly", LocalDate.parse("2025-07-05"), 1);
+        assertFalse(db_module.addSubscription(s));
+    }
+
+
 
     //deleteSubscription:
     @Test
