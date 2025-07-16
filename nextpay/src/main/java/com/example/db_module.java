@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class db_module {
@@ -291,4 +292,22 @@ public class db_module {
             return null;
         }
     }
+    
+    public HashMap<String, List<Subscription>> getMonthlySubscriptionSummary(int userId) {
+    String sqlSummary = "SELECT COUNT(*) as count, SUM(Cost) as total FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
+    String sqlList = "SELECT * FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
+
+    int count = 0;
+    double total = 0.0;
+    List<Subscription> subscriptions = new ArrayList<>();
+    HashMap<String, List<Subscription>> result = new HashMap<>();
+
+ 
+    return result;
+}
+
+
+    
+
+
 }

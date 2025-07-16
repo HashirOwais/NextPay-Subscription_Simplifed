@@ -11,17 +11,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.models.Subscription;
 
 public class db_moduleTest {
     static db_module db_module;
 
-    @BeforeAll
-    static void setupDatabase(){
+    @BeforeEach
+     void setupDatabase(){
         db_module = new db_module();
         db_module.DBConnection();
 
@@ -295,7 +296,27 @@ public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
         assertNotNull(result);
         assertTrue(result.isEmpty());
 
+
+    //find suscription
+
+    
+
+
     }
+
+    @Test
+public void getMonthlySubscriptionSummary_WithMonthlySubs_ReturnsCorrectSummaryAndList() {
+    db_module.addSubscription(new Subscription(0, "Netflix", 10.00, true, "monthly", LocalDate.now(), 1));
+    db_module.addSubscription(new Subscription(0, "Spotify", 7.99, true, "monthly", LocalDate.now(), 1));
+
+    // Act
+    HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(1);
+
+    // Assert: summary must mention "2 monthly subscriptions" and "17.99"
+    String summary = summaryMap.keySet().iterator().next();
+    assertTrue(summary.contains("You have 2 monthly subscriptions") && summary.contains("17.99"));
+}
+
 
 
 
