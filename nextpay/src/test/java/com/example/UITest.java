@@ -2,11 +2,13 @@ package com.example;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 public class UITest {
 
-
+    //handleLogin - Positive case
     @Test
     public void testHandleLogin_validCredentials_returnsTrue() {
         UIModule ui = new UIModule();
@@ -45,4 +47,17 @@ public class UITest {
         assertFalse(result);
     }
 
+
+
+    //handleAddSub
+    @Test
+public void testHandleAddSubscription_validInput_returnsTrue() {
+        UIModule ui = new UIModule();
+
+        Subscription s = new Subscription(0,"Spotify Premium",9.99,true,"Monthly",LocalDate.of(2025, 8, 1), // Existing userID);
+
+        boolean result = ui.handleAddSubscription(s);
+        assertTrue(result);
+    }
 }
+
