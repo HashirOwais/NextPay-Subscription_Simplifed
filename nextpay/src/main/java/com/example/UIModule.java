@@ -73,7 +73,6 @@ public class UIModule {
     }
 
     // Login handler
-    // Login handler
     public boolean handleLogin(String username, String password) {
         User user = new User();
         user.setUsername(username);
