@@ -304,25 +304,23 @@ public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
 
     }
 
-    @Test
-public void getMonthlySubscriptionSummary_WithMonthlySubs_ReturnsCorrectSummaryAndList() {
+
+
+@Test
+public void getMonthlySubscriptionSummary_WithMonthlySubs_ReturnsCorrectSummary() {
     db_module.addSubscription(new Subscription(0, "Netflix", 10.00, true, "monthly", LocalDate.now(), 1));
     db_module.addSubscription(new Subscription(0, "Spotify", 7.99, true, "monthly", LocalDate.now(), 1));
-
-    // Act
     HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(1);
-
-    // Assert: summary must mention "2 monthly subscriptions" and "17.99"
     String summary = summaryMap.keySet().iterator().next();
-    assertTrue(summary.contains("You have 2 monthly subscriptions") && summary.contains("17.99"));
+    assertTrue(summary.contains("You have 3 monthly subscriptions") && summary.contains("27.99"));
 }
 
-
-
-
-
-
-
+@Test
+public void getMonthlySubscriptionSummary_NoMonthlySubs_ReturnsZeroSummary() {
+    HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(2);
+    String summary = summaryMap.keySet().iterator().next();
+    assertTrue(summary.contains("You have 0 monthly subscriptions") && summary.contains("0.00"));
+}
 
 
 

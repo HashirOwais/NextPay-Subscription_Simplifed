@@ -293,7 +293,7 @@ public class db_module {
         }
     }
     
-    public HashMap<String, List<Subscription>> getMonthlySubscriptionSummary(int userId) {
+public HashMap<String, List<Subscription>> getMonthlySubscriptionSummary(int userId) {
     String sqlSummary = "SELECT COUNT(*) as count, SUM(Cost) as total FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
     String sqlList = "SELECT * FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
 
@@ -302,9 +302,45 @@ public class db_module {
     List<Subscription> subscriptions = new ArrayList<>();
     HashMap<String, List<Subscription>> result = new HashMap<>();
 
- 
+    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db")) {
+        // Get summary stats
+        try (PreparedStatement ps = conn.prepareStatement(sqlSummary)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("count");
+                total = rs.getDouble("total");
+            }
+        }
+        // Get the subscriptions list
+        try (PreparedStatement ps = conn.prepareStatement(sqlList)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Subscription s = new Subscription(
+                    rs.getInt("SubscriptionID"),
+                    rs.getString("SubscriptionsName"),
+                    rs.getDouble("Cost"),
+                    rs.getBoolean("IsRecurring"),
+                    rs.getString("BillingCycleType"),
+                    LocalDate.parse(rs.getString("BillingCycleDate")),
+                    rs.getInt("UserID")
+                );
+                subscriptions.add(s);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    String summary = String.format(
+        "You have %d monthly subscriptions. Your total monthly payments: $%.2f",
+        count, total
+    );
+    result.put(summary, subscriptions);
     return result;
 }
+
 
 
     
