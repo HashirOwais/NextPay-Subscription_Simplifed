@@ -1,8 +1,11 @@
 package com.example;
-
 import java.util.Scanner;
-
 import com.example.models.User;
+import com.example.models.Subscription;
+import com.example.models.Subscription;
+
+
+
 //test
 public class UIModule {
     private Scanner scanner = new Scanner(System.in);
@@ -90,7 +93,9 @@ public class UIModule {
     }
 
     // Add subscription input
-    public void handleAddSubscription() {
+    public boolean handleAddSubscription(Subscription s) {
+        subscriptions_module controller = new subscriptions_module();
+        return controller.addSubscription(s);
     }
 
     // Delete subscription by ID

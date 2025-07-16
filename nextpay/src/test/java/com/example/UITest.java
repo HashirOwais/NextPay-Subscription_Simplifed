@@ -1,6 +1,7 @@
 package com.example;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.example.models.Subscription;
 
 import java.time.LocalDate;
 
@@ -51,10 +52,10 @@ public class UITest {
 
     //handleAddSub
     @Test
-public void testHandleAddSubscription_validInput_returnsTrue() {
+    public void testHandleAddSubscription_validInput_returnsTrue() {
         UIModule ui = new UIModule();
 
-        Subscription s = new Subscription(0,"Spotify Premium",9.99,true,"Monthly",LocalDate.of(2025, 8, 1), // Existing userID);
+        Subscription s = new Subscription(0, "Spotify Premium", 9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
 
         boolean result = ui.handleAddSubscription(s);
         assertTrue(result);
