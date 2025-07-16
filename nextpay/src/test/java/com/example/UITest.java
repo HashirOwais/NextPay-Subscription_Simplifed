@@ -4,15 +4,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.example.models.Subscription;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 public class UITest {
+    UIModule ui = new UIModule();
+
 
     //handleLogin - Positive case
     @Test
     public void testHandleLogin_validCredentials_returnsTrue() {
-        UIModule ui = new UIModule();
         boolean result = ui.handleLogin("testuser", "password123");
         assertTrue(result);
     }
@@ -21,14 +23,12 @@ public class UITest {
     //Checks both username and passwords being wrong
     @Test
     public void testHandleLogin_invalidCredentials_returnsFalse() {
-        UIModule ui = new UIModule();
         boolean result = ui.handleLogin("testuserFalse", "password123False");
         assertFalse(result);
     }
     //wrong password
     @Test
     public void testHandleLogin_invalidPasswordCredentials_returnsFalse() {
-        UIModule ui = new UIModule();
         boolean result = ui.handleLogin("testuser", "password123False");
         assertFalse(result);
     }
@@ -36,14 +36,12 @@ public class UITest {
     //wrong username
     @Test
     public void testHandleLogin_invalidUsernameCredentials_returnsFalse() {
-        UIModule ui = new UIModule();
         boolean result = ui.handleLogin("testuserFalse", "password123");
         assertFalse(result);
     }
     //empty fields
     @Test
     public void testHandleLogin_emptyCredentials_returnsFalse() {
-        UIModule ui = new UIModule();
         boolean result = ui.handleLogin("", "");
         assertFalse(result);
     }
@@ -53,7 +51,6 @@ public class UITest {
     //handleAddSub
     @Test
     public void testHandleAddSubscription_validInput_returnsTrue() {
-        UIModule ui = new UIModule();
 
         Subscription s = new Subscription(0, "Spotify Premium", 9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
 
@@ -62,18 +59,35 @@ public class UITest {
     }
     @Test
     public void testHandleAddSubscription_emptyName_returnsFalse() {
-        UIModule ui = new UIModule();
         Subscription s = new Subscription(0, "", 9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
         boolean result = ui.handleAddSubscription(s);
         assertFalse(result);
     }
     @Test
     public void testHandleAddSubscription_invalidCost_returnsFalse() {
-        UIModule ui = new UIModule();
         Subscription s = new Subscription(0, "Disney+", -9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
         boolean result = ui.handleAddSubscription(s);
         assertFalse(result);
     }
+
+    //handlSort
+    @Test
+    public void testHandleSort_byDate_returnsSortedList() {
+    List<Subscription> sorted = ui.handleSort("date");
+
+    if (sorted.size() >= 2) {
+        Subscription first = sorted.get(0);
+        Subscription second = sorted.get(1);
+
+        LocalDate date1 = first.getDate();
+        LocalDate date2 = second.getDate();
+
+        assertTrue(date1.isBefore(date2));
+    }
+}
+
+
+
 
 }
 
