@@ -358,8 +358,47 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
 |------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
 | Hashir Owais     | Complete current and previous assigned tasks. | Completed | Lead the discussions for project structure and mangement. |
-| Muhammad Tariq   | Complete current and previous assigned tasks. | Completed | Initialized Maven project and setup modules. |
+| Muhammad Tariq   | Complete current and previous assigned tasks. | Completed | Initialize Maven project and setup modules. |
 | Simran Gahra     | Complete current and previous assigned tasks. | Completed | Brainsorm methods/modules for Nextpay and assist with Maven folder structure. |
+
+---
+
+### Meeting 7
+
+**Time**: July 05th, 2025, 2:30pm - 7:25pm <br>
+**Agenda**: Impliment DB_Module
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Lead the discussions for project structure and mangement. | Completed | Implement and test functions for updating, filtering subscriptions by name and date. |
+| Muhammad Tariq   | Initialized Maven project and setup modules. | Completed | Implement and test functions to add, delete, and view subscriptions. |
+| Simran Gahra     | Brainsorm methods/modules for Nextpay and assist with Maven folder structure. | Completed | Implement and test functions for DB creation and initialization, user authentication, and exporting subscriptions to CSV. |
+
+---
+
+### Meeting 8
+
+**Time**: July 09th, 2025, 5:10pm - 7:05pm <br>
+**Agenda**: Initilze and brainstorm functions for UI_module and Subscriptions_module
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Implement and test functions for updating, filtering subscriptions by name and date. | Completed | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. |
+| Muhammad Tariq   | Implement and test functions to add, delete, and view subscriptions. | Completed | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. |
+| Simran Gahra     | Implement and test functions for DB creation and initialization, user authentication, and exporting subscriptions to CSV. | Completed | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. |
+
+---
+
+### Meeting 9
+
+**Time**: July 16th, 2025, 10:25am -  <br>
+**Agenda**: Impliment functions for UI_module and Subscriptions_module
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed |  |
+| Muhammad Tariq   | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed |  |
+| Simran Gahra     | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed |  |
 
 ---
 ## 5. Project Management
