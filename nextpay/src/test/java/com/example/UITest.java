@@ -10,7 +10,7 @@ public class UITest {
     @Test
     public void testHandleLogin_validCredentials_returnsTrue() {
         UIModule ui = new UIModule();
-        boolean result = ui.handleLogin("demo", "pass123");
+        boolean result = ui.handleLogin("testuser", "password123");
         assertTrue(result);
     }
 

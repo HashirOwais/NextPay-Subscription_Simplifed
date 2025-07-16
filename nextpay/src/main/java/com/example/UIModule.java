@@ -1,6 +1,8 @@
 package com.example;
 
 import java.util.Scanner;
+
+import com.example.models.User;
 //test
 public class UIModule {
     private Scanner scanner = new Scanner(System.in);
@@ -71,8 +73,18 @@ public class UIModule {
     }
 
     // Login handler
-    public void handleLogin(String username, String password) {
+    // Login handler
+    public boolean handleLogin(String username, String password) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+
+        subscriptions_module controller = new subscriptions_module();
+        return controller.isUserValid(user);
     }
+
+
+
 
     // Main menu selection
     public void handleMainMenuSelection(int choice) {
