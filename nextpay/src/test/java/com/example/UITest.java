@@ -71,6 +71,7 @@ public class UITest {
     }
 
     //handlSort
+    //positive test
     @Test
     public void testHandleSort_byDate_returnsSortedList() {
         List<Subscription> sorted = ui.handleSort("date");
@@ -89,5 +90,5 @@ public class UITest {
 
 
 
-}
+
 

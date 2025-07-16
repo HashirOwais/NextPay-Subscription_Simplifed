@@ -1,4 +1,6 @@
 package com.example;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import com.example.models.User;
 import com.example.models.Subscription;
@@ -109,5 +111,17 @@ public class UIModule {
     // Update subscription by ID
     public void handleUpdateSubscription(int id) {
     }
+
+    public List<Subscription> handleSort(String sortBy) {
+        subscriptions_module controller = new subscriptions_module();
+
+        if (sortBy.equalsIgnoreCase("date")) {
+            return controller.sortSubscriptionsByDate(); // pulled from DB
+        }
+
+        return new ArrayList<>(); // fallback
+    }
+
+
 
 }
