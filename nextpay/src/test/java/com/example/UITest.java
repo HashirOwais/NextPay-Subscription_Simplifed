@@ -73,17 +73,17 @@ public class UITest {
     //handlSort
     @Test
     public void testHandleSort_byDate_returnsSortedList() {
-    List<Subscription> sorted = ui.handleSort("date");
+        List<Subscription> sorted = ui.handleSort("date");
 
-    if (sorted.size() >= 2) {
-        Subscription first = sorted.get(0);
-        Subscription second = sorted.get(1);
+        assertTrue(sorted.size() >= 2); // sanity check
 
-        LocalDate date1 = first.getDate();
-        LocalDate date2 = second.getDate();
+        // Basic ascending check (first two only)
+        Subscription s1 = sorted.get(0);
+        Subscription s2 = sorted.get(1);
 
-        assertTrue(date1.isBefore(date2));
+        assertTrue(s1.getBillingCycleDate().isBefore(s2.getBillingCycleDate())|| s1.getBillingCycleDate().isEqual(s2.getBillingCycleDate()));
     }
+
 }
 
 
