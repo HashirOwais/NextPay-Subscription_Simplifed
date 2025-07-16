@@ -60,5 +60,20 @@ public class UITest {
         boolean result = ui.handleAddSubscription(s);
         assertTrue(result);
     }
+    @Test
+    public void testHandleAddSubscription_emptyName_returnsFalse() {
+        UIModule ui = new UIModule();
+        Subscription s = new Subscription(0, "", 9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
+        boolean result = ui.handleAddSubscription(s);
+        assertFalse(result);
+    }
+    @Test
+    public void testHandleAddSubscription_invalidCost_returnsFalse() {
+        UIModule ui = new UIModule();
+        Subscription s = new Subscription(0, "Disney+", -9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
+        boolean result = ui.handleAddSubscription(s);
+        assertFalse(result);
+    }
+
 }
 
