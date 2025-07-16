@@ -1,4 +1,9 @@
+# Ignore target folder inside this directory
 target/
+
+# Ignore nextpay.db file in this directory
+nextpay.db
+
 # Compiled class file
 *.class
 
