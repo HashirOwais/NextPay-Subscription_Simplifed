@@ -7,13 +7,12 @@ import org.junit.jupiter.api.Test;
 public class UITest {
 
 
-    /**
-     * Rigorous Test :-)
-     */
     @Test
-    public void shouldAnswerWithTrue3()
-    {
-        assertTrue( true );
+    public void testHandleLogin_validCredentials_returnsTrue() {
+        UIModule ui = new UIModule();
+        boolean result = ui.handleLogin("demo", "pass123");
+        assertTrue(result);
     }
+
     
 }
