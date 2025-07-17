@@ -11,17 +11,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.models.Subscription;
 
 public class db_moduleTest {
     static db_module db_module;
 
-    @BeforeAll
-    static void setupDatabase(){
+    @BeforeEach
+     void setupDatabase(){
         db_module = new db_module();
         db_module.DBConnection();
 
@@ -295,14 +296,55 @@ public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
         assertNotNull(result);
         assertTrue(result.isEmpty());
 
+
+    //find suscription
+
+    
+
+
     }
 
 
 
+@Test
+public void getMonthlySubscriptionSummary_WithMonthlySubs_ReturnsCorrectSummary() {
+    db_module.addSubscription(new Subscription(0, "Netflix", 10.00, true, "monthly", LocalDate.now(), 1));
+    db_module.addSubscription(new Subscription(0, "Spotify", 7.99, true, "monthly", LocalDate.now(), 1));
+    HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(1);
+    String summary = summaryMap.keySet().iterator().next();
+    assertTrue(summary.contains("You have 3 monthly subscriptions") && summary.contains("27.99"));
+}
 
+@Test
+public void getMonthlySubscriptionSummary_NoMonthlySubs_ReturnsZeroSummary() {
+    HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(2);
+    String summary = summaryMap.keySet().iterator().next();
+    assertTrue(summary.contains("You have 0 monthly subscriptions") && summary.contains("0.00"));
+}
 
+@Test
+public void getUserIdByUsername_ExistingUser_ReturnsCorrectId() {
+    int userId = db_module.getUserIdByUsername("testuser");
+    assertTrue(userId == 1); // Seeded user always ID 1
+}
 
+@Test
+public void getUserIdByUsername_NonExistentUser_ReturnsMinusOne() {
+    int userId = db_module.getUserIdByUsername("nonexistent_user");
+    assertTrue(userId == -1); // Not found should return -1
+}
 
+@Test
+public void getUserIdByUsername_EmptyString_ReturnsMinusOne() {
+    int userId = db_module.getUserIdByUsername("");
+    assertTrue(userId == -1);
+}
+
+@Test
+public void getUserIdByUsername_Null_ReturnsMinusOne() {
+    int userId = db_module.getUserIdByUsername(null);
+    assertTrue(userId == -1);
+}
 
 
 

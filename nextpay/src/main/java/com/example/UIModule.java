@@ -1,5 +1,6 @@
 package com.example;
-import java.util.ArrayList;
+
+import com.example.models.Subscription;
 import java.util.List;
 import java.util.Scanner;
 import com.example.models.User;
@@ -13,7 +14,8 @@ public class UIModule {
     private subscriptions_module controller = new subscriptions_module();
     private int currentUserId = -1; // Set on login
 
-    //   Start and Login  
+    // --- Display Menus ---
+
     public void displayStartScreen() {
         System.out.println("NEXT PAY START");
         System.out.println("CHOOSE AN OPTION (1 - 2)");
@@ -28,7 +30,6 @@ public class UIModule {
         System.out.println("OR PRESS 'q' TO QUIT");
     }
 
-    //   Main Menu  
     public void displayMainMenu() {
         System.out.println("\nNEXT PAY: Menu");
         System.out.println("CHOOSE AN OPTION (1 - 5)");
@@ -39,7 +40,6 @@ public class UIModule {
         System.out.println("5) QUIT");
     }
 
-    //   Add Subscriptions  
     public void displayAddSubscriptionMenu() {
         System.out.println("\nNEXT PAY: ADD Subscriptions");
         System.out.println("CHOOSE AN OPTION (1 - 2)");
@@ -47,7 +47,6 @@ public class UIModule {
         System.out.println("2) QUIT");
     }
 
-    //   Delete Subscriptions  
     public void displayDeleteMenu() {
         System.out.println("\nNEXT PAY: DELETE Subscriptions");
         System.out.println("CHOOSE AN OPTION (1 - 2)");
@@ -55,7 +54,6 @@ public class UIModule {
         System.out.println("2) QUIT");
     }
 
-    //   View Subscriptions  
     public void displayViewMenu() {
         System.out.println("\nNEXT PAY: VIEW Subscriptions");
         System.out.println("CHOOSE AN OPTION (1 - 4)");
@@ -65,34 +63,45 @@ public class UIModule {
         System.out.println("4) QUIT");
     }
 
-    //Update Subscriptions
     public void displayUpdateMenu() {
         System.out.println("\nNEXT PAY: Update Subscriptions");
         System.out.println("CHOOSE AN OPTION (1 - 2)");
         System.out.println("1) Choose BY ID and then UPDATE THE Subscriptions LIKE ADD Subscriptions");
         System.out.println("2) QUIT");
     }
-    //   HANDLER PROTOTYPES  
 
-    // Start screen choice handler
-    public void handleStartSelection(int choice) {
+
+    /** Handles user login. Returns true if login successful. */
+    public boolean handleLogin(String username, String password) {
+        return false; // logic to be added
     }
 
-    // Login handler
-     public boolean handleLogin(String username, String password) {
-        boolean valid = controller.validateUser(username, password);
-        if (valid) {
-            // Get the user ID from DB/controller and set it
-            int userId = controller.getUserIdByUsername(username);
-            setCurrentUserId(userId);
-            System.out.println("Login successful! Welcome, " + username + ".");
-            return true;
-        } else {
-            System.out.println("Invalid username or password. Try again.");
-            return false;
-        }
+    /** Handles adding a subscription for the given user. */
+    public boolean handleAddSubscription(Subscription subscription, int userId) {
+        return false; // logic to be added
     }
 
+    /** Handles deleting a subscription by ID for the given user. */
+    public boolean handleDeleteSubscription(int userId, int subscriptionId) {
+        return false; // logic to be added
+    }
+
+    /** Handles viewing subscriptions menu for the given user. */
+    public boolean handleViewSubscriptions(int userId, int viewChoice) {
+        return false; // logic to be added
+    }
+
+    /** Handles updating a subscription by ID for the given user. */
+    public boolean handleUpdateSubscription(int userId, int subscriptionId) {
+        return false; // logic to be added
+    }
+
+    /** Handles viewing the user's monthly subscription summary. */
+    public boolean handleViewSummary(int userId) {
+        return false; // logic to be added
+    }
+
+    // --- User ID Getters/Setters ---
 
     public int getCurrentUserId() {
         return currentUserId;
@@ -100,31 +109,6 @@ public class UIModule {
     public void setCurrentUserId(int userId) {
         this.currentUserId = userId;
     }
-
-
-    // Main menu selection
-    public void handleMainMenuSelection(int choice) {
-    }
-
-    // Add subscription input
-    public boolean handleAddSubscription(Subscription s) {
-        subscriptions_module controller = new subscriptions_module();
-        return controller.addSubscription(s);
-    }
-
-    // Delete subscription by ID
-    public void handleDeleteSubscription(int id) {
-    }
-
-    // View all, sort, or filter
-    public void handleViewSubscriptions(int choice) {
-    }
-
-    // Update subscription by ID
-    public void handleUpdateSubscription(int id) {
-    }
-
-   
 }
 
 

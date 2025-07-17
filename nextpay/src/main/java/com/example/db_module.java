@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class db_module {
@@ -291,20 +292,78 @@ public class db_module {
             return null;
         }
     }
-    public int getUserIdByUsername(String username) {
-        String url = "jdbc:sqlite:nextpay.db";
-        String sql = "SELECT UserID FROM Users WHERE Username = ?";
-        try (Connection conn = DriverManager.getConnection(url);
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
+
+
+    
+public HashMap<String, List<Subscription>> getMonthlySubscriptionSummary(int userId) {
+    String sqlSummary = "SELECT COUNT(*) as count, SUM(Cost) as total FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
+    String sqlList = "SELECT * FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
+
+    int count = 0;
+    double total = 0.0;
+    List<Subscription> subscriptions = new ArrayList<>();
+    HashMap<String, List<Subscription>> result = new HashMap<>();
+
+    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db")) {
+        // Get summary stats
+        try (PreparedStatement ps = conn.prepareStatement(sqlSummary)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getInt("UserID");
+                count = rs.getInt("count");
+                total = rs.getDouble("total");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return -1; // Not found or error
+        // Get the subscriptions list
+        try (PreparedStatement ps = conn.prepareStatement(sqlList)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Subscription s = new Subscription(
+                    rs.getInt("SubscriptionID"),
+                    rs.getString("SubscriptionsName"),
+                    rs.getDouble("Cost"),
+                    rs.getBoolean("IsRecurring"),
+                    rs.getString("BillingCycleType"),
+                    LocalDate.parse(rs.getString("BillingCycleDate")),
+                    rs.getInt("UserID")
+                );
+                subscriptions.add(s);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+
+    String summary = String.format(
+        "You have %d monthly subscriptions. Your total monthly payments: $%.2f",
+        count, total
+    );
+    result.put(summary, subscriptions);
+    return result;
+}
+
+
+public int getUserIdByUsername(String username) {
+    String url = "jdbc:sqlite:nextpay.db";
+    String sql = "SELECT UserID FROM Users WHERE Username = ?";
+    try (Connection conn = DriverManager.getConnection(url);
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, username);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("UserID");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return -1; // Not found or error
+}
+
+
+
+
+    
+
 
 }

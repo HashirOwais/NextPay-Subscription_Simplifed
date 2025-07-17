@@ -54,19 +54,19 @@ public class UITest {
 
         Subscription s = new Subscription(0, "Spotify Premium", 9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
 
-        boolean result = ui.handleAddSubscription(s);
+        boolean result = ui.handleAddSubscription(s, 1);
         assertTrue(result);
     }
     @Test
     public void testHandleAddSubscription_emptyName_returnsFalse() {
         Subscription s = new Subscription(0, "", 9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
-        boolean result = ui.handleAddSubscription(s);
+        boolean result = ui.handleAddSubscription(s, 1);
         assertFalse(result);
     }
     @Test
     public void testHandleAddSubscription_invalidCost_returnsFalse() {
         Subscription s = new Subscription(0, "Disney+", -9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
-        boolean result = ui.handleAddSubscription(s);
+        boolean result = ui.handleAddSubscription(s,1);
         assertFalse(result);
     }
 
