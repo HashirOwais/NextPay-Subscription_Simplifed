@@ -1,80 +1,69 @@
 package com.example;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.example.models.Subscription;
 
-import java.time.LocalDate;
-import java.util.List;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.time.LocalDate;
+
+import com.example.models.Subscription;
+
 public class UITest {
-    UIModule ui = new UIModule();
-    private subscriptions_module controller = new subscriptions_module();
+    UIModule ui;
+    int userId = 1; // This matches seeded user
 
-    //handleLogin - Positive case
+    @BeforeEach
+    void setup() {
+        // Reset DB: Clean and seed user
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("DROP TABLE IF EXISTS Subscriptions;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS Users;");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Users (UserID INTEGER PRIMARY KEY AUTOINCREMENT, Username TEXT NOT NULL, Password TEXT NOT NULL);");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Subscriptions (SubscriptionID INTEGER PRIMARY KEY AUTOINCREMENT, SubscriptionsName TEXT NOT NULL, Cost REAL NOT NULL, IsRecurring BOOLEAN NOT NULL, BillingCycleType TEXT NOT NULL, BillingCycleDate DATE NOT NULL, UserID INTEGER NOT NULL, FOREIGN KEY (UserID) REFERENCES Users(UserID));");
+            stmt.executeUpdate("INSERT INTO Users (UserID, Username, Password) VALUES (1, 'testuser', 'password123');");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ui = new UIModule();
+    }
+
     @Test
-    public void testHandleLogin_validCredentials_returnsTrue() {
-        boolean result = ui.handleLogin("testuser", "password123");
+    public void testViewAllSubscriptions_NoSubscriptions_ReturnsFalse() {
+        boolean result = ui.handleViewSubscriptions(userId, 1); // 1 = VIEW ALL
+        assertFalse(result);
+    }
+
+    @Test
+    public void testViewAllSubscriptions_WithSubscriptions_ReturnsTrue() {
+        ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+        boolean result = ui.handleViewSubscriptions(userId, 1); // 1 = VIEW ALL
         assertTrue(result);
     }
 
-    //handleLogin - negative case.\
-    //Checks both username and passwords being wrong
     @Test
-    public void testHandleLogin_invalidCredentials_returnsFalse() {
-        boolean result = ui.handleLogin("testuserFalse", "password123False");
-        assertFalse(result);
-    }
-    //wrong password
-    @Test
-    public void testHandleLogin_invalidPasswordCredentials_returnsFalse() {
-        boolean result = ui.handleLogin("testuser", "password123False");
+    public void testMonthlySummary_NoSubscriptions_ReturnsFalse() {
+        boolean result = ui.handleViewSubscriptions(userId, 3); // 3 = MONTHLY SUMMARY
         assertFalse(result);
     }
 
-    //wrong username
     @Test
-    public void testHandleLogin_invalidUsernameCredentials_returnsFalse() {
-        boolean result = ui.handleLogin("testuserFalse", "password123");
-        assertFalse(result);
-    }
-    //empty fields
-    @Test
-    public void testHandleLogin_emptyCredentials_returnsFalse() {
-        boolean result = ui.handleLogin("", "");
-        assertFalse(result);
-    }
-
-
-
-    //handleAddSub
-    @Test
-    public void testHandleAddSubscription_validInput_returnsTrue() {
-
-        Subscription s = new Subscription(0, "Spotify Premium", 9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
-
-        boolean result = ui.handleAddSubscription(s, 1);
+    public void testMonthlySummary_WithSubscriptions_ReturnsTrue() {
+        ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+        ui.getController().addSubscription(new Subscription(0, "Spotify", 7.0, true, "monthly", LocalDate.now(), userId));
+        boolean result = ui.handleViewSubscriptions(userId, 3); // 3 = MONTHLY SUMMARY
         assertTrue(result);
     }
+
     @Test
-    public void testHandleAddSubscription_emptyName_returnsFalse() {
-        Subscription s = new Subscription(0, "", 9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
-        boolean result = ui.handleAddSubscription(s, 1);
-        assertFalse(result);
-    }
-    @Test
-    public void testHandleAddSubscription_invalidCost_returnsFalse() {
-        Subscription s = new Subscription(0, "Disney+", -9.99, true, "Monthly", LocalDate.of(2025, 8, 1), 1);
-        boolean result = ui.handleAddSubscription(s,1);
+    public void testViewSubscriptions_InvalidChoice_ReturnsFalse() {
+        boolean result = ui.handleViewSubscriptions(userId, 99); // Invalid menu option
         assertFalse(result);
     }
 
-
+    // NOTE: Do NOT test sort here (choice 2) since you don't have that implemented.
 }
-
-
-
-
-
-

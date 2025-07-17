@@ -18,9 +18,11 @@ public class subscriptions_module {
     public boolean addSubscription(Subscription s) {
         return db.addSubscription(s);
     }
+
+    
    
-    public List<Subscription> sortSubscriptionsByDate() {
-        return db.getAllSubscriptionsSortedByDate("asc");
+    public List<Subscription> sortSubscriptionsByDate(String order) {
+        return db.getAllSubscriptionsSortedByDate(order);
     }
     public int getUserIdByUsername(String username) {
         return db.getUserIdByUsername(username);
