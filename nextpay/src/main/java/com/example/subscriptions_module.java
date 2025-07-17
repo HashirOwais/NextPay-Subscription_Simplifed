@@ -6,20 +6,21 @@ import com.example.models.Subscription;
 import com.example.models.User;
 
 public class subscriptions_module {
-    public boolean isUserValid(User user) {
         db_module db = new db_module();
-        return db.isUserValid(user.getUsername(), user.getPassword());
+
+    public boolean validateUser(String username, String password) {
+        return db.isUserValid(username, password);
     }
     public boolean addSubscription(Subscription s) {
-        db_module db = new db_module();
         return db.addSubscription(s);
     }
    
     public List<Subscription> sortSubscriptionsByDate() {
-        db_module db = new db_module();
         return db.getAllSubscriptionsSortedByDate("asc");
     }
-
+    public int getUserIdByUsername(String username) {
+        return db.getUserIdByUsername(username);
+    }
 
 
 }

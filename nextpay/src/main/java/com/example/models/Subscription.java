@@ -52,7 +52,7 @@ public class Subscription {
     public int getUserID() {
         return userID;
     }
-
+    
     // Setters
     public void setSubscriptionID(int subscriptionID) {
         this.subscriptionID = subscriptionID;

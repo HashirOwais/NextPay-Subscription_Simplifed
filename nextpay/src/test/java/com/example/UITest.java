@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 public class UITest {
     UIModule ui = new UIModule();
-
+    private subscriptions_module controller = new subscriptions_module();
 
     //handleLogin - Positive case
     @Test

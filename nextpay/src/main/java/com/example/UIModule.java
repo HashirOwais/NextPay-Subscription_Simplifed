@@ -4,13 +4,14 @@ import java.util.List;
 import java.util.Scanner;
 import com.example.models.User;
 import com.example.models.Subscription;
-import com.example.models.Subscription;
 
 
 
 //test
 public class UIModule {
     private Scanner scanner = new Scanner(System.in);
+    private subscriptions_module controller = new subscriptions_module();
+    private int currentUserId = -1; // Set on login
 
     //   Start and Login  
     public void displayStartScreen() {
@@ -78,16 +79,27 @@ public class UIModule {
     }
 
     // Login handler
-    public boolean handleLogin(String username, String password) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-
-        subscriptions_module controller = new subscriptions_module();
-        return controller.isUserValid(user);
+     public boolean handleLogin(String username, String password) {
+        boolean valid = controller.validateUser(username, password);
+        if (valid) {
+            // Get the user ID from DB/controller and set it
+            int userId = controller.getUserIdByUsername(username);
+            setCurrentUserId(userId);
+            System.out.println("Login successful! Welcome, " + username + ".");
+            return true;
+        } else {
+            System.out.println("Invalid username or password. Try again.");
+            return false;
+        }
     }
 
 
+    public int getCurrentUserId() {
+        return currentUserId;
+    }
+    public void setCurrentUserId(int userId) {
+        this.currentUserId = userId;
+    }
 
 
     // Main menu selection
@@ -112,16 +124,9 @@ public class UIModule {
     public void handleUpdateSubscription(int id) {
     }
 
-    public List<Subscription> handleSort(String sortBy) {
-        subscriptions_module controller = new subscriptions_module();
-
-        if (sortBy.equalsIgnoreCase("date")) {
-            return controller.sortSubscriptionsByDate(); // pulled from DB
-        }
-
-        return new ArrayList<>(); // fallback
-    }
-
-
-
+   
 }
+
+
+
+
