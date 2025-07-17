@@ -1,9 +1,17 @@
 package com.example;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import com.example.models.User;
+import com.example.models.Subscription;
 
+
+
+//test
 public class UIModule {
     private Scanner scanner = new Scanner(System.in);
+    private subscriptions_module controller = new subscriptions_module();
+    private int currentUserId = -1; // Set on login
 
     //   Start and Login  
     public void displayStartScreen() {
@@ -71,15 +79,37 @@ public class UIModule {
     }
 
     // Login handler
-    public void handleLogin(String username, String password) {
+     public boolean handleLogin(String username, String password) {
+        boolean valid = controller.validateUser(username, password);
+        if (valid) {
+            // Get the user ID from DB/controller and set it
+            int userId = controller.getUserIdByUsername(username);
+            setCurrentUserId(userId);
+            System.out.println("Login successful! Welcome, " + username + ".");
+            return true;
+        } else {
+            System.out.println("Invalid username or password. Try again.");
+            return false;
+        }
     }
+
+
+    public int getCurrentUserId() {
+        return currentUserId;
+    }
+    public void setCurrentUserId(int userId) {
+        this.currentUserId = userId;
+    }
+
 
     // Main menu selection
     public void handleMainMenuSelection(int choice) {
     }
 
     // Add subscription input
-    public void handleAddSubscription() {
+    public boolean handleAddSubscription(Subscription s) {
+        subscriptions_module controller = new subscriptions_module();
+        return controller.addSubscription(s);
     }
 
     // Delete subscription by ID
@@ -94,4 +124,9 @@ public class UIModule {
     public void handleUpdateSubscription(int id) {
     }
 
+   
 }
+
+
+
+

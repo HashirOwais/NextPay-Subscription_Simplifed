@@ -1,7 +1,7 @@
 package com.example;
 
 import java.util.Scanner;
-
+import com.example.models.Subscription;
 public class App {
     public static void main(String[] args) {
         UIModule ui = new UIModule();
@@ -45,7 +45,29 @@ public class App {
                 switch (mainChoice) {
                     case "1":
                         ui.displayAddSubscriptionMenu();
-                        ui.handleAddSubscription();
+                        System.out.print("Enter Subscription Name: ");
+                        String name = scanner.nextLine();
+
+                        System.out.print("Enter Cost: ");
+                        double cost = Double.parseDouble(scanner.nextLine());
+
+                        System.out.print("Is Recurring (true/false): ");
+                        boolean isRecurring = Boolean.parseBoolean(scanner.nextLine());
+
+                        System.out.print("Enter Billing Cycle Type: ");
+                        String billingType = scanner.nextLine();
+
+                        System.out.print("Enter Billing Date (YYYY-MM-DD): ");
+                        String billingDate = scanner.nextLine();
+
+                        System.out.print("Enter User ID: ");
+                        int userID = Integer.parseInt(scanner.nextLine());
+
+                        Subscription s = new Subscription(0, name, cost, isRecurring, billingType, java.time.LocalDate.parse(billingDate), userID);
+
+                        boolean success = ui.handleAddSubscription(s);
+                        System.out.println(success ? "Subscription added." : "Failed to add.");
+
                         break;
 
                     case "2":
