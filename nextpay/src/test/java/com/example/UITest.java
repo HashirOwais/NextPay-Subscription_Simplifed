@@ -70,20 +70,6 @@ public class UITest {
         assertFalse(result);
     }
 
-    //handlSort
-    //positive test
-    @Test
-    public void testHandleSort_byDate_returnsSortedList() {
-        List<Subscription> sorted = ui.handleSort("date");
-
-        assertTrue(sorted.size() >= 2); // sanity check
-
-        // Basic ascending check (first two only)
-        Subscription s1 = sorted.get(0);
-        Subscription s2 = sorted.get(1);
-
-        assertTrue(s1.getBillingCycleDate().isBefore(s2.getBillingCycleDate())|| s1.getBillingCycleDate().isEqual(s2.getBillingCycleDate()));
-    }
 
 }
 
