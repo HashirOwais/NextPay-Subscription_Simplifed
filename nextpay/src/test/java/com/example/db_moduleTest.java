@@ -322,6 +322,29 @@ public void getMonthlySubscriptionSummary_NoMonthlySubs_ReturnsZeroSummary() {
     assertTrue(summary.contains("You have 0 monthly subscriptions") && summary.contains("0.00"));
 }
 
+@Test
+public void getUserIdByUsername_ExistingUser_ReturnsCorrectId() {
+    int userId = db_module.getUserIdByUsername("testuser");
+    assertTrue(userId == 1); // Seeded user always ID 1
+}
+
+@Test
+public void getUserIdByUsername_NonExistentUser_ReturnsMinusOne() {
+    int userId = db_module.getUserIdByUsername("nonexistent_user");
+    assertTrue(userId == -1); // Not found should return -1
+}
+
+@Test
+public void getUserIdByUsername_EmptyString_ReturnsMinusOne() {
+    int userId = db_module.getUserIdByUsername("");
+    assertTrue(userId == -1);
+}
+
+@Test
+public void getUserIdByUsername_Null_ReturnsMinusOne() {
+    int userId = db_module.getUserIdByUsername(null);
+    assertTrue(userId == -1);
+}
 
 
 

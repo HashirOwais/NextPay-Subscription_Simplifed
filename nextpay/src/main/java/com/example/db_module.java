@@ -342,6 +342,24 @@ public HashMap<String, List<Subscription>> getMonthlySubscriptionSummary(int use
 }
 
 
+public int getUserIdByUsername(String username) {
+    String url = "jdbc:sqlite:nextpay.db";
+    String sql = "SELECT UserID FROM Users WHERE Username = ?";
+    try (Connection conn = DriverManager.getConnection(url);
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, username);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("UserID");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return -1; // Not found or error
+}
+
+
+
 
     
 
