@@ -44,6 +44,13 @@ public class subscriptions_module {
         // Always one entry, so grab the key (summary)
         return map.keySet().iterator().next();
     }
+
+    //handleLogin
+     public boolean isUserValid(User user) {
+        db_module db = new db_module();
+        return db.isUserValid(user.getUsername(), user.getPassword());
+    }
+    
 }
     
 
