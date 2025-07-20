@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.List;
 
 import com.example.models.Subscription;
 
@@ -100,7 +101,7 @@ public class UITest {
 
     //handleAddSub Tests
     @Test
-    public void testHandleAddSubscription_ValidInput_ShouldSucceed() {
+    public void testHandleAddSubscription_ValidInput_True() {
         Subscription s = new Subscription(
             0, "Disney+", 12.99, true, "monthly", LocalDate.now().plusDays(10), userId
         );
@@ -108,14 +109,29 @@ public class UITest {
         assertTrue(result, "Expected successful addition of subscription.");
     }
     @Test
-    public void testAddSubscription_EmptyName_ShouldFail() {
+    public void testAddSubscription_EmptyName_False() {
         Subscription s = new Subscription(
             0, "", 9.99, true, "monthly", LocalDate.now().plusDays(5), 1
         );
         boolean result = ui.handleAddSubscription(s);
         assertFalse(result, "Empty name should not be allowed.");
     }
+     @Test
+    public void testAddSubscription_NegativeCost_False() {
+        Subscription s = new Subscription(0, "Netflix", -9.99, true, "monthly", LocalDate.now().plusDays(5), 1);
+        boolean result = ui.handleAddSubscription(s);
+        assertFalse(result);
+    }
 
 
-    
+    //sortBy
+    @Test
+    public void testHandleSortBy_True() {
+        UIModule ui = new UIModule();
+        List<Subscription> sorted = ui.handleSort("date");
+        assertNotNull(sorted);
+        assertTrue(sorted.size() > 0); // assuming some data
+        assertTrue(sorted.get(0).getDate().compareTo(sorted.get(1).getDate()) <= 0);
+    }
+
 }
