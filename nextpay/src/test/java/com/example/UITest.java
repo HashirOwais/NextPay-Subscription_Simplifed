@@ -126,12 +126,13 @@ public class UITest {
 
     //sortBy
     @Test
-    public void testHandleSortBy_True() {
-        UIModule ui = new UIModule();
-        List<Subscription> sorted = ui.handleSort("date");
-        assertNotNull(sorted);
-        assertTrue(sorted.size() > 0); // assuming some data
-        assertTrue(sorted.get(0).getDate().compareTo(sorted.get(1).getDate()) <= 0);
+    public void testHandleSortSubscriptions_ValidAscOrder_ReturnsTrue() {
+        Subscription s1 = new Subscription(0, "A", 10.0, true, "monthly", LocalDate.of(2025, 7, 1), userId);
+        Subscription s2 = new Subscription(0, "B", 15.0, true, "monthly", LocalDate.of(2025, 8, 1), userId);
+        ui.getController().addSubscription(s2);
+        ui.getController().addSubscription(s1);
+        boolean result = ui.handleSortSubscriptions(userId, "asc");
+        assertTrue(result);
     }
 
 }
