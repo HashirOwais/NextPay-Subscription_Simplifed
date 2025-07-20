@@ -98,5 +98,15 @@ public class UITest {
         assertEquals(-1, ui.getCurrentUserId());
     }
 
+    //handleAddSub Tests
+    @Test
+    public void testHandleAddSubscription_ValidInput_ShouldSucceed() {
+        Subscription s = new Subscription(
+            0, "Disney+", 12.99, true, "monthly", LocalDate.now().plusDays(10), userId
+        );
+        boolean result = ui.handleAddSubscription(s);
+        assertTrue(result, "Expected successful addition of subscription.");
+    }
+
     
 }
