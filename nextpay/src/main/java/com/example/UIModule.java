@@ -163,9 +163,26 @@ case 2: // SORT BY (asc/desc)
      * If you want a separate function.
      */
     public boolean handleSortSubscriptions(int userId, String sortOrder) {
-        return true;
-
+    List<Subscription> sortedSubs = controller.sortSubscriptionsByDate(sortOrder);
+    if (sortedSubs == null || sortedSubs.isEmpty()) {
+        System.out.println("No subscriptions to sort or invalid sort order.");
+        return false;
     }
+
+    System.out.println("\n--- Subscriptions Sorted By Date (" + sortOrder + ") ---");
+    for (Subscription sub : sortedSubs) {
+        System.out.println(
+            "ID: " + sub.getSubscriptionID() +
+            ", Name: " + sub.getSubscriptionsName() +
+            ", Cost: $" + sub.getCost() +
+            ", Recurring: " + sub.isRecurring() +
+            ", Cycle: " + sub.getBillingCycleType() +
+            ", Next Bill: " + sub.getBillingCycleDate()
+        );
+    }
+    return true;
+}
+
 
     public boolean handleUpdateSubscription(int userId, int subscriptionId) {
         return true;
