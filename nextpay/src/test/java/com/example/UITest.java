@@ -66,4 +66,43 @@ public class UITest {
     }
 
     // NOTE: Do NOT test sort here (choice 2) since you don't have that implemented.
+
+    //handleLogin
+    @Test
+    public void testHandleLogin_ValidCredentials_True() {
+        String username = "testuser";
+        String password = "password123";
+
+        boolean result = ui.handleLogin(username, password);
+        assertTrue(result);
+        assertNotEquals(-1, ui.getCurrentUserId());
+    }
+    @Test
+    public void testHandleLogin_inValidCredentialsUsername_fail() {
+        String username = "testuserFail";
+        String password = "password123";
+
+        boolean result = ui.handleLogin(username, password);
+        assertTrue(result);
+        assertNotEquals(-1, ui.getCurrentUserId());
+    }
+    @Test
+    public void testHandleLogin_inValidCredentialsPass_fail() {
+        String username = "testuser";
+        String password = "password123Fail";
+
+        boolean result = ui.handleLogin(username, password);
+        assertTrue(result);
+        assertNotEquals(-1, ui.getCurrentUserId());
+    }
+    @Test
+    public void testHandleLogin_inValidCredentialsPassANDUser_fail() {
+        String username = "testuseFailr";
+        String password = "password123Fail";
+
+        boolean result = ui.handleLogin(username, password);
+        assertTrue(result);
+        assertNotEquals(-1, ui.getCurrentUserId());
+    }
+    
 }

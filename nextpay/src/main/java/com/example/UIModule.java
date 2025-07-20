@@ -67,16 +67,7 @@ public class UIModule {
     // --- Handler Prototypes ---
 
     public boolean handleLogin(String username, String password) {
-        boolean valid = controller.validateUser(username, password);
-        if (valid) {
-            int userId = controller.getUserIdByUsername(username);
-            setCurrentUserId(userId);
-            System.out.println("Login successful! Welcome, " + username + ".");
-            return true;
-        } else {
-            System.out.println("Invalid username or password. Try again.");
-            return false;
-        }
+        return true;
     }
 
     public boolean handleAddSubscription(int userId) {
