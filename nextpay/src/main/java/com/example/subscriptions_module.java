@@ -51,6 +51,7 @@ public class subscriptions_module {
         return db.isUserValid(user.getUsername(), user.getPassword());
     }
     
+    
 }
     
 

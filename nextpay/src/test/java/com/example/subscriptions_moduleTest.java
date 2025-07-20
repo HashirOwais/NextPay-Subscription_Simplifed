@@ -65,6 +65,7 @@ public class subscriptions_moduleTest {
         String summary = controller.getMonthlySummaryString(1);
         assertTrue(summary.contains("You have 2 monthly subscriptions") && summary.contains("17.99"));
     }
+    
 
     
 

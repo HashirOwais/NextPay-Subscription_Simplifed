@@ -107,6 +107,15 @@ public class UITest {
         boolean result = ui.handleAddSubscription(s);
         assertTrue(result, "Expected successful addition of subscription.");
     }
+    @Test
+    public void testAddSubscription_EmptyName_ShouldFail() {
+        Subscription s = new Subscription(
+            0, "", 9.99, true, "monthly", LocalDate.now().plusDays(5), 1
+        );
+        boolean result = ui.handleAddSubscription(s);
+        assertFalse(result, "Empty name should not be allowed.");
+    }
+
 
     
 }

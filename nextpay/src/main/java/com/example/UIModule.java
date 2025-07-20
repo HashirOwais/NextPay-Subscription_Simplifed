@@ -79,10 +79,16 @@ public class UIModule {
         }
     }
 
-    public boolean handleAddSubscription(int userId) {
-        return true;
-   
+    public boolean handleAddSubscription(Subscription s) {
+        boolean success = controller.addSubscription(s);
+        if (success) {
+            System.out.println("Subscription added successfully.");
+        } else {
+            System.out.println("Failed to add subscription. Please check your input.");
+        }
+        return success;
     }
+    
 
     public boolean handleDeleteSubscription(int userId, int subscriptionId) {
         return false;
