@@ -44,6 +44,15 @@ public class subscriptions_module {
         // Always one entry, so grab the key (summary)
         return map.keySet().iterator().next();
     }
+
+    // 3. Delete a subscription by ID
+    public boolean handleDeleteSubscription(int userId, int subscriptionId) {
+        Subscription sub = db.findSubscriptionById(subscriptionId);
+        if (sub != null && sub.getUserID() == userId) {
+            return db.deleteSubscription(subscriptionId);
+        }
+        return false;
+    }
 }
     
 

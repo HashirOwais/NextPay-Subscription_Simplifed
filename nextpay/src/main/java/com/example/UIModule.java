@@ -85,7 +85,7 @@ public class UIModule {
     }
 
     public boolean handleDeleteSubscription(int userId, int subscriptionId) {
-        return false;
+        return getController().handleDeleteSubscription(userId, subscriptionId);
     }
 
     /**
