@@ -65,5 +65,34 @@ public class UITest {
         assertFalse(result);
     }
 
+    @Test
+    public void testDeleteSubscription_ValidDeletion_True() {
+        ui.getController().addSubscription(
+                new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+        int subscriptionId = ui.getController().getAllSubscriptionsForUser(userId).get(0).getSubscriptionID();
+
+        boolean result = ui.handleDeleteSubscription(userId, subscriptionId);
+
+        assertTrue(result, "Valid subscription should be deleted");
+    }
+
+    @Test
+    public void testDeleteSubscription_NonExistentSubscription_False() {
+        boolean result = ui.handleDeleteSubscription(userId, 99999);
+        assertFalse(result, "Deleting a non-existent subscription should return false");
+    }
+
+    @Test
+    public void testDeleteSubscription_NotOwnedByUser_False() {
+        Subscription otherSub = new Subscription(0, "Spotify", 7.0, true, "monthly", LocalDate.now(), 2);
+        ui.getController().addSubscription(otherSub);
+
+        int otherUserSubId = ui.getController().getAllSubscriptionsForUser(2).get(0).getSubscriptionID();
+
+        boolean result = ui.handleDeleteSubscription(userId, otherUserSubId);
+
+        assertFalse(result, "User should not delete another user's subscription");
+    }
+
     // NOTE: Do NOT test sort here (choice 2) since you don't have that implemented.
 }
