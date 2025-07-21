@@ -94,5 +94,41 @@ public class UITest {
         assertFalse(result, "User should not delete another user's subscription");
     }
 
+    @Test
+    public void testHandleMainMenuSelection_Add_Returns1() {
+        int result = ui.handleMainMenuSelection(1);
+        assertEquals(1, result, "Input 1 should trigger Add Subscriptions");
+    }
+
+    @Test
+    public void testHandleMainMenuSelection_Delete_Returns2() {
+        int result = ui.handleMainMenuSelection(2);
+        assertEquals(2, result, "Input 2 should trigger Delete Subscriptions");
+    }
+
+    @Test
+    public void testHandleMainMenuSelection_View_Returns3() {
+        int result = ui.handleMainMenuSelection(3);
+        assertEquals(3, result, "Input 3 should trigger View Subscriptions");
+    }
+
+    @Test
+    public void testHandleMainMenuSelection_Update_Returns4() {
+        int result = ui.handleMainMenuSelection(4);
+        assertEquals(4, result, "Input 4 should trigger Update Subscriptions");
+    }
+
+    @Test
+    public void testHandleMainMenuSelection_Quit_Returns0() {
+        int result = ui.handleMainMenuSelection(5);
+        assertEquals(0, result, "Input 5 should log out");
+    }
+
+    @Test
+    public void testHandleMainMenuSelection_Invalid_ReturnsMinus1() {
+        int result = ui.handleMainMenuSelection(99);
+        assertEquals(-1, result, "Invalid input should return -1");
+    }
+
     // NOTE: Do NOT test sort here (choice 2) since you don't have that implemented.
 }
