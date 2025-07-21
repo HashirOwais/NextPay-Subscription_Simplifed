@@ -134,5 +134,39 @@ public class UITest {
         boolean result = ui.handleSortSubscriptions(userId, "asc");
         assertTrue(result);
     }
+    @Test
+    public void testHandleSortSubscriptions_ValidDescOrder_ReturnsTrue() {
+        Subscription s1 = new Subscription(0, "A", 10.0, true, "monthly", LocalDate.of(2025, 7, 1), userId);
+        Subscription s2 = new Subscription(0, "B", 15.0, true, "monthly", LocalDate.of(2025, 8, 1), userId);
+        ui.getController().addSubscription(s2);
+        ui.getController().addSubscription(s1);
+        boolean result = ui.handleSortSubscriptions(userId, "desc");
+        assertTrue(result);
+    }
+    @Test
+    public void testHandleSortSubscriptions_InvalidOrder_ReturnsFalse() {
+        boolean result = ui.handleSortSubscriptions(userId, "random");
+        assertFalse(result);
+    }
+
+
+    //handleUpdateSubscription
+        @Test
+    public void testHandleUpdateSubscription_ValidUpdate_ReturnsTrue() {
+        Subscription original = new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now().plusDays(5), userId);
+        ui.getController().addSubscription(original);
+
+        int subId = ui.getController().getAllSubscriptionsForUser(userId).get(0).getSubscriptionID();
+
+        Subscription updated = new Subscription(subId, "Netflix Premium", 15.0, true, "monthly", LocalDate.now().plusDays(10), userId);
+
+        boolean result = ui.getController().updateSubscription(updated);
+        assertTrue(result);
+
+        Subscription found = ui.getController().findSubscriptionById(subId);
+        assertTrue(found.getSubscriptionsName().equals("Netflix Premium"));
+        assertTrue(found.getCost() == 15.0);
+    }
+
 
 }
