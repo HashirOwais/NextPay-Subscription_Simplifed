@@ -130,5 +130,20 @@ public class UITest {
         assertEquals(-1, result, "Invalid input should return -1");
     }
 
+    @Test
+public void testExportToCSV_WithSubscriptions_ReturnsTrue() {
+    ui.getController().addSubscription(
+        new Subscription(0, "Netflix", 15.99, true, "monthly", LocalDate.now(), userId)
+    );
+    boolean result = ui.exportToCSV(userId);
+    assertTrue(result);
+}
+
+@Test
+public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
+    boolean result = ui.exportToCSV(userId);
+    assertFalse(result);
+}
+
     // NOTE: Do NOT test sort here (choice 2) since you don't have that implemented.
 }
