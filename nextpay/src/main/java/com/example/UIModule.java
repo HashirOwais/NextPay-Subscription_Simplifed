@@ -1,6 +1,8 @@
 package com.example;
 
 import com.example.models.Subscription;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -185,7 +187,34 @@ case 2: // SORT BY (asc/desc)
 
 
     public boolean handleUpdateSubscription(int userId, int subscriptionId) {
-        return true;
+        Subscription existing = controller.findSubscriptionById(subscriptionId);
+
+        if (existing == null || existing.getUserID() != userId) {
+            System.out.println("Subscription not found or access denied.");
+            return false;
+        }
+
+        System.out.println("Updating subscription: " + existing.getSubscriptionsName());
+        System.out.print("Enter new name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter new cost: ");
+        double cost = Double.parseDouble(scanner.nextLine());
+        System.out.print("Is recurring (true/false): ");
+        boolean recurring = Boolean.parseBoolean(scanner.nextLine());
+        System.out.print("Billing cycle type: ");
+        String cycle = scanner.nextLine();
+        System.out.print("Next billing date (YYYY-MM-DD): ");
+        LocalDate nextDate = LocalDate.parse(scanner.nextLine());
+
+        Subscription updated = new Subscription(subscriptionId, name, cost, recurring, cycle, nextDate, userId);
+
+        boolean success = controller.updateSubscription(updated);
+        if (success) {
+            System.out.println("Subscription updated successfully.");
+        } else {
+            System.out.println("Failed to update subscription.");
+        }
+        return success;
      
     }
 
