@@ -19,8 +19,7 @@ public class subscriptions_module {
         return db.addSubscription(s);
     }
 
-    
-   
+
     public List<Subscription> sortSubscriptionsByDate(String order) {
         return db.getAllSubscriptionsSortedByDate(order);
     }
@@ -53,6 +52,11 @@ public class subscriptions_module {
         }
         return false;
     }
+
+    public boolean exportToCSV(int userId) {
+        return db.exportSubscriptions(userId);
+    }
+
 }
     
 

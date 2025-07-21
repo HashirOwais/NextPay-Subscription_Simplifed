@@ -88,7 +88,7 @@ public class UIModule {
                 return -1;
         }
     }
-    
+
     public boolean handleLogin(String username, String password) {
         boolean valid = controller.validateUser(username, password);
         if (valid) {
@@ -173,6 +173,10 @@ case 2: // SORT BY (asc/desc)
                 System.out.println("Invalid choice. Try again.");
                 return false;
         }
+    }
+
+    public boolean exportToCSV(int userId) {
+        return controller.exportToCSV(userId);
     }
 
     /**
