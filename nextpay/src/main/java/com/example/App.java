@@ -1,7 +1,6 @@
 package com.example;
 
 import java.util.Scanner;
-import com.example.models.Subscription;
 public class App {
     public static void main(String[] args) {
         UIModule ui = new UIModule();
