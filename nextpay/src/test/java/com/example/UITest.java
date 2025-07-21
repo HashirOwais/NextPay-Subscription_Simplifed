@@ -131,19 +131,35 @@ public class UITest {
     }
 
     @Test
-public void testExportToCSV_WithSubscriptions_ReturnsTrue() {
-    ui.getController().addSubscription(
-        new Subscription(0, "Netflix", 15.99, true, "monthly", LocalDate.now(), userId)
-    );
-    boolean result = ui.exportToCSV(userId);
-    assertTrue(result);
-}
+    public void testExportToCSV_WithSubscriptions_ReturnsTrue() {
+        ui.getController().addSubscription(
+            new Subscription(0, "Netflix", 15.99, true, "monthly", LocalDate.now(), userId)
+        );
+        boolean result = ui.exportToCSV(userId);
+        assertTrue(result);
+    }
 
-@Test
-public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
-    boolean result = ui.exportToCSV(userId);
-    assertFalse(result);
-}
+    @Test
+    public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
+        boolean result = ui.exportToCSV(userId);
+        assertFalse(result);
+    }
 
-    // NOTE: Do NOT test sort here (choice 2) since you don't have that implemented.
+    @Test
+    public void testHandleStartSelection_Login_Returns1() {
+        int result = ui.handleStartSelection(1);
+        assertEquals(1, result);
+    }
+
+    @Test
+    public void testHandleStartSelection_Quit_Returns0() {
+        int result = ui.handleStartSelection(2);
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void testHandleStartSelection_Invalid_ReturnsMinus1() {
+        int result = ui.handleStartSelection(99);
+        assertEquals(-1, result);
+    }
 }
