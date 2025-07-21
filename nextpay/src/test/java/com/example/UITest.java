@@ -152,7 +152,7 @@ public class UITest {
 
     //handleUpdateSubscription
         @Test
-    public void testHandleUpdateSubscription_ValidUpdate_ReturnsTrue() {
+        public void testHandleUpdateSubscription_ValidUpdate_ReturnsTrue() {
         Subscription original = new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now().plusDays(5), userId);
         ui.getController().addSubscription(original);
 
@@ -167,6 +167,11 @@ public class UITest {
         assertTrue(found.getSubscriptionsName().equals("Netflix Premium"));
         assertTrue(found.getCost() == 15.0);
     }
+    @Test
+    public void testHandleLogin_EmptyUsername_ReturnsFalse() {
+        assertFalse(ui.handleLogin("", "password123"));
+    }
+
 
 
 }
