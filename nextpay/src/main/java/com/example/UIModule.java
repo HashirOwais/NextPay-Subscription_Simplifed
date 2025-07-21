@@ -66,6 +66,29 @@ public class UIModule {
 
     // --- Handler Prototypes ---
 
+    public int handleMainMenuSelection(int input) {
+        switch (input) {
+            case 1:
+                System.out.println("Selected: Add Subscriptions");
+                return 1;
+            case 2:
+                System.out.println("Selected: Delete Subscriptions");
+                return 2;
+            case 3:
+                System.out.println("Selected: View Subscriptions");
+                return 3;
+            case 4:
+                System.out.println("Selected: Update Subscriptions");
+                return 4;
+            case 5:
+                System.out.println("Logging out...");
+                return 0;
+            default:
+                System.out.println("Invalid choice. Try again.");
+                return -1;
+        }
+    }
+    
     public boolean handleLogin(String username, String password) {
         boolean valid = controller.validateUser(username, password);
         if (valid) {
