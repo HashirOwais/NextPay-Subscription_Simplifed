@@ -66,6 +66,18 @@ public class UIModule {
 
     // --- Handler Prototypes ---
 
+    public int handleStartSelection(int input) {
+        switch (input) {
+            case 1:
+                return 1; // Proceed to login
+            case 2:
+                return 0; // Quit application
+            default:
+                return -1; // Invalid input
+        }
+    }
+
+    
     public int handleMainMenuSelection(int input) {
         switch (input) {
             case 1:
