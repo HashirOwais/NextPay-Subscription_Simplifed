@@ -2,7 +2,7 @@
 target/
 
 # Ignore nextpay.db file in this directory
-nextpay.db
+*.db
 
 # Compiled class file
 *.class
@@ -31,3 +31,4 @@ replay_pid*
 
 
 doc/
+nextpay/*.csv
