@@ -66,4 +66,25 @@ public class UITest {
     }
 
     // NOTE: Do NOT test sort here (choice 2) since you don't have that implemented.
+
+
+    // HANDLELOGIN TESTS
+     @Test
+    public void handleLogin_ValidCredentials_ReturnsTrue() {
+        // Arrange
+        String username = "testuser";
+        String password = "password123";
+        
+        // Act
+        boolean result = ui.handleLogin(username, password);
+        
+        // Assert
+        assertTrue(result, "Login should succeed with valid credentials");
+        assertEquals(1, ui.getCurrentUserId(), "Current user ID should be set to 1");
+        
+       
+    }
+
+    
+
 }
