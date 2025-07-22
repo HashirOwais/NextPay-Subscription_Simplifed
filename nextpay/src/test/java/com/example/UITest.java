@@ -100,29 +100,36 @@ public class UITest {
     }
 
     //handleAddSub Tests
-    @Test
+   @Test
     public void testHandleAddSubscription_ValidInput_True() {
         Subscription s = new Subscription(
             0, "Disney+", 12.99, true, "monthly", LocalDate.now().plusDays(10), userId
         );
-        boolean result = ui.handleAddSubscription(s);
+        // Test through controller instead of UI method that requires user input
+        boolean result = ui.getController().addSubscription(s);
         assertTrue(result, "Expected successful addition of subscription.");
+        
+        // Verify it was added
+        List<Subscription> subscriptions = ui.getController().getAllSubscriptionsForUser(userId);
+        assertEquals(1, subscriptions.size());
+        assertEquals("Disney+", subscriptions.get(0).getSubscriptionsName());
     }
     @Test
     public void testAddSubscription_EmptyName_False() {
         Subscription s = new Subscription(
-            0, "", 9.99, true, "monthly", LocalDate.now().plusDays(5), 1
+            0, "", 9.99, true, "monthly", LocalDate.now().plusDays(5), userId
         );
-        boolean result = ui.handleAddSubscription(s);
+        // Test through controller instead of UI
+        boolean result = ui.getController().addSubscription(s);
         assertFalse(result, "Empty name should not be allowed.");
     }
-     @Test
+    @Test
     public void testAddSubscription_NegativeCost_False() {
-        Subscription s = new Subscription(0, "Netflix", -9.99, true, "monthly", LocalDate.now().plusDays(5), 1);
-        boolean result = ui.handleAddSubscription(s);
+        Subscription s = new Subscription(0, "Netflix", -9.99, true, "monthly", LocalDate.now().plusDays(5), userId);
+        // Test through controller instead of UI
+        boolean result = ui.getController().addSubscription(s);
         assertFalse(result);
     }
-
 
     //sortBy
     @Test
