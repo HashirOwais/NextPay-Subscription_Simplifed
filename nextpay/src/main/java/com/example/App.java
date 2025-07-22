@@ -37,8 +37,8 @@ public class App {
                             switch (mainChoice) {
                                 case "1":
                                     ui.displayAddSubscriptionMenu();
-                                
-                                   // ui.handleAddSubscription(ui.getCurrentUserId(), );
+                                    System.out.print("Enter choice ");
+                                   ui.handleAddSubscription(ui.getCurrentUserId());
                                     break;
 
                                 case "2":

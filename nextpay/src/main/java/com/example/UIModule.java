@@ -81,16 +81,52 @@ public class UIModule {
         }
     }
 
-    public boolean handleAddSubscription(Subscription s) {
-        boolean success = controller.addSubscription(s);
-        if (success) {
-            System.out.println("Subscription added successfully.");
-        } else {
-            System.out.println("Failed to add subscription. Please check your input.");
+    public boolean handleAddSubscription(int userId) {
+    try {
+        int choice = Integer.parseInt(scanner.nextLine());
+        
+        switch (choice) {
+            case 1: // Add New Subscription
+                System.out.print("Enter subscription name: ");
+                String name = scanner.nextLine();
+                
+                System.out.print("Enter cost: ");
+                double cost = Double.parseDouble(scanner.nextLine());
+                
+                System.out.print("Is recurring (true/false): ");
+                boolean isRecurring = Boolean.parseBoolean(scanner.nextLine());
+                
+                System.out.print("Enter billing cycle type (monthly/yearly): ");
+                String cycleType = scanner.nextLine();
+                
+                System.out.print("Enter billing date (YYYY-MM-DD): ");
+                LocalDate date = LocalDate.parse(scanner.nextLine());
+                
+                Subscription s = new Subscription(0, name, cost, isRecurring, cycleType, date, userId);
+                boolean success = controller.addSubscription(s);
+                
+                if (success) {
+                    System.out.println("Subscription added successfully.");
+                    return true;
+                } else {
+                    System.out.println("Failed to add subscription. Please check your input.");
+                    return false;
+                }
+
+            case 2: // Quit
+                System.out.println("Returning to main menu...");
+                return false;
+
+            default:
+                System.out.println("Invalid choice. Try again.");
+                return false;
         }
-        return success;
+        
+    } catch (Exception e) {
+        System.out.println("Failed to add subscription. Please check your input.");
+        return false;
     }
-    
+}
 
     public boolean handleDeleteSubscription(int userId, int subscriptionId) {
         return false;
