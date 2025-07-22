@@ -416,7 +416,7 @@ Discuss any limitations and suggest improvements for future iterations.
 
 ## 7. References
 
-Use **IEEE style** citations. Only include items that are cited in the report.
+Use **IEEE style** citations. Only  items that are cited in the report.
 
 ---
 
