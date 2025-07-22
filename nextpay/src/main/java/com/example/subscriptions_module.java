@@ -1,11 +1,12 @@
 package com.example;
 import java.util.List;
 import com.example.models.Subscription;
+import com.example.models.User;
 
 import java.util.HashMap;
 
 public class subscriptions_module {
-        db_module db = new db_module();
+    db_module db = new db_module();
 
     public boolean validateUser(String username, String password) {
         return db.isUserValid(username, password);
