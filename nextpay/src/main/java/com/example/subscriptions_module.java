@@ -52,6 +52,25 @@ public class subscriptions_module {
         return db.exportSubscriptions(userId);
     }
 
+
+    //handleLogin
+     public boolean isUserValid(User user) {
+        db_module db = new db_module();
+        return db.isUserValid(user.getUsername(), user.getPassword());
+    }
+    
+    //handleUpdate
+    public boolean updateSubscription(Subscription updated) {
+        return db.updateSubscription(updated);
+    }
+
+    public Subscription findSubscriptionById(int subId) {
+        return db.findSubscriptionById(subId);
+    }
+
+    
+
+    
 }
     
 

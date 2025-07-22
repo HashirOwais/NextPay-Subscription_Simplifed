@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.List;
 
 import com.example.models.Subscription;
 
@@ -162,4 +163,118 @@ public class UITest {
         int result = ui.handleStartSelection(99);
         assertEquals(-1, result);
     }
+
+    //handleLogin
+    @Test
+    public void testHandleLogin_inValidCredentialsUsername_fail() {
+        String username = "testuserFail";
+        String password = "password123";
+
+        boolean result = ui.handleLogin(username, password);
+        assertFalse(result); 
+        assertEquals(-1, ui.getCurrentUserId());
+    }
+
+    @Test
+    public void testHandleLogin_inValidCredentialsPass_fail() {
+        String username = "testuser";
+        String password = "password123Fail";
+
+        boolean result = ui.handleLogin(username, password);
+        assertFalse(result); 
+        assertEquals(-1, ui.getCurrentUserId());
+    }
+
+    @Test
+    public void testHandleLogin_inValidCredentialsPassANDUser_fail() {
+        String username = "testuseFailr";
+        String password = "password123Fail";
+
+        boolean result = ui.handleLogin(username, password);
+        assertFalse(result); 
+        assertEquals(-1, ui.getCurrentUserId());
+    }
+
+    //handleAddSub Tests
+   @Test
+    public void testHandleAddSubscription_ValidInput_True() {
+        Subscription s = new Subscription(
+            0, "Disney+", 12.99, true, "monthly", LocalDate.now().plusDays(10), userId
+        );
+        // Test through controller instead of UI method that requires user input
+        boolean result = ui.getController().addSubscription(s);
+        assertTrue(result, "Expected successful addition of subscription.");
+        
+        // Verify it was added
+        List<Subscription> subscriptions = ui.getController().getAllSubscriptionsForUser(userId);
+        assertEquals(1, subscriptions.size());
+        assertEquals("Disney+", subscriptions.get(0).getSubscriptionsName());
+    }
+    @Test
+    public void testAddSubscription_EmptyName_False() {
+        Subscription s = new Subscription(
+            0, "", 9.99, true, "monthly", LocalDate.now().plusDays(5), userId
+        );
+        // Test through controller instead of UI
+        boolean result = ui.getController().addSubscription(s);
+        assertFalse(result, "Empty name should not be allowed.");
+    }
+    @Test
+    public void testAddSubscription_NegativeCost_False() {
+        Subscription s = new Subscription(0, "Netflix", -9.99, true, "monthly", LocalDate.now().plusDays(5), userId);
+        // Test through controller instead of UI
+        boolean result = ui.getController().addSubscription(s);
+        assertFalse(result);
+    }
+
+    //sortBy
+    @Test
+    public void testHandleSortSubscriptions_ValidAscOrder_ReturnsTrue() {
+        Subscription s1 = new Subscription(0, "A", 10.0, true, "monthly", LocalDate.of(2025, 7, 1), userId);
+        Subscription s2 = new Subscription(0, "B", 15.0, true, "monthly", LocalDate.of(2025, 8, 1), userId);
+        ui.getController().addSubscription(s2);
+        ui.getController().addSubscription(s1);
+        boolean result = ui.handleSortSubscriptions(userId, "asc");
+        assertTrue(result);
+    }
+    @Test
+    public void testHandleSortSubscriptions_ValidDescOrder_ReturnsTrue() {
+        Subscription s1 = new Subscription(0, "A", 10.0, true, "monthly", LocalDate.of(2025, 7, 1), userId);
+        Subscription s2 = new Subscription(0, "B", 15.0, true, "monthly", LocalDate.of(2025, 8, 1), userId);
+        ui.getController().addSubscription(s2);
+        ui.getController().addSubscription(s1);
+        boolean result = ui.handleSortSubscriptions(userId, "desc");
+        assertTrue(result);
+    }
+    @Test
+    public void testHandleSortSubscriptions_InvalidOrder_ReturnsFalse() {
+        boolean result = ui.handleSortSubscriptions(userId, "random");
+        assertFalse(result);
+    }
+
+
+    //handleUpdateSubscription
+        @Test
+        public void testHandleUpdateSubscription_ValidUpdate_ReturnsTrue() {
+        Subscription original = new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now().plusDays(5), userId);
+        ui.getController().addSubscription(original);
+
+        int subId = ui.getController().getAllSubscriptionsForUser(userId).get(0).getSubscriptionID();
+
+        Subscription updated = new Subscription(subId, "Netflix Premium", 15.0, true, "monthly", LocalDate.now().plusDays(10), userId);
+
+        boolean result = ui.getController().updateSubscription(updated);
+        assertTrue(result);
+
+        Subscription found = ui.getController().findSubscriptionById(subId);
+        assertTrue(found.getSubscriptionsName().equals("Netflix Premium"));
+        assertTrue(found.getCost() == 15.0);
+    }
+    @Test
+    public void testHandleLogin_EmptyUsername_ReturnsFalse() {
+        assertFalse(ui.handleLogin("", "password123"));
+    }
+
+
+
 }

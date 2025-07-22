@@ -1,6 +1,8 @@
 package com.example;
 
 import com.example.models.Subscription;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -115,9 +117,51 @@ public class UIModule {
     }
 
     public boolean handleAddSubscription(int userId) {
-        return true;
-   
+    try {
+        int choice = Integer.parseInt(scanner.nextLine());
+        
+        switch (choice) {
+            case 1: // Add New Subscription
+                System.out.print("Enter subscription name: ");
+                String name = scanner.nextLine();
+                
+                System.out.print("Enter cost: ");
+                double cost = Double.parseDouble(scanner.nextLine());
+                
+                System.out.print("Is recurring (true/false): ");
+                boolean isRecurring = Boolean.parseBoolean(scanner.nextLine());
+                
+                System.out.print("Enter billing cycle type (monthly/yearly): ");
+                String cycleType = scanner.nextLine();
+                
+                System.out.print("Enter billing date (YYYY-MM-DD): ");
+                LocalDate date = LocalDate.parse(scanner.nextLine());
+                
+                Subscription s = new Subscription(0, name, cost, isRecurring, cycleType, date, userId);
+                boolean success = controller.addSubscription(s);
+                
+                if (success) {
+                    System.out.println("Subscription added successfully.");
+                    return true;
+                } else {
+                    System.out.println("Failed to add subscription. Please check your input.");
+                    return false;
+                }
+
+            case 2: // Quit
+                System.out.println("Returning to main menu...");
+                return false;
+
+            default:
+                System.out.println("Invalid choice. Try again.");
+                return false;
+        }
+        
+    } catch (Exception e) {
+        System.out.println("Failed to add subscription. Please check your input.");
+        return false;
     }
+}
 
     public boolean handleDeleteSubscription(int userId, int subscriptionId) {
         return getController().handleDeleteSubscription(userId, subscriptionId);
@@ -196,12 +240,56 @@ case 2: // SORT BY (asc/desc)
      * If you want a separate function.
      */
     public boolean handleSortSubscriptions(int userId, String sortOrder) {
-        return true;
-
+    List<Subscription> sortedSubs = controller.sortSubscriptionsByDate(sortOrder);
+    if (sortedSubs == null || sortedSubs.isEmpty()) {
+        System.out.println("No subscriptions to sort or invalid sort order.");
+        return false;
     }
 
+    System.out.println("\n--- Subscriptions Sorted By Date (" + sortOrder + ") ---");
+    for (Subscription sub : sortedSubs) {
+        System.out.println(
+            "ID: " + sub.getSubscriptionID() +
+            ", Name: " + sub.getSubscriptionsName() +
+            ", Cost: $" + sub.getCost() +
+            ", Recurring: " + sub.isRecurring() +
+            ", Cycle: " + sub.getBillingCycleType() +
+            ", Next Bill: " + sub.getBillingCycleDate()
+        );
+    }
+    return true;
+}
+
+
     public boolean handleUpdateSubscription(int userId, int subscriptionId) {
-        return true;
+        Subscription existing = controller.findSubscriptionById(subscriptionId);
+
+        if (existing == null || existing.getUserID() != userId) {
+            System.out.println("Subscription not found or access denied.");
+            return false;
+        }
+
+        System.out.println("Updating subscription: " + existing.getSubscriptionsName());
+        System.out.print("Enter new name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter new cost: ");
+        double cost = Double.parseDouble(scanner.nextLine());
+        System.out.print("Is recurring (true/false): ");
+        boolean recurring = Boolean.parseBoolean(scanner.nextLine());
+        System.out.print("Billing cycle type: ");
+        String cycle = scanner.nextLine();
+        System.out.print("Next billing date (YYYY-MM-DD): ");
+        LocalDate nextDate = LocalDate.parse(scanner.nextLine());
+
+        Subscription updated = new Subscription(subscriptionId, name, cost, recurring, cycle, nextDate, userId);
+
+        boolean success = controller.updateSubscription(updated);
+        if (success) {
+            System.out.println("Subscription updated successfully.");
+        } else {
+            System.out.println("Failed to update subscription.");
+        }
+        return success;
      
     }
 
