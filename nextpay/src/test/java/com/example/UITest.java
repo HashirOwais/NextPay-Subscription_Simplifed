@@ -169,18 +169,18 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
     }
 
     @Test
+    public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
+        boolean result = ui.exportToCSV(userId);
+        assertFalse(result);
+    }
+
+    @Test
     public void testExportToCSV_WithSubscriptions_ReturnsTrue() {
         ui.getController().addSubscription(
             new Subscription(0, "Netflix", 15.99, true, "monthly", LocalDate.now(), userId)
         );
         boolean result = ui.exportToCSV(userId);
         assertTrue(result);
-    }
-
-    @Test
-    public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
-        boolean result = ui.exportToCSV(userId);
-        assertFalse(result);
     }
 
     @Test
@@ -247,6 +247,7 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertEquals(1, subscriptions.size());
         assertEquals("Disney+", subscriptions.get(0).getSubscriptionsName());
     }
+
     @Test
     public void testAddSubscription_EmptyName_False() {
         Subscription s = new Subscription(
@@ -256,6 +257,7 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         boolean result = ui.getController().addSubscription(s);
         assertFalse(result, "Empty name should not be allowed.");
     }
+
     @Test
     public void testAddSubscription_NegativeCost_False() {
         Subscription s = new Subscription(0, "Netflix", -9.99, true, "monthly", LocalDate.now().plusDays(5), userId);
@@ -274,6 +276,7 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         boolean result = ui.handleSortSubscriptions(userId, "asc");
         assertTrue(result);
     }
+
     @Test
     public void testHandleSortSubscriptions_ValidDescOrder_ReturnsTrue() {
         Subscription s1 = new Subscription(0, "A", 10.0, true, "monthly", LocalDate.of(2025, 7, 1), userId);
@@ -283,16 +286,16 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         boolean result = ui.handleSortSubscriptions(userId, "desc");
         assertTrue(result);
     }
+
     @Test
     public void testHandleSortSubscriptions_InvalidOrder_ReturnsFalse() {
         boolean result = ui.handleSortSubscriptions(userId, "random");
         assertFalse(result);
     }
 
-
     //handleUpdateSubscription
-        @Test
-        public void testHandleUpdateSubscription_ValidUpdate_ReturnsTrue() {
+    @Test
+    public void testHandleUpdateSubscription_ValidUpdate_ReturnsTrue() {
         Subscription original = new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now().plusDays(5), userId);
         ui.getController().addSubscription(original);
 
@@ -307,11 +310,9 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertTrue(found.getSubscriptionsName().equals("Netflix Premium"));
         assertTrue(found.getCost() == 15.0);
     }
+
     @Test
     public void testHandleLogin_EmptyUsername_ReturnsFalse() {
         assertFalse(ui.handleLogin("", "password123"));
     }
-
-
-
 }
