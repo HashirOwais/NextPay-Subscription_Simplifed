@@ -34,6 +34,7 @@ public class UITest {
         ui = new UIModule();
     }
 
+    //TEST CASES FOR handleViewSubscriptions
     @Test
     public void testViewAllSubscriptions_NoSubscriptions_ReturnsFalse() {
         boolean result = ui.handleViewSubscriptions(userId, 1); // 1 = VIEW ALL
@@ -46,6 +47,42 @@ public class UITest {
         boolean result = ui.handleViewSubscriptions(userId, 1); // 1 = VIEW ALL
         assertTrue(result);
     }
+
+    @Test
+public void testHandleMainMenuSelection_DeletesSubscription_Returns2() {
+    int result = ui.handleMainMenuSelection(2); // 2 = Delete Subscriptions
+    assertEquals(2, result, "Selecting option 2 should return 2 for Delete Subscriptions");
+}
+
+
+@Test
+public void testHandleViewSubscriptions_SortByAsc_Covered() {
+    // Save original System.in
+    java.io.InputStream originalIn = System.in;
+    try {
+        // Simulate user input for Scanner (as if user types "asc" + Enter)
+        String input = "asc\n";
+        System.setIn(new java.io.ByteArrayInputStream(input.getBytes()));
+
+        UIModule ui = new UIModule(); // This uses your default constructor with Scanner(System.in)
+
+        // Seed subscriptions
+        ui.getController().addSubscription(new Subscription(0, "A", 10, true, "monthly", LocalDate.now(), userId));
+        ui.getController().addSubscription(new Subscription(0, "B", 15, true, "monthly", LocalDate.now().plusDays(1), userId));
+
+        // Test the sort option (case 2)
+        boolean result = ui.handleViewSubscriptions(userId, 2);
+        assertTrue(result);
+    } finally {
+        // Restore System.in for other tests
+        System.setIn(originalIn);
+    }
+}
+
+
+
+
+
 
     @Test
     public void testMonthlySummary_NoSubscriptions_ReturnsFalse() {
@@ -133,18 +170,18 @@ public class UITest {
     }
 
     @Test
+    public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
+        boolean result = ui.exportToCSV(userId);
+        assertFalse(result);
+    }
+
+    @Test
     public void testExportToCSV_WithSubscriptions_ReturnsTrue() {
         ui.getController().addSubscription(
             new Subscription(0, "Netflix", 15.99, true, "monthly", LocalDate.now(), userId)
         );
         boolean result = ui.exportToCSV(userId);
         assertTrue(result);
-    }
-
-    @Test
-    public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
-        boolean result = ui.exportToCSV(userId);
-        assertFalse(result);
     }
 
     @Test
@@ -241,6 +278,7 @@ public class UITest {
         assertEquals("Disney+", subscriptions.get(0).getSubscriptionsName());
     }
 
+
     @Test
     public void testAddSubscription_EmptyName_False() {
         Subscription s = new Subscription(
@@ -293,6 +331,7 @@ public class UITest {
         assertEquals(0, subscriptions.size());
     }
 
+
     @Test
     public void testAddSubscription_YearlySubscription_ReturnsTrue() {
         // Test yearly subscription
@@ -321,6 +360,7 @@ public class UITest {
         assertFalse(subscriptions.get(0).isRecurring());
         assertEquals("one-time", subscriptions.get(0).getBillingCycleType());
     }
+
     @Test
     public void testHandleAddSubscription_SimulateSuccessPath_True() {
         
@@ -333,6 +373,7 @@ public class UITest {
         assertEquals(1, subscriptions.size());
         assertEquals("Netflix Premium", subscriptions.get(0).getSubscriptionsName());
     }
+
     @Test
     public void testHandleAddSubscription_SimulateFailurePath_False() {
         
@@ -374,6 +415,7 @@ public class UITest {
         assertTrue(found.getSubscriptionsName().equals("Netflix Premium"));
         assertTrue(found.getCost() == 15.0);
     }
+
     @Test
     public void testHandleLogin_EmptyUsername_ReturnsFalse() {
         assertFalse(ui.handleLogin("", "password123"));

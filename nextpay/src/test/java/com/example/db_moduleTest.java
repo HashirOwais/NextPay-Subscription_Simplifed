@@ -116,7 +116,6 @@ public class db_moduleTest {
         assertFalse(db_module.updateSubscription(sub));
     }
 
-
     @Test
     public void dbConnection_WithInvalidConn_ThrowsException() {
         db_module testDb = new db_module() {
@@ -230,24 +229,26 @@ public class db_moduleTest {
         assertTrue(isSorted);
     }
 
-@Test
-public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
-    List<Subscription> subs = db_module.getAllSubscriptionsSortedByDate("notValid");
-    assertNull(subs); // Should be null for any invalid order string
-}
+    @Test
+    public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
+        List<Subscription> subs = db_module.getAllSubscriptionsSortedByDate("notValid");
+        assertNull(subs); // Should be null for any invalid order string
+    }
 
-//addSubscription: Positive Cases
+    //addSubscription: Positive Cases
     @Test
     public void addSubscription_ValidSubscription_True() {
         Subscription s = new Subscription(0, "Spotify", 8.99, true, "Monthly", LocalDate.parse("2025-07-05"), 1);
         assertTrue(db_module.addSubscription(s)); 
     }
+
     @Test
     public void addSubscription_ValidNonRecurringSubscription_True() 
     {
         Subscription s = new Subscription(0, "Fortnite VBucks", 14.00, false, "Yearly", LocalDate.parse("2025-12-31"), 1);
         assertTrue(db_module.addSubscription(s));
     }
+
     //addSubscription: Negative Cases
     @Test
     public void addSubscription_EmptyName_ReturnsFalse() {
@@ -269,6 +270,7 @@ public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
         db_module.addSubscription(s);
         assertTrue(db_module.deleteSubscription(5)); 
     }
+
     //deleteSubscription: negative cases
     public void deleteSubscription_NonExistentId_ReturnsFalse() {
         boolean result = db_module.deleteSubscription(999999); 
@@ -289,64 +291,52 @@ public void getAllSubscriptionsSortedByDate_InvalidOrder_ReturnsNull() {
         List<Subscription> results = db_module.viewSubscription(1);
         assertNotNull(results);
     }
+
     //viewSubscription: negative cases
     @Test
     public void viewSubscription_NonExistentUserId_ReturnsEmptyList(){
         List<Subscription> result = db_module.viewSubscription(9999); // unlikely user ID
         assertNotNull(result);
         assertTrue(result.isEmpty());
-
-
-    //find suscription
-
-    
-
-
     }
 
+    @Test
+    public void getMonthlySubscriptionSummary_WithMonthlySubs_ReturnsCorrectSummary() {
+        db_module.addSubscription(new Subscription(0, "Netflix", 10.00, true, "monthly", LocalDate.now(), 1));
+        db_module.addSubscription(new Subscription(0, "Spotify", 7.99, true, "monthly", LocalDate.now(), 1));
+        HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(1);
+        String summary = summaryMap.keySet().iterator().next();
+        assertTrue(summary.contains("You have 3 monthly subscriptions") && summary.contains("27.99"));
+    }
 
+    @Test
+    public void getMonthlySubscriptionSummary_NoMonthlySubs_ReturnsZeroSummary() {
+        HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(2);
+        String summary = summaryMap.keySet().iterator().next();
+        assertTrue(summary.contains("You have 0 monthly subscriptions") && summary.contains("0.00"));
+    }
 
-@Test
-public void getMonthlySubscriptionSummary_WithMonthlySubs_ReturnsCorrectSummary() {
-    db_module.addSubscription(new Subscription(0, "Netflix", 10.00, true, "monthly", LocalDate.now(), 1));
-    db_module.addSubscription(new Subscription(0, "Spotify", 7.99, true, "monthly", LocalDate.now(), 1));
-    HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(1);
-    String summary = summaryMap.keySet().iterator().next();
-    assertTrue(summary.contains("You have 3 monthly subscriptions") && summary.contains("27.99"));
-}
+    @Test
+    public void getUserIdByUsername_ExistingUser_ReturnsCorrectId() {
+        int userId = db_module.getUserIdByUsername("testuser");
+        assertTrue(userId == 1); // Seeded user always ID 1
+    }
 
-@Test
-public void getMonthlySubscriptionSummary_NoMonthlySubs_ReturnsZeroSummary() {
-    HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(2);
-    String summary = summaryMap.keySet().iterator().next();
-    assertTrue(summary.contains("You have 0 monthly subscriptions") && summary.contains("0.00"));
-}
+    @Test
+    public void getUserIdByUsername_NonExistentUser_ReturnsMinusOne() {
+        int userId = db_module.getUserIdByUsername("nonexistent_user");
+        assertTrue(userId == -1); // Not found should return -1
+    }
 
-@Test
-public void getUserIdByUsername_ExistingUser_ReturnsCorrectId() {
-    int userId = db_module.getUserIdByUsername("testuser");
-    assertTrue(userId == 1); // Seeded user always ID 1
-}
+    @Test
+    public void getUserIdByUsername_EmptyString_ReturnsMinusOne() {
+        int userId = db_module.getUserIdByUsername("");
+        assertTrue(userId == -1);
+    }
 
-@Test
-public void getUserIdByUsername_NonExistentUser_ReturnsMinusOne() {
-    int userId = db_module.getUserIdByUsername("nonexistent_user");
-    assertTrue(userId == -1); // Not found should return -1
-}
-
-@Test
-public void getUserIdByUsername_EmptyString_ReturnsMinusOne() {
-    int userId = db_module.getUserIdByUsername("");
-    assertTrue(userId == -1);
-}
-
-@Test
-public void getUserIdByUsername_Null_ReturnsMinusOne() {
-    int userId = db_module.getUserIdByUsername(null);
-    assertTrue(userId == -1);
-}
-
-
-
-
+    @Test
+    public void getUserIdByUsername_Null_ReturnsMinusOne() {
+        int userId = db_module.getUserIdByUsername(null);
+        assertTrue(userId == -1);
+    }
 }
