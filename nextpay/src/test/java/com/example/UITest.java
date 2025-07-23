@@ -263,7 +263,6 @@ public class UITest {
         Subscription s = new Subscription(
             0, "Disney+", 12.99, true, "monthly", LocalDate.now().plusDays(10), userId
         );
-        // Use controller directly - this works and tests the business logic
         boolean result = ui.getController().addSubscription(s);
         assertTrue(result, "Expected successful addition of subscription.");
         
@@ -274,13 +273,10 @@ public class UITest {
 
     @Test
     public void testAddSubscription_EmptyName_False() {
-        Subscription s = new Subscription(
-            0, "", 9.99, true, "monthly", LocalDate.now().plusDays(5), userId);
-        // Use controller directly
+        Subscription s = new Subscription(0, "", 9.99, true, "monthly", LocalDate.now().plusDays(5), userId);
         boolean result = ui.getController().addSubscription(s);
         assertFalse(result, "Empty name should not be allowed.");
         
-        // Verify no subscription was added
         List<Subscription> subscriptions = ui.getController().getAllSubscriptionsForUser(userId);
         assertEquals(0, subscriptions.size());
     }
@@ -298,7 +294,6 @@ public class UITest {
 
     @Test
     public void testAddSubscription_ZeroCost_ReturnsTrue() {
-        // Test zero cost validation - your current business logic allows free services
         Subscription s = new Subscription(0, "Free Service", 0.0, true, "monthly", LocalDate.now().plusDays(5), userId);
         
         boolean result = ui.getController().addSubscription(s);
@@ -384,7 +379,6 @@ public class UITest {
        
         Subscription s = new Subscription(0, "Netflix", 10.99, true, "monthly", LocalDate.parse("2025-08-01"), userId);
         
-        // Don't call addSubscription (simulates choosing quit option)
         // Verify no subscription was added (simulates case 2 behavior)
         List<Subscription> subscriptions = ui.getController().getAllSubscriptionsForUser(userId);
         assertEquals(0, subscriptions.size(), "No subscription should be added (simulates case 2 quit behavior)");
@@ -421,8 +415,7 @@ public class UITest {
         Subscription found = ui.getController().findSubscriptionById(nonExistentSubId);
         assertNull(found, "Should return null for non-existent subscription ");
         
-        // This simulates what would happen in handleUpdateSubscription when existing == null
-        // The method would return false without proceeding to update
+        
     }
 
     @Test
