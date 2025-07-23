@@ -404,7 +404,7 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 
 ### Meeting 10
 
-**Time**: July 22nd, 2025, 5:25pm -  <br>
+**Time**: July 22nd, 2025, 5:25pm - 7:30pm <br>
 **Agenda**: Merge All Code for UI_module and Subscriptions_module.
 
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
