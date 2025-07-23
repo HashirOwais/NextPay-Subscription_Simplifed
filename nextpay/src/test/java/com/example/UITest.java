@@ -33,6 +33,7 @@ public class UITest {
         ui = new UIModule();
     }
 
+    //TEST CASES FOR handleViewSubscriptions
     @Test
     public void testViewAllSubscriptions_NoSubscriptions_ReturnsFalse() {
         boolean result = ui.handleViewSubscriptions(userId, 1); // 1 = VIEW ALL
@@ -45,6 +46,42 @@ public class UITest {
         boolean result = ui.handleViewSubscriptions(userId, 1); // 1 = VIEW ALL
         assertTrue(result);
     }
+
+    @Test
+public void testHandleMainMenuSelection_DeletesSubscription_Returns2() {
+    int result = ui.handleMainMenuSelection(2); // 2 = Delete Subscriptions
+    assertEquals(2, result, "Selecting option 2 should return 2 for Delete Subscriptions");
+}
+
+
+@Test
+public void testHandleViewSubscriptions_SortByAsc_Covered() {
+    // Save original System.in
+    java.io.InputStream originalIn = System.in;
+    try {
+        // Simulate user input for Scanner (as if user types "asc" + Enter)
+        String input = "asc\n";
+        System.setIn(new java.io.ByteArrayInputStream(input.getBytes()));
+
+        UIModule ui = new UIModule(); // This uses your default constructor with Scanner(System.in)
+
+        // Seed subscriptions
+        ui.getController().addSubscription(new Subscription(0, "A", 10, true, "monthly", LocalDate.now(), userId));
+        ui.getController().addSubscription(new Subscription(0, "B", 15, true, "monthly", LocalDate.now().plusDays(1), userId));
+
+        // Test the sort option (case 2)
+        boolean result = ui.handleViewSubscriptions(userId, 2);
+        assertTrue(result);
+    } finally {
+        // Restore System.in for other tests
+        System.setIn(originalIn);
+    }
+}
+
+
+
+
+
 
     @Test
     public void testMonthlySummary_NoSubscriptions_ReturnsFalse() {

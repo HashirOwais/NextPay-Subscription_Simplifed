@@ -197,6 +197,7 @@ public class UIModule {
             case 2: // SORT BY (asc/desc)
                 System.out.print("Sort by date (asc/desc): ");
                 String sortOrder = scanner.nextLine();
+                controller.sortSubscriptionsByDate(sortOrder);
                 // Just call the controller method as specified in the API you agreed on:
                 List<Subscription> sortedSubs = controller.sortSubscriptionsByDate(sortOrder);
                 if (sortedSubs == null || sortedSubs.isEmpty()) {
