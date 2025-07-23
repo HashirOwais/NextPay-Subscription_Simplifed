@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -16,7 +15,7 @@ import com.example.models.Subscription;
 
 public class UITest {
     UIModule ui;
-    int userId = 1; // This matches seeded user
+    int userId = 1;
 
     @BeforeEach
     void setup() {
@@ -49,40 +48,34 @@ public class UITest {
     }
 
     @Test
-public void testHandleMainMenuSelection_DeletesSubscription_Returns2() {
-    int result = ui.handleMainMenuSelection(2); // 2 = Delete Subscriptions
-    assertEquals(2, result, "Selecting option 2 should return 2 for Delete Subscriptions");
-}
-
-
-@Test
-public void testHandleViewSubscriptions_SortByAsc_Covered() {
-    // Save original System.in
-    java.io.InputStream originalIn = System.in;
-    try {
-        // Simulate user input for Scanner (as if user types "asc" + Enter)
-        String input = "asc\n";
-        System.setIn(new java.io.ByteArrayInputStream(input.getBytes()));
-
-        UIModule ui = new UIModule(); // This uses your default constructor with Scanner(System.in)
-
-        // Seed subscriptions
-        ui.getController().addSubscription(new Subscription(0, "A", 10, true, "monthly", LocalDate.now(), userId));
-        ui.getController().addSubscription(new Subscription(0, "B", 15, true, "monthly", LocalDate.now().plusDays(1), userId));
-
-        // Test the sort option (case 2)
-        boolean result = ui.handleViewSubscriptions(userId, 2);
-        assertTrue(result);
-    } finally {
-        // Restore System.in for other tests
-        System.setIn(originalIn);
+    public void testHandleMainMenuSelection_DeletesSubscription_Returns2() {
+        int result = ui.handleMainMenuSelection(2); // 2 = Delete Subscriptions
+        assertEquals(2, result, "Selecting option 2 should return 2 for Delete Subscriptions");
     }
-}
 
+    @Test
+    public void testHandleViewSubscriptions_SortByAsc_Covered() {
+        // Save original System.in
+        java.io.InputStream originalIn = System.in;
+        try {
+            // Simulate user input for Scanner (as if user types "asc" + Enter)
+            String input = "asc\n";
+            System.setIn(new java.io.ByteArrayInputStream(input.getBytes()));
 
+            UIModule ui = new UIModule(); // This uses your default constructor with Scanner(System.in)
 
+            // Seed subscriptions
+            ui.getController().addSubscription(new Subscription(0, "A", 10, true, "monthly", LocalDate.now(), userId));
+            ui.getController().addSubscription(new Subscription(0, "B", 15, true, "monthly", LocalDate.now().plusDays(1), userId));
 
-
+            // Test the sort option (case 2)
+            boolean result = ui.handleViewSubscriptions(userId, 2);
+            assertTrue(result);
+        } finally {
+            // Restore System.in for other tests
+            System.setIn(originalIn);
+        }
+    }
 
     @Test
     public void testMonthlySummary_NoSubscriptions_ReturnsFalse() {
@@ -203,7 +196,6 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertEquals(-1, result);
     }
 
-    /////////////////////////handleLogin///////////////////////////
     @Test
     public void testHandleLogin_ValidCredentials_Success() {
         String username = "testuser";
@@ -214,6 +206,7 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertTrue(result, "Login should succeed with valid credentials");
         assertEquals(1, ui.getCurrentUserId(), "Current user ID should be set to 1");
     }
+
     @Test
     public void testHandleLogin_ValidCredentials_SetsCorrectUserId() {
         String username = "testuser";
@@ -227,6 +220,7 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertTrue(result, "Login should succeed");
         assertEquals(1, ui.getCurrentUserId(), "Should set current user ID to 1");
     }
+
     @Test
     public void testHandleLogin_BothEmpty_ReturnsFalse() {
         boolean result = ui.handleLogin("", "");
@@ -263,7 +257,7 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertFalse(result); 
         assertEquals(-1, ui.getCurrentUserId());
     }
-/////////////////////////////handleAddSub Tests////////////////////////////////////////////////
+
     @Test
     public void testHandleAddSubscription_ValidInput_True() {
         Subscription s = new Subscription(
@@ -277,7 +271,6 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertEquals(1, subscriptions.size());
         assertEquals("Disney+", subscriptions.get(0).getSubscriptionsName());
     }
-
 
     @Test
     public void testAddSubscription_EmptyName_False() {
@@ -330,7 +323,6 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         List<Subscription> subscriptions = ui.getController().getAllSubscriptionsForUser(userId);
         assertEquals(0, subscriptions.size());
     }
-
 
     @Test
     public void testAddSubscription_YearlySubscription_ReturnsTrue() {
@@ -386,6 +378,7 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         List<Subscription> subscriptions = ui.getController().getAllSubscriptionsForUser(userId);
         assertEquals(0, subscriptions.size());
     }
+
    @Test
     public void testHandleAddSubscription_SimulateCase2QuitTrue() {
        
@@ -397,8 +390,6 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertEquals(0, subscriptions.size(), "No subscription should be added (simulates case 2 quit behavior)");
     }
     
-
-    //////////////////////////////////////////handleUpdateSubscription//////////////////////////////////////////////////////////////////////////
     @Test
     public void testHandleUpdateSubscription_ValidUpdate_ReturnsTrue() {
         Subscription original = new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now().plusDays(5), userId);
@@ -436,8 +427,6 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
 
     @Test
     public void testHandleUpdateSubscription_WrongUserAccess_ReturnsFalse() {
-       
-        
         Subscription otherUserSub = new Subscription(0, "Other User Netflix", 10.0, true, "monthly", LocalDate.now().plusDays(5), 2);
         ui.getController().addSubscription(otherUserSub);
         
@@ -449,9 +438,9 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
             Subscription found = ui.getController().findSubscriptionById(otherUserSubId);
             assertNotNull(found, "Subscription should exist");
             assertNotEquals(userId, found.getUserID(), "Should belong to different user (simulates access control check)");
-            
         }
     }
+
     @Test
     public void testHandleUpdateSubscription_ValidSubscriptionFound_AccessGranted() {
         
@@ -468,6 +457,7 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertEquals(userId, found.getUserID(), "Should belong to correct user");
         assertEquals("User Netflix", found.getSubscriptionsName(), "Should have correct name");
     }
+    
     @Test
     public void testHandleUpdateSubscription_UpdateWithValidData_Success() {
        
@@ -488,18 +478,13 @@ public void testHandleViewSubscriptions_SortByAsc_Covered() {
         assertEquals("Updated Netflix Premium", found.getSubscriptionsName());
         assertEquals(15.99, found.getCost(), 0.01);
     }
+
     @Test
-    public void testHandleUpdateSubscription_UI_SubscriptionNotFound_ReturnsFalse() {
-        
-        
+    public void testHandleUpdateSubscription_UI_SubscriptionNotFound_ReturnsFalse() {        
         int nonExistentSubId = 99999;
-        
         
         boolean result = ui.handleUpdateSubscription(userId, nonExistentSubId);
         
         assertFalse(result, "Should return false for non-existent subscription");
     }
-
-
-
 }
