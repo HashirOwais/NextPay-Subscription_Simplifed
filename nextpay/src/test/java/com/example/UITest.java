@@ -132,18 +132,18 @@ public class UITest {
     }
 
     @Test
+    public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
+        boolean result = ui.exportToCSV(userId);
+        assertFalse(result);
+    }
+    
+    @Test
     public void testExportToCSV_WithSubscriptions_ReturnsTrue() {
         ui.getController().addSubscription(
             new Subscription(0, "Netflix", 15.99, true, "monthly", LocalDate.now(), userId)
         );
         boolean result = ui.exportToCSV(userId);
         assertTrue(result);
-    }
-
-    @Test
-    public void testExportToCSV_NoSubscriptions_ReturnsFalse() {
-        boolean result = ui.exportToCSV(userId);
-        assertFalse(result);
     }
 
     @Test
