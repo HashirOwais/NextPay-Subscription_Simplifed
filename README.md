@@ -391,14 +391,40 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 
 ### Meeting 9
 
-**Time**: July 16th, 2025, 10:25am -  <br>
+**Time**: July 16th, 2025, 10:25am - 1:55pm <br>
 **Agenda**: Impliment functions for UI_module and Subscriptions_module
 
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
 |------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| Hashir Owais     | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed |  |
-| Muhammad Tariq   | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed |  |
-| Simran Gahra     | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed |  |
+| Hashir Owais     | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. |
+| Muhammad Tariq   | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. |
+| Simran Gahra     | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. Complete meeting minutes to ensure everything up to date. |
+
+---
+
+### Meeting 10
+
+**Time**: July 22nd, 2025, 5:25pm -  <br>
+**Agenda**: Merge All Code for UI_module and Subscriptions_module.
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. | Completed | Begin work on the project mangement aspect of this project. |
+| Muhammad Tariq   | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. | Completed | Begin work on the project mangement aspect of this project. |
+| Simran Gahra     | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. Complete meeting minutes to ensure everything up to date. | Completed | Begin work on the project mangement aspect of this project. |
+
+---
+
+### Meeting 11
+
+**Time**: July --nd, 2025, -:-pm - -:-pm <br>
+**Agenda**: 
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Begin work on the project mangement aspect of this project. | - | - |
+| Muhammad Tariq   | Begin work on the project mangement aspect of this project. | - | - |
+| Simran Gahra     | Begin work on the project mangement aspect of this project. | - | - |
 
 ---
 ## 5. Project Management
