@@ -11,7 +11,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.models.Subscription;
-import com.example.models.User;
 
 public class subscriptions_moduleTest {
     subscriptions_module controller;
@@ -65,8 +64,4 @@ public class subscriptions_moduleTest {
         String summary = controller.getMonthlySummaryString(1);
         assertTrue(summary.contains("You have 2 monthly subscriptions") && summary.contains("17.99"));
     }
-    
-
-    
-
 }

@@ -15,14 +15,12 @@ public class subscriptions_module {
         return db.addSubscription(s);
     }
 
-
     public List<Subscription> sortSubscriptionsByDate(String order) {
         return db.getAllSubscriptionsSortedByDate(order);
     }
     public int getUserIdByUsername(String username) {
         return db.getUserIdByUsername(username);
     }
-
 
     public subscriptions_module() {
         db = new db_module();
@@ -53,7 +51,6 @@ public class subscriptions_module {
         return db.exportSubscriptions(userId);
     }
 
-
     //handleLogin
      public boolean isUserValid(User user) {
         db_module db = new db_module();
@@ -68,10 +65,6 @@ public class subscriptions_module {
     public Subscription findSubscriptionById(int subId) {
         return db.findSubscriptionById(subId);
     }
-
-    
-
-    
 }
     
 

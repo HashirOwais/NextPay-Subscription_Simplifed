@@ -174,13 +174,13 @@ public class db_module {
                 }
             }
         }
-
-        return rows > 0;
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
+            return rows > 0;
+        } 
+        catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-}
 
     public boolean deleteSubscription(int subscriptionId) {
         String url = "jdbc:sqlite:nextpay.db";
@@ -228,7 +228,6 @@ public class db_module {
         return subscriptions;
     }
 
-
     public List<Subscription> getAllSubscriptionsSortedByDate(String order) {
         String safeOrder;
         if ("desc".equalsIgnoreCase(order)) {
@@ -263,7 +262,6 @@ public class db_module {
         return results;
     }
 
-
     public Subscription findSubscriptionById(int id) {
         String sql = "SELECT * FROM Subscriptions WHERE SubscriptionID = ?";
 
@@ -293,79 +291,68 @@ public class db_module {
         }
     }
 
+    public HashMap<String, List<Subscription>> getMonthlySubscriptionSummary(int userId) {
+        String sqlSummary = "SELECT COUNT(*) as count, SUM(Cost) as total FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
+        String sqlList = "SELECT * FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
 
-    
-public HashMap<String, List<Subscription>> getMonthlySubscriptionSummary(int userId) {
-    String sqlSummary = "SELECT COUNT(*) as count, SUM(Cost) as total FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
-    String sqlList = "SELECT * FROM Subscriptions WHERE UserID = ? AND LOWER(BillingCycleType) = 'monthly'";
+        int count = 0;
+        double total = 0.0;
+        List<Subscription> subscriptions = new ArrayList<>();
+        HashMap<String, List<Subscription>> result = new HashMap<>();
 
-    int count = 0;
-    double total = 0.0;
-    List<Subscription> subscriptions = new ArrayList<>();
-    HashMap<String, List<Subscription>> result = new HashMap<>();
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db")) {
+            // Get summary stats
+            try (PreparedStatement ps = conn.prepareStatement(sqlSummary)) {
+                ps.setInt(1, userId);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    count = rs.getInt("count");
+                    total = rs.getDouble("total");
+                }
+            }
+            // Get the subscriptions list
+            try (PreparedStatement ps = conn.prepareStatement(sqlList)) {
+                ps.setInt(1, userId);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Subscription s = new Subscription(
+                        rs.getInt("SubscriptionID"),
+                        rs.getString("SubscriptionsName"),
+                        rs.getDouble("Cost"),
+                        rs.getBoolean("IsRecurring"),
+                        rs.getString("BillingCycleType"),
+                        LocalDate.parse(rs.getString("BillingCycleDate")),
+                        rs.getInt("UserID")
+                    );
+                    subscriptions.add(s);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db")) {
-        // Get summary stats
-        try (PreparedStatement ps = conn.prepareStatement(sqlSummary)) {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
+        String summary = String.format(
+            "You have %d monthly subscriptions. Your total monthly payments: $%.2f",
+            count, total
+        );
+        result.put(summary, subscriptions);
+        return result;
+    }
+
+
+    public int getUserIdByUsername(String username) {
+        String url = "jdbc:sqlite:nextpay.db";
+        String sql = "SELECT UserID FROM Users WHERE Username = ?";
+        try (Connection conn = DriverManager.getConnection(url);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                count = rs.getInt("count");
-                total = rs.getDouble("total");
+                return rs.getInt("UserID");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        // Get the subscriptions list
-        try (PreparedStatement ps = conn.prepareStatement(sqlList)) {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Subscription s = new Subscription(
-                    rs.getInt("SubscriptionID"),
-                    rs.getString("SubscriptionsName"),
-                    rs.getDouble("Cost"),
-                    rs.getBoolean("IsRecurring"),
-                    rs.getString("BillingCycleType"),
-                    LocalDate.parse(rs.getString("BillingCycleDate")),
-                    rs.getInt("UserID")
-                );
-                subscriptions.add(s);
-            }
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return -1; // Not found or error
     }
-
-    String summary = String.format(
-        "You have %d monthly subscriptions. Your total monthly payments: $%.2f",
-        count, total
-    );
-    result.put(summary, subscriptions);
-    return result;
-}
-
-
-public int getUserIdByUsername(String username) {
-    String url = "jdbc:sqlite:nextpay.db";
-    String sql = "SELECT UserID FROM Users WHERE Username = ?";
-    try (Connection conn = DriverManager.getConnection(url);
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setString(1, username);
-        ResultSet rs = pstmt.executeQuery();
-        if (rs.next()) {
-            return rs.getInt("UserID");
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return -1; // Not found or error
-}
-
-
-
-
-
-
-    
-
-
 }

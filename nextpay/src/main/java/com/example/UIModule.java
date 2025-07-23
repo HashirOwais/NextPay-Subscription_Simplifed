@@ -179,6 +179,7 @@ public class UIModule {
                     System.out.println("You have no subscriptions.");
                     return false;
                 }
+
                 System.out.println("\n--- All Subscriptions ---");
                 for (Subscription sub : allSubs) {
                     System.out.println(
@@ -190,30 +191,32 @@ public class UIModule {
                         ", Next Bill: " + sub.getBillingCycleDate()
                     );
                 }
+
                 return true;
 
-case 2: // SORT BY (asc/desc)
-    System.out.print("Sort by date (asc/desc): ");
-    String sortOrder = scanner.nextLine();
-    // Just call the controller method as specified in the API you agreed on:
-    List<Subscription> sortedSubs = controller.sortSubscriptionsByDate(sortOrder);
-    if (sortedSubs == null || sortedSubs.isEmpty()) {
-        System.out.println("No subscriptions to sort or invalid sort order.");
-        return false;
-    }
-    System.out.println("\n--- Subscriptions Sorted By Date (" + sortOrder + ") ---");
-    for (Subscription sub : sortedSubs) {
-        // Print as usual
-        System.out.println(
-            "ID: " + sub.getSubscriptionID() +
-            ", Name: " + sub.getSubscriptionsName() +
-            ", Cost: $" + sub.getCost() +
-            ", Recurring: " + sub.isRecurring() +
-            ", Cycle: " + sub.getBillingCycleType() +
-            ", Next Bill: " + sub.getBillingCycleDate()
-        );
-    }
-    return true;
+            case 2: // SORT BY (asc/desc)
+                System.out.print("Sort by date (asc/desc): ");
+                String sortOrder = scanner.nextLine();
+                // Just call the controller method as specified in the API you agreed on:
+                List<Subscription> sortedSubs = controller.sortSubscriptionsByDate(sortOrder);
+                if (sortedSubs == null || sortedSubs.isEmpty()) {
+                    System.out.println("No subscriptions to sort or invalid sort order.");
+                    return false;
+                }
+                System.out.println("\n--- Subscriptions Sorted By Date (" + sortOrder + ") ---");
+                for (Subscription sub : sortedSubs) {
+                    // Print as usual
+                    System.out.println(
+                        "ID: " + sub.getSubscriptionID() +
+                        ", Name: " + sub.getSubscriptionsName() +
+                        ", Cost: $" + sub.getCost() +
+                        ", Recurring: " + sub.isRecurring() +
+                        ", Cycle: " + sub.getBillingCycleType() +
+                        ", Next Bill: " + sub.getBillingCycleDate()
+                    );
+                }
+
+                return true;
 
             case 3: // MONTHLY SUMMARY
                 String summary = controller.getMonthlySummaryString(userId);
@@ -240,25 +243,25 @@ case 2: // SORT BY (asc/desc)
      * If you want a separate function.
      */
     public boolean handleSortSubscriptions(int userId, String sortOrder) {
-    List<Subscription> sortedSubs = controller.sortSubscriptionsByDate(sortOrder);
-    if (sortedSubs == null || sortedSubs.isEmpty()) {
-        System.out.println("No subscriptions to sort or invalid sort order.");
-        return false;
-    }
+        List<Subscription> sortedSubs = controller.sortSubscriptionsByDate(sortOrder);
+        if (sortedSubs == null || sortedSubs.isEmpty()) {
+            System.out.println("No subscriptions to sort or invalid sort order.");
+            return false;
+        }
 
-    System.out.println("\n--- Subscriptions Sorted By Date (" + sortOrder + ") ---");
-    for (Subscription sub : sortedSubs) {
-        System.out.println(
-            "ID: " + sub.getSubscriptionID() +
-            ", Name: " + sub.getSubscriptionsName() +
-            ", Cost: $" + sub.getCost() +
-            ", Recurring: " + sub.isRecurring() +
-            ", Cycle: " + sub.getBillingCycleType() +
-            ", Next Bill: " + sub.getBillingCycleDate()
-        );
+        System.out.println("\n--- Subscriptions Sorted By Date (" + sortOrder + ") ---");
+        for (Subscription sub : sortedSubs) {
+            System.out.println(
+                "ID: " + sub.getSubscriptionID() +
+                ", Name: " + sub.getSubscriptionsName() +
+                ", Cost: $" + sub.getCost() +
+                ", Recurring: " + sub.isRecurring() +
+                ", Cycle: " + sub.getBillingCycleType() +
+                ", Next Bill: " + sub.getBillingCycleDate()
+            );
+        }
+        return true;
     }
-    return true;
-}
 
 
     public boolean handleUpdateSubscription(int userId, int subscriptionId) {
@@ -303,6 +306,5 @@ case 2: // SORT BY (asc/desc)
 
     public subscriptions_module getController() {
     return controller;
-}
-
+    }
 }
