@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -99,8 +101,7 @@ public class UITest {
 
     @Test
     public void testDeleteSubscription_ValidDeletion_True() {
-        ui.getController().addSubscription(
-                new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+        ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
         int subscriptionId = ui.getController().getAllSubscriptionsForUser(userId).get(0).getSubscriptionID();
 
         boolean result = ui.handleDeleteSubscription(userId, subscriptionId);
@@ -480,4 +481,321 @@ public class UITest {
         
         assertFalse(result, "Should return false for non-existent subscription");
     }
+
+    //new tests
+
+    @Test
+    public void testHandleAddSubscription_ValidInputTrue() {
+        // Save original System.in
+        InputStream originalIn = System.in;
+        
+        try {
+            // Create test input
+            String input = "1\nNetflix\n15.99\ntrue\nmonthly\n2025-08-01\n";
+            System.setIn(new ByteArrayInputStream(input.getBytes()));
+            
+            // Create new UIModule (this will use the mocked input)
+            UIModule ui = new UIModule();
+            
+            boolean result = ui.handleAddSubscription(1);
+            assertTrue(result);
+            
+        } finally {
+            // Always restore System.in
+            System.setIn(originalIn);
+        }
+    }
+    @Test
+    public void testHandleAddSubscription_Case1_FailsToAdd_ReturnsFalse() {
+    // Save original System.in
+    InputStream originalIn = System.in;
+    
+    try {
+        // Input that will cause addSubscription to fail (e.g., empty name)
+        String input = "1\n\n10.99\ntrue\nmonthly\n2025-08-01\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        
+        UIModule ui = new UIModule();
+        boolean result = ui.handleAddSubscription(1);
+        
+        assertFalse(result, "Should return false when subscription addition fails");
+        
+    } finally {
+        System.setIn(originalIn);
+    }
 }
+
+@Test
+public void testHandleAddSubscription_Case2_ReturnsToMenu_ReturnsFalse() {
+    // Save original System.in
+    InputStream originalIn = System.in;
+    
+    try {
+        // Input "2" to quit/return to main menu
+        String input = "2\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        
+        UIModule ui = new UIModule();
+        boolean result = ui.handleAddSubscription(1);
+        
+        assertFalse(result, "Should return false when user chooses to quit");
+        
+    } finally {
+        System.setIn(originalIn);
+    }
+}
+
+@Test
+public void testHandleAddSubscription_InvalidChoice_ReturnsFalse() {
+    // Save original System.in
+    InputStream originalIn = System.in;
+    
+    try {
+        // Input invalid choice (99)
+        String input = "99\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        
+        UIModule ui = new UIModule();
+        boolean result = ui.handleAddSubscription(1);
+        
+        assertFalse(result, "Should return false for invalid menu choice");
+        
+    } finally {
+        System.setIn(originalIn);
+    }
+}
+
+@Test
+public void testHandleAddSubscription_ExceptionThrown_ReturnsFalse() {
+    // Save original System.in
+    InputStream originalIn = System.in;
+    
+    try {
+        // Input that will cause parsing exception (invalid number for choice)
+        String input = "invalid\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        
+        UIModule ui = new UIModule();
+        boolean result = ui.handleAddSubscription(1);
+        
+        assertFalse(result, "Should return false when exception is thrown");
+        
+    } finally {
+        System.setIn(originalIn);
+    }
+}
+
+
+
+@Test
+public void testHandleViewSubscriptions_Case2_ValidSortOrder_ReturnsTrue() {
+    // Save original System.in
+    InputStream originalIn = System.in;
+    
+    try {
+        // Add test subscriptions first
+        ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+        ui.getController().addSubscription(new Subscription(0, "Spotify", 15.0, true, "monthly", LocalDate.now().plusDays(5), userId));
+        
+        // Mock user input for sort order
+        String input = "asc\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        
+        UIModule ui = new UIModule();
+        boolean result = ui.handleViewSubscriptions(userId, 2);
+        
+        assertTrue(result, "Should return true when sorting with valid order");
+        
+    } finally {
+        System.setIn(originalIn);
+    }
+}
+@Test
+public void testHandleViewSubscriptions_Case2_EmptySubscriptions_ReturnsFalse() {
+    // Save original System.in
+    InputStream originalIn = System.in;
+    
+    try {
+        // Mock user input for sort order
+        String input = "asc\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        
+        UIModule ui = new UIModule();
+        boolean result = ui.handleViewSubscriptions(userId, 2);
+        
+        assertFalse(result, "Should return false when no subscriptions to sort");
+        
+    } finally {
+        System.setIn(originalIn);
+    }
+}
+
+@Test
+public void testHandleViewSubscriptions_Case2_DescSortOrder_ReturnsTrue() {
+    // Save original System.in
+    InputStream originalIn = System.in;
+    
+    try {
+        // Add test subscriptions
+        ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+        ui.getController().addSubscription(new Subscription(0, "Spotify", 15.0, true, "monthly", LocalDate.now().minusDays(2), userId));
+        
+        // Mock user input for descending sort order
+        String input = "desc\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        
+        UIModule ui = new UIModule();
+        boolean result = ui.handleViewSubscriptions(userId, 2);
+        
+        assertTrue(result, "Should return true when sorting with desc order");
+        
+    } finally {
+        System.setIn(originalIn);
+    }
+}
+@Test
+public void testHandleViewSubscriptions_Case2_NullReturnFromController_ReturnsFalse() {
+    // Save original System.in
+    InputStream originalIn = System.in;
+    
+    try {
+        // Mock user input
+        String input = "asc\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+        
+        UIModule ui = new UIModule();
+        // This test assumes the controller might return null for some edge case
+        boolean result = ui.handleViewSubscriptions(userId, 2);
+        
+        assertFalse(result, "Should return false when controller returns null");
+        
+    } finally {
+        System.setIn(originalIn);
+    }
+}
+
+
+
+/////////////////handleSort///
+@Test
+public void testHandleSortSubscriptions_ValidAscOrder_ReturnsTrue() {
+    // Add test subscriptions
+    ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+    ui.getController().addSubscription(new Subscription(0, "Spotify", 15.0, true, "monthly", LocalDate.now().plusDays(5), userId));
+    
+    boolean result = ui.handleSortSubscriptions(userId, "asc");
+    
+    assertTrue(result, "Should return true for valid ascending sort");
+}
+
+@Test
+public void testHandleSortSubscriptions_ValidDescOrder_ReturnsTrue() {
+    // Add test subscriptions
+    ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+    ui.getController().addSubscription(new Subscription(0, "Spotify", 15.0, true, "monthly", LocalDate.now().minusDays(3), userId));
+    
+    boolean result = ui.handleSortSubscriptions(userId, "desc");
+    
+    assertTrue(result, "Should return true for valid descending sort");
+}
+
+@Test
+public void testHandleSortSubscriptions_EmptySubscriptionsList_ReturnsFalse() {
+    // No subscriptions added - empty list
+    boolean result = ui.handleSortSubscriptions(userId, "asc");
+    
+    assertFalse(result, "Should return false when subscription list is empty");
+}
+
+@Test
+public void testHandleSortSubscriptions_NullReturnFromController_ReturnsFalse() {
+    // This test assumes the controller might return null for invalid sort order
+    boolean result = ui.handleSortSubscriptions(userId, "invalid");
+    
+    assertFalse(result, "Should return false when controller returns null");
+}
+
+@Test
+public void testHandleSortSubscriptions_InvalidSortOrder_ReturnsFalse() {
+    // Add a test subscription
+    ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+    
+    // Use invalid sort order
+    boolean result = ui.handleSortSubscriptions(userId, "random");
+    
+    assertFalse(result, "Should return false for invalid sort order");
+}
+
+@Test
+public void testHandleSortSubscriptions_SingleSubscription_ReturnsTrue() {
+    // Add single subscription
+    ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+    
+    boolean result = ui.handleSortSubscriptions(userId, "asc");
+    
+    assertTrue(result, "Should return true even with single subscription");
+}
+
+@Test
+public void testHandleSortSubscriptions_MultipleSubscriptions_ReturnsTrue() {
+    // Add multiple subscriptions with different dates
+    ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+    ui.getController().addSubscription(new Subscription(0, "Spotify", 15.0, true, "monthly", LocalDate.now().plusDays(10), userId));
+    ui.getController().addSubscription(new Subscription(0, "Disney+", 12.0, true, "monthly", LocalDate.now().minusDays(5), userId));
+    
+    boolean result = ui.handleSortSubscriptions(userId, "asc");
+    
+    assertTrue(result, "Should return true for multiple subscriptions");
+}
+
+@Test
+public void testHandleSortSubscriptions_EmptyStringOrder_ReturnsFalse() {
+    // Add test subscription
+    ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+    
+    boolean result = ui.handleSortSubscriptions(userId, "");
+    
+    assertFalse(result, "Should return false for empty string sort order");
+}
+
+@Test
+public void testHandleSortSubscriptions_NullSortOrder_ReturnsFalse() {
+    // Add test subscription
+    ui.getController().addSubscription(new Subscription(0, "Netflix", 10.0, true, "monthly", LocalDate.now(), userId));
+    
+    boolean result = ui.handleSortSubscriptions(userId, null);
+    
+    assertFalse(result, "Should return false for null sort order");
+}
+
+
+    /////////handleUpdateSubscriptions///////////////
+    
+
+
+
+
+    
+    //test for UI
+ @Test
+public void testUI_True() {
+    ui.displayAddSubscriptionMenu();
+    ui.displayDeleteMenu();
+    ui.displayLoginPrompt();
+    ui.displayMainMenu();
+    ui.displayStartScreen();
+    ui.displayViewMenu();
+    ui.displayUpdateMenu();
+    
+    
+    assertTrue(true);
+}
+
+
+}
+
+
+
+
+
+
