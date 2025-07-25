@@ -417,14 +417,14 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 
 ### Meeting 11
 
-**Time**: July --nd, 2025, -:-pm - -:-pm <br>
-**Agenda**: 
+**Time**: July 24nd, 2025, 2:00pm - 3:15pm <br>
+**Agenda**: Overall Code Coverage for NextPay Application
 
 | Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
 |------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| Hashir Owais     | Begin work on the project mangement aspect of this project. | - | - |
-| Muhammad Tariq   | Begin work on the project mangement aspect of this project. | - | - |
-| Simran Gahra     | Begin work on the project mangement aspect of this project. | - | - |
+| Hashir Owais     | Begin work on the project mangement aspect of this project. | In Progress | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. |
+| Muhammad Tariq   | Begin work on the project mangement aspect of this project. | In Progress | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. |
+| Simran Gahra     | Begin work on the project mangement aspect of this project. | In Progress | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. |
 
 ---
 ## 5. Project Management
