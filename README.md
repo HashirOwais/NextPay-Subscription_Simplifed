@@ -70,8 +70,7 @@ The Subscription Tracking Application will include a set of core features aimed 
 - **Add and remove subscriptions**  
   Users are be able to easily add new subscriptions by entering details such as name, cost, billing, and renewal date. Subscriptions that are no longer needed are removable with a simple command.
 
-- **Account creation**  
-  The system will allow users to create individual accounts so that personal subscription data is stored separately.
+
 
 - **View previous subscriptions**  
   Users can access a history of previously tracked subscriptions, in turn helping in analyzing long-term expenditure.
@@ -82,15 +81,11 @@ The Subscription Tracking Application will include a set of core features aimed 
 - **Filtering feature**  
   Users will be able to filter subscriptions by dates and costs.
 
-- **Countdown till next payment**  
-  The application will be capable display the number of days remaining until the next scheduled payment.
-
 - **Calculate total/monthly/yearly cost**  
   The system will automatically calculate and display the total cost of all active subscriptions, broken down by monthly and yearly values.
 
 - **Exporting to a CSV**  
   Users can export their subscription data Excel formats, enabling easy backup.
-
 
 #### 2.2.2 Objectives
 
