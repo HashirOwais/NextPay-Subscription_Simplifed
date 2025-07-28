@@ -1,5 +1,70 @@
 package com.example;
+import java.util.List;
+import com.example.models.Subscription;
+import com.example.models.User;
+
+import java.util.HashMap;
 
 public class subscriptions_module {
+    db_module db = new db_module();
+
+    public boolean validateUser(String username, String password) {
+        return db.isUserValid(username, password);
+    }
+    public boolean addSubscription(Subscription s) {
+        return db.addSubscription(s);
+    }
+
+    public List<Subscription> sortSubscriptionsByDate(String order) {
+        return db.getAllSubscriptionsSortedByDate(order);
+    }
+    public int getUserIdByUsername(String username) {
+        return db.getUserIdByUsername(username);
+    }
+
+    public subscriptions_module() {
+        db = new db_module();
+    }
+
+    // 1. View all subscriptions for a user
+    public List<Subscription> getAllSubscriptionsForUser(int userId) {
+        return db.viewSubscription(userId);
+    }
+
+    // 2. View monthly summary for a user
+    public String getMonthlySummaryString(int userId) {
+        HashMap<String, List<Subscription>> map = db.getMonthlySubscriptionSummary(userId);
+        // Always one entry, so grab the key (summary)
+        return map.keySet().iterator().next();
+    }
+
+    // 3. Delete a subscription by ID
+    public boolean handleDeleteSubscription(int userId, int subscriptionId) {
+        Subscription sub = db.findSubscriptionById(subscriptionId);
+        if (sub != null && sub.getUserID() == userId) {
+            return db.deleteSubscription(subscriptionId);
+        }
+        return false;
+    }
+
+    public boolean exportToCSV(int userId) {
+        return db.exportSubscriptions(userId);
+    }
+
+    //handleLogin
+     public boolean isUserValid(User user) {
+        db_module db = new db_module();
+        return db.isUserValid(user.getUsername(), user.getPassword());
+    }
     
+    //handleUpdate
+    public boolean updateSubscription(Subscription updated) {
+        return db.updateSubscription(updated);
+    }
+
+    public Subscription findSubscriptionById(int subId) {
+        return db.findSubscriptionById(subId);
+    }
 }
+    
+
