@@ -424,7 +424,12 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 ---
 ## 5. Project Management
 
-Include a Gantt chart outlining all tasks, their predecessors, slack time, and critical path.
+The following Gantt chart outlines all major tasks, their dependencies, slack time, and the critical path for the NextPay project.
+
+<div align="center">
+  <img src="Docs/GANTT Chart-2025-07-28-234126.png" alt="Gantt Chart" width="850"/>
+</div>
+
 
 ---
 
@@ -443,6 +448,30 @@ Use **IEEE style** citations. Only include items that are cited in the report.
 
 ## 8. Appendix
 
-Add any supplementary material or documentation here.
+### UI Module Diagram
+<div align="center">
+  <img src="Docs/UI_Module_NextPay.png" alt="UI Module Diagram" width="650"/>
+</div>
+
+### Subscriptions Module Diagram
+<div align="center">
+  <img src="Docs/Subscriptions_Module_NextPay.png" alt="Subscriptions Module Diagram" width="650"/>
+</div>
+
+### Database Module Diagram
+<div align="center">
+  <img src="Docs/DB_Module_NextPay.png" alt="DB Module Diagram" width="650"/>
+</div>
+
+### Storyboard
+<div align="center">
+  <img src="Docs/Storyboard_NextPay.png" alt="Storyboard" width="650"/>
+</div>
+
+### Database ERD
+<div align="center">
+  <img src="Docs/db_ERD_NextPay.png" alt="Database ERD" width="650"/>
+</div>
+
 
 ---
