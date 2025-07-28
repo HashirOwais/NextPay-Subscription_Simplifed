@@ -42,11 +42,13 @@ Simran Gahra (200484408)
 
 ## 1. Introduction
 
-Give a brief description of the design and a summary of the relevant background information related to the topic. Provide rationale about what is needed and why.
+In today's digital age, managing multiple subscription services - such as streaming platforms, cloud storage, productivity tools, and fitness memberships - can be challenging and often leads to overlooked renewals, unexpected charges, and limited financial oversight. Many users lack a simple and effective way to track these recurring expenses, resulting in financial inefficiencies and missed opportunities to optimize spending.
 
-Give the reader an overview of what is in the next sections.
+To address this need, our project, **NextPay**, introduces a Java-based Command-Line Interface (CLI) application that centralizes the tracking and management of user subscriptions. Developed as part of the ENSE 375 Software Testing and Validation course, NextPay emphasizes rigorous test-driven development (TDD) using Java and JUnit, with all data securely stored locally via SQLite.
 
-**Do not include detailed results here.**
+The application's design supports key features such as adding and removing subscriptions, filtering and sorting, cost calculations, renewal reminders, and CSV export/import. These features not only streamline subscription management but also serve as practical domains for applying systematic software testing methodologies required by the course, including boundary value, equivalence class, state transition, and use case testing.
+
+The sections that follow in this report detail the design problem and requirements, document alternative and final solutions, explain team collaboration and management practices, and summarize testing approaches and project outcomes. This structure provides a comprehensive overview of our engineering and testing process, ensuring both practical effectiveness and alignment with ENSE 375 objectives.
 
 ---
 
