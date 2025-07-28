@@ -145,7 +145,7 @@ Our first proposed solution involved building a full-stack web application with 
   -    Backend: Java Spring Boot
   -    Database: PostgreSQL
   -    ORM: Hibernate
-  - Deployment: AWS Infrastructure
+  -    Deployment: AWS Infrastructure
 
 While this solution provided a scalable, modern, and user-friendly platform, it introduced substantial complexity in terms of testing. To properly validate this architecture, we would have required multiple testing tools and strategies:
   -    UI Testing using Jest, Selenium, or React Testing Library
