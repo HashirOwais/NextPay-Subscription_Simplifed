@@ -339,20 +339,19 @@ stateDiagram-v2
 ```
 mermaid
 stateDiagram-v2
-LoggedOut --> LoggedIn: handleLogin(success)
-LoggedIn --> MainMenu: displayMainMenu()
-MainMenu --> AddFlow: handleAddSubscription()
-AddFlow --> MainMenu: return
-MainMenu --> ViewFlow: handleViewSubscriptions()
-ViewFlow --> MainMenu: return
-MainMenu --> UpdateFlow: handleUpdateSubscription()
-UpdateFlow --> MainMenu: return
-MainMenu --> DeleteFlow: handleDeleteSubscription()
-DeleteFlow --> MainMenu: return
-MainMenu --> ExportFlow: exportToCSV()
-ExportFlow --> MainMenu: return
-MainMenu --> LoggedOut: handleMainMenuSelection(Quit)
-
+  LoggedOut --> LoggedIn: handleLogin(success)
+  LoggedIn --> MainMenu: displayMainMenu()
+  MainMenu --> AddFlow: handleAddSubscription()
+  AddFlow --> MainMenu: return
+  MainMenu --> ViewFlow: handleViewSubscriptions()
+  ViewFlow --> MainMenu: return
+  MainMenu --> UpdateFlow: handleUpdateSubscription()
+  UpdateFlow --> MainMenu: return
+  MainMenu --> DeleteFlow: handleDeleteSubscription()
+  DeleteFlow --> MainMenu: return
+  MainMenu --> ExportFlow: exportToCSV()
+  ExportFlow --> MainMenu: return
+  MainMenu --> LoggedOut: handleMainMenuSelection(Quit)
 ```
 Every state and transition was exercised by at least one test, ensuring complete node coverage.
 
@@ -371,5 +370,3 @@ Most core logic methods exceed 85% coverage; model classes have lower coverage d
 - **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.
 - **UI menus** and CLI prompts are difficult to fully automate; while we test navigation handlers, the `display*` methods are not directly asserted.
 - **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
-
-*End of TESTING.md*
