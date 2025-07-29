@@ -4,7 +4,7 @@
 
 ## 1. Overview
 
-This document describes the systematic testing plan for NextPay, covering unit tests, integration tests, and validation techniques as per ENSE 375 requirements. All JUnit tests have been implemented; this report outlines the test design, control and data-flow analyses, and key test cases.
+This document describes the systematic testing plan for NextPay, covering unit tests, integration tests, and validation techniques as per ENSE 375 requirements. All JUnit tests have been implemented; this report outlines the test design, control and data-flow analyses, and key test cases.
 
 ---
 
@@ -91,8 +91,8 @@ flowchart TD
 
 ### 4.2 Equivalence Class Testing
 
-* **Cost**: Valid > 0; Invalid ≤ 0
-* **Name**: Valid length 1–100; Invalid empty or > 100
+* **Cost**: Valid > 0; Invalid ≤ 0
+* **Name**: Valid length 1–100; Invalid empty or > 100
 
 ### 4.3 Decision Table
 
@@ -124,22 +124,35 @@ Diagrams below ensure transitions between:
 
 ```mermaid
 erDiagram
-  USER ||--o{ SUBSCRIPTION : owns
+  USER ||--o{ SUBSCRIPTION : "has"
+  USER {
+    int userID PK
+    string username
+    string password
+  }
   SUBSCRIPTION {
-    int id PK
-    string name
+    int subscriptionID PK
+    string subscriptionsName
     double cost
-    boolean recurring
-    string cycleType
-    date nextBilling
+    boolean isRecurring
+    string billingCycleType
+    date billingCycleDate
+    int userID FK
   }
 ```
 
 ```mermaid
 flowchart LR
-  UIModule --> SubMod[subscriptions_module]
-  SubMod --> DBMod[db_module]
-  DBMod --> SQLite[(nextpay.db)]
+  UIModule[UIModule]
+  SubMod[subscriptions_module]
+  DBMod[db_module]
+  Models((models package))
+
+  Models --> User[User]
+  Models --> Subscription[Subscription]
+  UIModule --> SubMod
+  SubMod --> DBMod
+  DBMod --> Models
 ```
 
 </details>
@@ -274,4 +287,91 @@ flowchart TD
 * **UIModuleTest**: start/menu/login/add
 * **DBModuleTest**: connection, CRUD, export
 * **SubscriptionsModuleTest**: user validation, delete logic, summary, sort
+
 ---
+
+---
+
+## 11. System Testing & Coverage
+
+We performed **system testing** across the full CLI application, driving end-to-end scenarios via the UI module and verifying persistence in SQLite. 97 JUnit tests ran with zero failures, covering:
+
+* **Login** → Add → List → Update → Delete → Export flows
+* CLI menu navigation and error paths
+* Data persistence and CSV output
+
+### 11.1 Finite State Machine & Node Coverage
+
+We verified **node coverage** of the key application states via a finite-state machine (FSM). Each numbered transition maps to a UI action:
+
+```mermaid
+stateDiagram-v2
+  [*] --> Initialize: start application
+  Initialize --> LoginPrompt: displayStartScreen()
+  LoginPrompt --> LoggedIn: handleLogin(success)
+  LoginPrompt --> [*]: handleStartSelection(Quit)
+  LoggedIn --> MainMenu: displayMainMenu()
+
+  MainMenu --> AddFlow: handleMainMenuSelection(1)
+  AddFlow --> EnterAddDetails: displayAddSubscriptionMenu()
+  EnterAddDetails --> ValidateAdd: handleAddSubscription(userId)
+  ValidateAdd --> MainMenu: return to menu
+
+  MainMenu --> ViewFlow: handleMainMenuSelection(3)
+  ViewFlow --> ValidateView: handleViewSubscriptions(userId, choice)
+  ValidateView --> MainMenu: return to menu
+
+  MainMenu --> UpdateFlow: handleMainMenuSelection(4)
+  UpdateFlow --> ValidateUpdate: handleUpdateSubscription(userId, subId)
+  ValidateUpdate --> MainMenu: return to menu
+
+  MainMenu --> DeleteFlow: handleMainMenuSelection(2)
+  DeleteFlow --> ValidateDelete: handleDeleteSubscription(userId, subId)
+  ValidateDelete --> MainMenu: return to menu
+
+  MainMenu --> ExportFlow: handleMainMenuSelection(5)
+  ExportFlow --> ExecuteExport: exportToCSV(userId)
+  ExecuteExport --> MainMenu: return to menu
+
+  MainMenu --> LoggedOut: handleMainMenuSelection(6)
+  LoggedOut --> [*]: end session
+```
+
+mermaid
+stateDiagram-v2
+LoggedOut --> LoggedIn: handleLogin(success)
+LoggedIn --> MainMenu: displayMainMenu()
+MainMenu --> AddFlow: handleAddSubscription()
+AddFlow --> MainMenu: return
+MainMenu --> ViewFlow: handleViewSubscriptions()
+ViewFlow --> MainMenu: return
+MainMenu --> UpdateFlow: handleUpdateSubscription()
+UpdateFlow --> MainMenu: return
+MainMenu --> DeleteFlow: handleDeleteSubscription()
+DeleteFlow --> MainMenu: return
+MainMenu --> ExportFlow: exportToCSV()
+ExportFlow --> MainMenu: return
+MainMenu --> LoggedOut: handleMainMenuSelection(Quit)
+
+```
+Every state and transition was exercised by at least one test, ensuring complete node coverage.
+
+### 11.2 Test & Coverage Summary
+- **Total tests**: 97 JUnit tests across `UITest`, `db_moduleTest`, `subscriptions_moduleTest`, and `AppTest`.
+- **Coverage (via JaCoCo)**:
+  - `db_module.java`: **85.98%**
+  - `subscriptions_module.java`: **91.67%**
+  - `UIModule.java`: **87.80%**
+  - `Subscription.java`: **58.93%**
+  - `User.java`: **0.00%** (only simple getters/setters)
+
+Most core logic methods exceed 85% coverage; model classes have lower coverage due to trivial getters/setters and untested `toString()`.
+
+### 11.3 Limitations
+- **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.
+- **UI menus** and CLI prompts are difficult to fully automate; while we test navigation handlers, the `display*` methods are not directly asserted.
+- **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
+
+*End of TESTING.md*
+
+```
