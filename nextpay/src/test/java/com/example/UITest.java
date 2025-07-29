@@ -153,8 +153,8 @@ public class UITest {
 
     @Test
     public void testHandleMainMenuSelection_Quit_Returns0() {
-        int result = ui.handleMainMenuSelection(5);
-        assertEquals(0, result, "Input 5 should log out");
+        int result = ui.handleMainMenuSelection(6);
+        assertEquals(0, result, "Input 6 should log out");
     }
 
     @Test
