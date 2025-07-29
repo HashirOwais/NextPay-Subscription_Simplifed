@@ -28,12 +28,13 @@ public class UIModule {
 
     public void displayMainMenu() {
         System.out.println("\nNEXT PAY: Menu");
-        System.out.println("CHOOSE AN OPTION (1 - 5)");
+        System.out.println("CHOOSE AN OPTION (1 - 6)");
         System.out.println("1) ADD Subscriptions");
         System.out.println("2) Delete Subscriptions");
         System.out.println("3) View Subscriptions");
         System.out.println("4) UPDATE Subscriptions");
-        System.out.println("5) QUIT");
+        System.out.println("5) EXPORT Subscriptions to CSV");
+        System.out.println("6) QUIT");
     }
 
     public void displayAddSubscriptionMenu() {
@@ -95,6 +96,9 @@ public class UIModule {
                 System.out.println("Selected: Update Subscriptions");
                 return 4;
             case 5:
+                System.out.println("Selected: Export Subscriptions to CSV");
+                return 5;
+            case 6:
                 System.out.println("Logging out...");
                 return 0;
             default:

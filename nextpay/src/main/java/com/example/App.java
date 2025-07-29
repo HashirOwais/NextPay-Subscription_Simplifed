@@ -63,6 +63,17 @@ public class App {
                                     break;
 
                                 case "5":
+                                    // Export to CSV
+                                    boolean success = ui.exportToCSV(ui.getCurrentUserId());
+                                    if (success) {
+                                        System.out.println("Export complete! Check the file: subscriptions_user_"
+                                                + ui.getCurrentUserId() + ".csv");
+                                    } else {
+                                        System.out.println("Export failed (maybe no subscriptions found).");
+                                    }
+                                    break;
+                                
+                                case "6":
                                     System.out.println("Logging out...");
                                     inMainMenu = false;
                                     // Optionally reset current user
