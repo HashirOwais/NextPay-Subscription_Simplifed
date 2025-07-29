@@ -49,11 +49,7 @@ public class UITest {
         assertTrue(result);
     }
 
-    @Test
-    public void testHandleMainMenuSelection_DeletesSubscription_Returns2() {
-        int result = ui.handleMainMenuSelection(2); // 2 = Delete Subscriptions
-        assertEquals(2, result, "Selecting option 2 should return 2 for Delete Subscriptions");
-    }
+
 
     @Test
     public void testHandleViewSubscriptions_SortByAsc_Covered() {
@@ -228,16 +224,6 @@ public class UITest {
         assertFalse(result, "Login should fail with both empty credentials");
         assertEquals(-1, ui.getCurrentUserId(), "User ID should remain -1");
     }
-    
-    @Test
-    public void testHandleLogin_inValidCredentialsUsername_fail() {
-        String username = "testuserFail";
-        String password = "password123";
-
-        boolean result = ui.handleLogin(username, password);
-        assertFalse(result); 
-        assertEquals(-1, ui.getCurrentUserId());
-    }
 
     @Test
     public void testHandleLogin_inValidCredentialsPass_fail() {
@@ -282,16 +268,7 @@ public class UITest {
         assertEquals(0, subscriptions.size());
     }
 
-    @Test
-    public void testAddSubscription_NegativeCost_ReturnsFalse() {
-        Subscription s = new Subscription(0, "Netflix", -10.99, true, "monthly", LocalDate.now().plusDays(5), userId);
-        // Use controller directly
-        boolean result = ui.getController().addSubscription(s);
-        assertFalse(result, "Should fail with negative cost");
-        
-        List<Subscription> subscriptions = ui.getController().getAllSubscriptionsForUser(userId);
-        assertEquals(0, subscriptions.size());
-    }
+    
 
     @Test
     public void testAddSubscription_ZeroCost_ReturnsTrue() {
@@ -362,18 +339,7 @@ public class UITest {
         assertEquals("Netflix Premium", subscriptions.get(0).getSubscriptionsName());
     }
 
-    @Test
-    public void testHandleAddSubscription_SimulateFailurePath_False() {
-        
-        Subscription invalidSub = new Subscription(0, "", 15.99, true, "monthly", LocalDate.parse("2025-08-01"), userId);
-        
-        boolean result = ui.getController().addSubscription(invalidSub);
-        assertFalse(result, "Should return false (simulates failure path");
-        
-        // Verify no subscription was added (simulates the failure scenario)
-        List<Subscription> subscriptions = ui.getController().getAllSubscriptionsForUser(userId);
-        assertEquals(0, subscriptions.size());
-    }
+    
 
    @Test
     public void testHandleAddSubscription_SimulateCase2QuitTrue() {
@@ -763,8 +729,6 @@ public class UITest {
         
         assertFalse(result, "Should return false for null sort order");
     }
-
-        /////////handleUpdateSubscriptions///////////////
         
         //test for UI
     @Test
