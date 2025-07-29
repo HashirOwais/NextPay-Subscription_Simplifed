@@ -437,8 +437,25 @@ The following Gantt chart outlines all major tasks, their dependencies, slack ti
 
 ## 6. Conclusion and Future Work
 
-Summarize achievements, focusing on fulfilled functions and objectives.  
-Discuss any limitations and suggest improvements for future iterations.
+### Conclusion
+The NextPay subscription tracking application succesfully achieved all primary design functions and objectives while satisifying the comprehensive testing requirements of ENSE 375. Our team brought there minds together to develope a fully functional Java Based CLI Application that addresses the core problem of subscription management throguh systematic softare developemt and rigirous testing practices such as Test Driven Development (TDD). The key achievements include:
+- Efficently adding, updating, deleting user subscriptions with completed CRUD fucntionality.
+- Managing user accounts.
+- Sorting subscriptions by billing dates in ascending or descending order.
+- Calculating and displaying subscription costs that occur monthly or yearly with comprehensive summaries.
+- Allowing users to export their subscription data to CSV format, for any external purposes.
+- Storing all data securely in a local SQLite database system
+- Providing an intuitive CLI for streamlined subscription management.
+
+By achieving thes objectives, we satisfied the goals of Java based develoment. systematic JUnit testing, local data storage, and user friendliness while meeting all ENSE 375 testing requirements.
+
+### Future Work
+While the final solution meets the current needs of individual subscription management, there are opportunies for future improvements:
+1) **Web Application Development**: Develop a full-stack web application using Spring Boot backend with REST APIs and React frontend for cross platform accessibility and modern user experience.
+2) **Multi User Support**: Enhancing the architecture to support multiple accounts with shared subscription management and collaborative budgeting features.
+3) **Advanced Analytics**: Extend the analytics to include more details of subscription habits. Adding notification support to email and SMS for subscription renewals can also be implemented.
+4) **Subscription Category Management**: Build upon the current subscription data model to include categorization features, allowing users to group subscriptions and view category-based spending summaries similar to the existing monthly summary feature.
+5) **AI Integration**: Implement machine learning algorithms to analyze user subscription patterns and provide personalized financial education recommendations.
 
 ---
 
