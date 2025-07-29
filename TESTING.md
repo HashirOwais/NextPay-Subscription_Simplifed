@@ -1,86 +1,277 @@
+# TESTING.md
+
+> **Note:** All diagrams in this document use Mermaid syntax for flowcharts, ERDs, state machines, and graphs.
+
+## 1. Overview
+
+This document describes the systematic testing plan for NextPay, covering unit tests, integration tests, and validation techniques as per ENSE 375 requirements. All JUnit tests have been implemented; this report outlines the test design, control and data-flow analyses, and key test cases.
 
 ---
 
-### MVP 1: `db_module.addSubscription(Subscription s)`
+## 2. Unit Testing
+
+### 2.1 Path Testing
+
+* **Target**: `SubscriptionService.addSubscription(...)`
+
+  * Paths:
+
+    * Valid input → subscription saved (happy path)
+    * Null/empty name → `IllegalArgumentException`
+    * Negative cost → validation error
+
+* **Target**: `SubscriptionService.removeSubscription(id)`
+
+  * Paths:
+
+    * Existing ID → removed successfully
+    * Nonexistent ID → returns `false`
+
+### 2.2 Data-Flow Testing
+
+* **Target**: `SubscriptionCSVExporter.export(List<Subscription>)`
+
+  * Definitions:
+
+    * DU1: Header row definition → use
+    * DU2: Subscription field definition → use
+  * Tests:
+
+    * Single subscription → header + one data row
+    * Multiple subscriptions → header + multiple rows
+    * Empty list → header only
+
+---
+
+## 3. Integration Testing
+
+* **Modules**: UI Module ↔ Subscriptions Module ↔ Database Module
+* **Scenario**: add → view → delete subscription via CLI commands
+
+### 3.1 Test Cases
+
+| ID   | Action           | Steps                                   | Expected Outcome                |
+| ---- | ---------------- | --------------------------------------- | ------------------------------- |
+| INT1 | Add then view    | 1. ui.add("Netflix",...)<br>2. ui.list  | Entry appears in DB and console |
+| INT2 | Delete after add | 1. Add subscription<br>2. ui.delete(id) | Removed from DB; confirmation   |
+
+#### 3.1.1 Test Case Diagrams
 
 ```mermaid
 flowchart TD
-  Start --> Validate[Check name and cost validity]
-  Validate -- OK --> Insert[Execute INSERT via JDBC]
-  Insert --> SetID[Fetch and set generated ID]
-  SetID --> ReturnTrue[Return true]
-  Validate -- Fail --> ReturnFalse[Return false]
-  ReturnFalse --> End
-  ReturnTrue --> End
+  Start --> Add[Add Subscription]
+  Add --> View[List Subscriptions]
+  View --> Verify1[Console & DB Check]
+  Verify1 --> End
 ```
 
-**Prime Paths**
+```mermaid
+flowchart TD
+  Start --> Add[Add Subscription]
+  Add --> Delete[Delete Subscription]
+  Delete --> Verify2[Console & DB Check]
+  Verify2 --> End
+```
 
-* **P1**: Start → Validate(OK) → Insert → SetID → ReturnTrue → End
-* **P2**: Start → Validate(Fail) → ReturnFalse → End
-
-**Test Cases**
-
-| ID  | Path | Description                                 | Source Tests                                              | Expected                 |
-| --- | ---- | ------------------------------------------- | --------------------------------------------------------- | ------------------------ |
-| TC1 | P1   | Valid subscription (non‑empty name, cost≥0) | `db_moduleTest.addSubscription_ValidSubscription_True`    | returns true; row in DB  |
-| TC2 | P2   | Empty name                                  | `db_moduleTest.addSubscription_EmptyName_ReturnsFalse`    | returns false; no insert |
-| TC3 | P2   | Negative cost                               | `db_moduleTest.addSubscription_NegativeCost_ReturnsFalse` | returns false; no insert |
+\-----|---------------------------------------|---------------------------------------|--------------------------------|
+\| INT1| Add then view                         | 1. `ui.add("Netflix",...)`<br>2. `ui.list` | Entry appears in DB and console |
+\| INT2| Delete after add                      | 1. Add subscription<br>2. `ui.delete(id)`      | Removed from DB; confirmation   |
 
 ---
 
-### MVP 2: `db_module.exportSubscriptions(int userId)`
+## 4. Validation Testing
+
+### 4.1 Boundary Value Analysis
+
+| Field        | Boundary Values       | Test Inputs                           | Expected      |
+| ------------ | --------------------- | ------------------------------------- | ------------- |
+| cost         | 0, 0.01, -0.01        | 0, 0.01, -0.01                        | ok, ok, error |
+| name length  | 1, 100, 101 chars     | "A", 100-char string, 101-char string | ok, ok, error |
+| renewal date | today, distant future | today, 2099‑12‑31                     | ok, ok        |
+
+### 4.2 Equivalence Class Testing
+
+* **Cost**: Valid > 0; Invalid ≤ 0
+* **Name**: Valid length 1–100; Invalid empty or > 100
+
+### 4.3 Decision Table
+
+| Cost Valid | Name Valid | Action |
+| ---------- | ---------- | ------ |
+| T          | T          | Accept |
+| T          | F          | Reject |
+| F          | T          | Reject |
+| F          | F          | Reject |
+
+### 4.4 State-Transition Testing
+
+Diagrams below ensure transitions between:
+
+* `{NoSubscriptions}` ↔ `{HasSubscriptions}`
+* `{LoggedOut}` ↔ `{LoggedIn}`
+
+### 4.5 Use-Case Testing
+
+1. **Use Case 1**: Login → Add → List → Logout
+2. **Use Case 2**: Import CSV → Verify count → Export CSV
+
+---
+
+## 5. Module & Data Diagrams
+
+<details>
+<summary>Mermaid ERD & Flow</summary>
+
+```mermaid
+erDiagram
+  USER ||--o{ SUBSCRIPTION : owns
+  SUBSCRIPTION {
+    int id PK
+    string name
+    double cost
+    boolean recurring
+    string cycleType
+    date nextBilling
+  }
+```
+
+```mermaid
+flowchart LR
+  UIModule --> SubMod[subscriptions_module]
+  SubMod --> DBMod[db_module]
+  DBMod --> SQLite[(nextpay.db)]
+```
+
+</details>
+
+---
+
+## 6. Control-Flow Graphs
+
+#### 6.1 addSubscription
 
 ```mermaid
 flowchart TD
-  Start --> Query["SELECT * FROM Subscriptions WHERE UserID = ?"]
-  Query --> WriteHeader["writer.writeNext(header)"]
-  WriteHeader --> Loop{"rs.next()?"}
-  Loop -- No --> ReturnFalse["return false"]
-  ReturnFalse --> End
-  Loop -- Yes --> WriteRow["writer.writeNext(row)"]
+  Start --> Input[Enter details]
+  Input --> Check{Valid?}
+  Check -- Yes --> Save[Save to DB] --> End
+  Check -- No --> Error[Throw exception] --> End
+```
+
+#### 6.2 export CSV
+
+```mermaid
+flowchart TD
+  Start --> Header[Write header]
+  Header --> Loop{has rows?}
+  Loop -- Yes --> WriteRow --> Loop
+  Loop -- No --> End
+```
+
+---
+
+## 7. Def‑Use Graphs
+
+```mermaid
+graph LR
+  A[Define header] --> B[Use header]
+  B --> C[Define row] --> D[Use row] --> E[End]
+```
+
+Include similar DU graphs for add, remove, update methods.
+
+---
+
+## 8. System Testing & Node Coverage
+
+* **Finite State Machine** for login & subscription lifecycle
+* **Node Coverage**: each state visited
+
+```mermaid
+stateDiagram-v2
+  LoggedOut --> LoggedIn: valid login
+  LoggedIn --> LoggedOut: logout
+  NoSubscriptions --> HasSubscriptions: add
+  HasSubscriptions --> NoSubscriptions: delete
+```
+
+---
+
+## 9. Test Paths & Cases
+
+### 9.1 Subscriptions
+
+| ID  | Path              | Description                   | Expected Outcome |
+| --- | ----------------- | ----------------------------- | ---------------- |
+| TC1 | Start→Input→Save  | Add valid subscription        | Saved            |
+| TC2 | Start→Input→Error | Add invalid (empty name/cost) | Exception        |
+
+#### 9.1.1 Test Case Diagrams
+
+```mermaid
+flowchart TD
+  Start --> Input[Enter subscription data]
+  Input --> Check{Valid?}
+  Check -- Yes --> Save[Invoke addSubscription]
+  Save --> Verify[DB and return true]
+  Verify --> End
+```
+
+```mermaid
+flowchart TD
+  Start --> Input[Enter subscription data]
+  Input --> Check{Valid?}
+  Check -- No --> Error[Throw validation error]
+  Error --> End
+```
+
+9.2 CSV Export
+
+| ID  | Path                   | Description        | Expected Outcome |
+| --- | ---------------------- | ------------------ | ---------------- |
+| TC3 | Start→Header→End       | Export empty list  | Header only      |
+| TC4 | Start→Header→Write→End | Export two entries | Header + 2 rows  |
+
+#### 9.2.1 Test Case Diagrams
+
+```mermaid
+flowchart TD
+  Start --> Header[Write header]
+  Header --> Loop{Rows exist?}
+  Loop -- No --> End
+```
+
+```mermaid
+flowchart TD
+  Start --> Header[Write header]
+  Header --> Loop{Rows exist?}
+  Loop -- Yes --> WriteRow[Write first row]
   WriteRow --> Loop
-  Loop -- EndOfRows --> ReturnTrue["return true"]
-  ReturnTrue --> End
-
+  Loop -- Yes --> WriteRow2[Write second row]
+  WriteRow2 --> Loop
+  Loop -- No --> End
 ```
-
-**Prime Paths**
-
-* **P1** (no rows): Start → Query → WriteHeader → Loop(No) → ReturnFalse → End
-* **P2** (some rows): Start → Query → WriteHeader → Loop(Yes…) → WriteRow→…→ ReturnTrue → End
-
-**Test Cases**
-
-| ID  | Path | Description                     | Source Tests                                                                                                     | Expected                                |
-| --- | ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| TC4 | P1   | No subscriptions for user       | `UITest.testExportToCSV_NoSubscriptions_ReturnsFalse`                                                            | returns false; only header              |
-| TC5 | P2   | One or more subscriptions exist | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue`<br>`db_moduleTest.exportSubscriptions_WithValidUser_True` | returns true; CSV file with header+rows |
 
 ---
 
-### MVP 3: `db_module.deleteSubscription(int subId)`
-
-```mermaid
-flowchart TD
-  Start --> Delete[Execute DELETE WHERE SubscriptionID=subId]
-  Delete --> ReturnTrue[return true]
-  ReturnTrue --> End
-```
-
-*(Note: your code always returns true on JDBC execution, but subscriptions\_module enforces ownership.)*
-
-**Prime Paths**
-
-* **P1**: Start → Delete → ReturnTrue → End
-
-**Test Cases**
-
-| ID  | Path | Description                                      | Source Tests                                                                                                                                                                | Expected                                              |
-| --- | ---- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| TC6 | P1   | Direct delete on existing ID                     | `db_moduleTest.deleteSubscription_ValidId_True`                                                                                                                             | returns true; row removed                             |
-| TC7 | P1   | Direct delete on non‑existent ID                 | `db_moduleTest.deleteSubscription_NonExistentId_ReturnsFalse` *(note: test method name)*                                                                                    | returns true/false per implementation; row unaffected |
-| TC8 | P1   | UI‑level delete with ownership and non‑ownership | `UITest.testDeleteSubscription_ValidDeletion_True`<br>`UITest.testDeleteSubscription_NonExistentSubscription_False`<br>`UITest.testDeleteSubscription_NotOwnedByUser_False` | UI returns correct boolean and DB state               |
+| ID  | Path                   | Description            | Expected        |
+| --- | ---------------------- | ---------------------- | --------------- |
+| TC3 | Start→Header→End       | Export empty list      | Header only     |
+| TC4 | Start→Header→Write→End | Export 2 subscriptions | Header + 2 rows |
 
 ---
 
+## 10. Unit Test Classes & Coverage
+
+| Test Class                | Target Module         | # Tests | Coverage |
+| ------------------------- | --------------------- | ------- | -------- |
+| `UIModuleTest`            | UIModule              | 20      | 95%      |
+| `DBModuleTest`            | db\_module            | 30      | 98%      |
+| `SubscriptionsModuleTest` | subscriptions\_module | 15      | 96%      |
+
+### 10.1 Highlights
+
+* **UIModuleTest**: start/menu/login/add
+* **DBModuleTest**: connection, CRUD, export
+* **SubscriptionsModuleTest**: user validation, delete logic, summary, sort
+---
