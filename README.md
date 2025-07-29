@@ -424,6 +424,20 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 | Simran Gahra     | Begin work on the project mangement aspect of this project. | In Progress | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. |
 
 ---
+
+### Meeting 12
+
+**Time**: July 29nd, 2025, 3:35pm - 7:15pm <br>
+**Agenda**: Begin The Verious testigs and Complete TESTING.md
+
+| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
+|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. | In Progress | Finish all previous assigned tasks. Finalize path/data flow tests. Begin validation tests (boundary, equivalence, decision table, etc.). |
+| Muhammad Tariq   | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. | In Progress | Finish all previous assigned tasks. Finalize integration testing and contribute to `TESTING.md` structure and content. |
+| Simran Gahra     | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. | In Progress | Finish all previous assigned tasks. Complete use case and state transition tests. Support formatting and reviewing `TESTING.md`. |
+
+---
+
 ## 5. Project Management
 
 The following Gantt chart outlines all major tasks, their dependencies, slack time, and the critical path for the NextPay project.
