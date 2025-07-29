@@ -335,7 +335,7 @@ stateDiagram-v2
 
   MainMenu --> LoggedOut: handleMainMenuSelection(6)
   LoggedOut --> [*]: end session
-```
+
 ```
 mermaid
 stateDiagram-v2
@@ -352,7 +352,7 @@ stateDiagram-v2
   MainMenu --> ExportFlow: exportToCSV()
   ExportFlow --> MainMenu: return
   MainMenu --> LoggedOut: handleMainMenuSelection(Quit)
-```
+
 Every state and transition was exercised by at least one test, ensuring complete node coverage.
 
 ### 11.2 Test & Coverage Summary
