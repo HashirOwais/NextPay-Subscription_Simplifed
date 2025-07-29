@@ -336,7 +336,7 @@ stateDiagram-v2
   MainMenu --> LoggedOut: handleMainMenuSelection(6)
   LoggedOut --> [*]: end session
 ```
-
+```
 mermaid
 stateDiagram-v2
 LoggedOut --> LoggedIn: handleLogin(success)
@@ -373,5 +373,3 @@ Most core logic methods exceed 85% coverage; model classes have lower coverage d
 - **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
 
 *End of TESTING.md*
-
-```
