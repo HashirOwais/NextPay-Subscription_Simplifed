@@ -274,4 +274,6 @@ flowchart TD
 * **UIModuleTest**: start/menu/login/add
 * **DBModuleTest**: connection, CRUD, export
 * **SubscriptionsModuleTest**: user validation, delete logic, summary, sort
+
+
 ---
