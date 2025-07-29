@@ -259,13 +259,14 @@ Block Diagram (Fig. 1)
 
 ---
 
-### Solution Overview:
+#### 3.3.5 Solution Overview:
 
 Our final solution is a Java-based Command Line Interface (CLI) application backed by an SQLite database. This approach was selected because it allows us to apply rigorous JUnit-based testing techniques without the complexity introduced by front-end frameworks, mobile environments, or web deployment layers. It aligns perfectly with ENSE 375’s focus on systematic testing, including boundary value analysis, equivalence class testing, use case testing, decision tables, state transition testing, path testing, and data flow testing.
 
 The CLI design minimizes setup overhead, improves development speed, and makes the core logic highly testable in isolation. Our solution is efficient, reliable, cost-effective, environmentally sustainable (due to no server resources), and safe with localized data storage.
 
 While the lack of a graphical user interface is a limitation, the focus on correctness, functionality, and systematic testing fully satisfies the course requirements.
+
 #### Final Considerations Comparison Table
 
 | Criterion                        | Solution 1 (Web App)                                                  | Solution 2 (Mobile App)                                              | Final Solution (CLI App)                                                  |
@@ -280,6 +281,92 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 | Multi-User Support           | Yes – Account-based via backend                                       | Partial – Some mobile apps support this                                | No – Single-user local only                                            |
 | Error Handling               | Moderate – Backend can handle exceptions                              | Moderate – Platform-dependent                                          | Basic – CLI-based, limited validation                                  |
 | Automation for Backups       | Possible – Through backend scripts                                    | Limited – Could be automated with OS tools                             | Not Implemented – Manual export/import required                        |
+
+---
+### 3.4 Test Cases And Solution Implimentaion
+
+#### MVP 1: `db_module.addSubscription(Subscription s)`
+
+```mermaid
+flowchart TD
+  Start --> Validate[Check name and cost validity]
+  Validate -- OK --> Insert[Execute INSERT via JDBC]
+  Insert --> SetID[Fetch and set generated ID]
+  SetID --> ReturnTrue[Return true]
+  Validate -- Fail --> ReturnFalse[Return false]
+  ReturnFalse --> End
+  ReturnTrue --> End
+```
+
+**Prime Paths**
+
+* **P1**: Start → Validate(OK) → Insert → SetID → ReturnTrue → End
+* **P2**: Start → Validate(Fail) → ReturnFalse → End
+
+**Test Cases**
+
+| ID  | Path | Description                                 | Source Tests                                              | Expected                 |
+| --- | ---- | ------------------------------------------- | --------------------------------------------------------- | ------------------------ |
+| TC1 | P1   | Valid subscription (non‑empty name, cost≥0) | `db_moduleTest.addSubscription_ValidSubscription_True`    | returns true; row in DB  |
+| TC2 | P2   | Empty name                                  | `db_moduleTest.addSubscription_EmptyName_ReturnsFalse`    | returns false; no insert |
+| TC3 | P2   | Negative cost                               | `db_moduleTest.addSubscription_NegativeCost_ReturnsFalse` | returns false; no insert |
+
+---
+
+#### MVP 2: `db_module.exportSubscriptions(int userId)`
+
+```mermaid
+flowchart TD
+  Start --> Query["SELECT * FROM Subscriptions WHERE UserID = ?"]
+  Query --> WriteHeader["writer.writeNext(header)"]
+  WriteHeader --> Loop{"rs.next()?"}
+  Loop -- No --> ReturnFalse["return false"]
+  ReturnFalse --> End
+  Loop -- Yes --> WriteRow["writer.writeNext(row)"]
+  WriteRow --> Loop
+  Loop -- EndOfRows --> ReturnTrue["return true"]
+  ReturnTrue --> End
+
+```
+**Prime Paths**
+
+* **P1** (no rows): Start → Query → WriteHeader → Loop(No) → ReturnFalse → End
+* **P2** (some rows): Start → Query → WriteHeader → Loop(Yes…) → WriteRow→…→ ReturnTrue → End
+
+**Test Cases**
+
+| ID  | Path | Description                     | Source Tests                                                                                                     | Expected                                |
+| --- | ---- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| TC4 | P1   | No subscriptions for user       | `UITest.testExportToCSV_NoSubscriptions_ReturnsFalse`                                                            | returns false; only header              |
+| TC5 | P2   | One or more subscriptions exist | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue`<br>`db_moduleTest.exportSubscriptions_WithValidUser_True` | returns true; CSV file with header+rows |
+
+---
+
+#### MVP 3: `db_module.deleteSubscription(int subId)`
+
+```mermaid
+flowchart TD
+  Start --> Delete[Execute DELETE WHERE SubscriptionID=subId]
+  Delete --> ReturnTrue[return true]
+  ReturnTrue --> End
+```
+
+
+**Prime Paths**
+
+* **P1**: Start → Delete → ReturnTrue → End
+
+**Test Cases**
+
+| ID  | Path | Description                                      | Source Tests                                                                                                                                                                | Expected                                              |
+| --- | ---- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| TC6 | P1   | Direct delete on existing ID                     | `db_moduleTest.deleteSubscription_ValidId_True`                                                                                                                             | returns true; row removed                             |
+| TC7 | P1   | Direct delete on non‑existent ID                 | `db_moduleTest.deleteSubscription_NonExistentId_ReturnsFalse` *(note: test method name)*                                                                                    | returns true/false per implementation; row unaffected |
+| TC8 | P1   | UI‑level delete with ownership and non‑ownership | `UITest.testDeleteSubscription_ValidDeletion_True`<br>`UITest.testDeleteSubscription_NonExistentSubscription_False`<br>`UITest.testDeleteSubscription_NotOwnedByUser_False` | UI returns correct boolean and DB state               |
+
+
+### 3.5 Test Paths and Test Cases
+
 
 ---
 
@@ -451,8 +538,25 @@ The following Gantt chart outlines all major tasks, their dependencies, slack ti
 
 ## 6. Conclusion and Future Work
 
-Summarize achievements, focusing on fulfilled functions and objectives.  
-Discuss any limitations and suggest improvements for future iterations.
+### Conclusion
+The NextPay subscription tracking application succesfully achieved all primary design functions and objectives while satisifying the comprehensive testing requirements of ENSE 375. Our team brought there minds together to develope a fully functional Java Based CLI Application that addresses the core problem of subscription management throguh systematic softare developemt and rigirous testing practices such as Test Driven Development (TDD). The key achievements include:
+- Efficently adding, updating, deleting user subscriptions with completed CRUD fucntionality.
+- Managing user accounts.
+- Sorting subscriptions by billing dates in ascending or descending order.
+- Calculating and displaying subscription costs that occur monthly or yearly with comprehensive summaries.
+- Allowing users to export their subscription data to CSV format, for any external purposes.
+- Storing all data securely in a local SQLite database system
+- Providing an intuitive CLI for streamlined subscription management.
+
+By achieving thes objectives, we satisfied the goals of Java based develoment. systematic JUnit testing, local data storage, and user friendliness while meeting all ENSE 375 testing requirements.
+
+### Future Work
+While the final solution meets the current needs of individual subscription management, there are opportunies for future improvements:
+1) **Web Application Development**: Develop a full-stack web application using Spring Boot backend with REST APIs and React frontend for cross platform accessibility and modern user experience.
+2) **Multi User Support**: Enhancing the architecture to support multiple accounts with shared subscription management and collaborative budgeting features.
+3) **Advanced Analytics**: Extend the analytics to include more details of subscription habits. Adding notification support to email and SMS for subscription renewals can also be implemented.
+4) **Subscription Category Management**: Build upon the current subscription data model to include categorization features, allowing users to group subscriptions and view category-based spending summaries similar to the existing monthly summary feature.
+5) **AI Integration**: Implement machine learning algorithms to analyze user subscription patterns and provide personalized financial education recommendations.
 
 ---
 
