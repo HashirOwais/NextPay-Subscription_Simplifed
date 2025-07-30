@@ -158,44 +158,122 @@ flowchart TD
 
 ---
 
-
 ## 4. Validation Testing
+
+**Files and Methods Under Test**  
+- **subscriptions_module.java**  
+  - `addSubscription(Subscription s)`  
+  - `updateSubscription(Subscription updated)`  
+  - `handleDeleteSubscription(int userId, int subscriptionId)`  
+- **db_module.java**  
+  - `addSubscription(Subscription s)`  
+  - `updateSubscription(Subscription s)`  
+  - `exportSubscriptions(int userId)`  
+- **UIModule.java**  
+  - `handleAddSubscription(int userId)`  
+  - `handleUpdateSubscription(int userId, int subId)`
+
+---
 
 ### 4.1 Boundary Value Analysis
 
-| Field        | Boundary Values       | Test Inputs                           | Expected      |
-| ------------ | --------------------- | ------------------------------------- | ------------- |
-| cost         | 0, 0.01, -0.01        | 0, 0.01, -0.01                        | ok, ok, error |
-| name length  | 1, 100, 101 chars     | "A", 100-char string, 101-char string | ok, ok, error |
-| renewal date | today, distant future | today, 2099‑12‑31                     | ok, ok        |
+We pick values at, just below, and just above each boundary to exercise edge cases.
+
+| Field           | Boundaries                                  | Test Inputs                                             | Expected Result                               |
+| --------------- | ------------------------------------------- | ------------------------------------------------------- | --------------------------------------------- |
+| **Cost**        | Min = 0<br>Min+ = 0.01<br>Max– = 9999.99<br>Max = 10000 | `-0.01`<br>`0`<br>`0.01`<br>`9999.99`<br>`10000`         | Reject if < 0; accept otherwise               |
+| **Name length** | Min = 1<br>Min+ = 2<br>Max– = 99<br>Max = 100           | `""` (empty)<br>`"A"`<br>`100`-char string<br>`101`-char string | Reject if length < 1 or > 100                |
+| **Billing Date**| Earliest = today (`2025-07-30`)<br>Nominal = `2026-01-01`<br>Max = `2099-12-31` | `2025-07-29`<br>`2025-07-30`<br>`2026-01-01`<br>`2099-12-31` | Reject before today; accept on/after today   |
+
+> **Example:**  
+> Calling `db_module.updateSubscription(s)` with `s.getCost() = -5.00` returns `false`.
+
+---
 
 ### 4.2 Equivalence Class Testing
 
-* **Cost**: Valid > 0; Invalid ≤ 0
-* **Name**: Valid length 1–100; Invalid empty or > 100
+We partition each input into valid/invalid classes and select one representative test per class.
 
-### 4.3 Decision Table
+| Input         | Valid Class                    | Invalid Class                     | Example Valid   | Example Invalid   |
+| ------------- | ------------------------------ | --------------------------------- | --------------- | ----------------- |
+| **Cost**      | ≥ 0 (including free)           | < 0                               | `10.99`, `0.00` | `-1.00`           |
+| **Name**      | 1–100 characters               | empty or > 100 characters         | `"Netflix"`     | `""`, 101-char    |
+| **Cycle Type**| `monthly`, `yearly`, `one-time`| any other string                  | `"monthly"`     | `"weekly"`        |
+| **Billing Date**| ≥ today, valid `YYYY-MM-DD` format | < today or malformed             | `"2025-07-30"`  | `"2025/07/29"`    |
 
-| Cost Valid | Name Valid | Action |
-| ---------- | ---------- | ------ |
-| T          | T          | Accept |
-| T          | F          | Reject |
-| F          | T          | Reject |
-| F          | F          | Reject |
+> **Example:**  
+> `db_module.updateSubscription(s)` rejects when `s.getSubscriptionName()` is empty.
+
+---
+
+### 4.3 Decision Table Testing
+
+We enumerate all meaningful combinations of boolean conditions to drive our delete-subscription logic.
+
+| Rule | Name Valid? | Cost Valid? | Date ≥ Today? | Cycle Type Valid? | Action                      |
+| ---- | ----------- | ----------- | ------------- | ----------------- | --------------------------- |
+| R1   | F           | *           | *             | *                 | Return `false` (invalid name) |
+| R2   | T           | F           | *             | *                 | Return `false` (invalid cost) |
+| R3   | T           | T           | F             | *                 | Return `false` (expired date) |
+| R4   | T           | T           | T             | F                 | Delete in DB, but flag error |
+| R5   | T           | T           | T             | T                 | Return `true` (success)      |
+
+> *Target:* `subscriptions_module.handleDeleteSubscription(int, int)`
+
+---
 
 ### 4.4 State-Transition Testing
 
-Diagrams below ensure transitions between:
+We model the UI flows as a finite-state machine to ensure each transition is exercised.
 
-* `{NoSubscriptions}` ↔ `{HasSubscriptions}`
-* `{LoggedOut}` ↔ `{LoggedIn}`
+```mermaid
+stateDiagram-v2
+    [*] --> LoggedOut
+    LoggedOut --> LoginPrompt: ui.handleLogin()
+    LoginPrompt --> LoggedIn: valid credentials
+    LoginPrompt --> LoggedOut: invalid/cancel
+    LoggedIn --> AddMenu: ui.handleAddSubscription()
+    AddMenu --> LoggedIn: success/cancel
+    LoggedIn --> DeleteMenu: subscriptions_module.handleDeleteSubscription()
+    DeleteMenu --> LoggedIn: success/reject
+    LoggedIn --> UpdateMenu: ui.handleUpdateSubscription()
+    UpdateMenu --> LoggedIn: success/reject
+    LoggedIn --> LoggedOut: ui.handleLogout()
+````
+
+---
 
 ### 4.5 Use-Case Testing
 
-1. **Use Case 1**: Login → Add → List → Logout
-2. **Use Case 2**: Import CSV → Verify count → Export CSV
+We derive end-to-end scenarios from user stories, covering both main and alternate flows.
+
+```mermaid
+flowchart TD
+  A[Start: Login] --> B{Valid?}
+  B -->|Yes| C[Main Menu]
+  B -->|No| A
+  C --> D[Add Subscription]
+  D --> E{Valid Input?}
+  E -->|Yes| F[Show Confirmation]
+  E -->|No| D
+  F --> G[List Subscriptions]
+  G --> H[Update Subscription]
+  H --> I{Valid Update?}
+  I -->|Yes| J[Confirm Update]
+  I -->|No| H
+  J --> K[Delete Subscription]
+  K --> L{Valid Delete?}
+  L -->|Yes| M[Confirm Delete]
+  L -->|No| K
+  M --> N[Logout]
+```
+
+* **Main Path:** `handleAddSubscription` → `getAllSubscriptionsForUser` → `updateSubscription` → `deleteSubscription` → `logout`
+* **Alternates:** invalid login, input errors on add/update/delete, user-canceled operations.
 
 ---
+
+
 
 ## 5. Module & Data Diagrams
 
@@ -497,7 +575,6 @@ Every state and transition was exercised by at least one test, ensuring complete
 
 Most core logic methods exceed 85% coverage; model classes have lower coverage due to trivial getters/setters and untested `toString()`.
 
-<<<<<<< HEAD
 ```mermaid
 flowchart TD
   Start --> Header[Write header]
@@ -541,9 +618,3 @@ flowchart TD
 
 
 ---
-=======
-### 11.3 Limitations
-- **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.
-- **UI menus** and CLI prompts are difficult to fully automate; while we test navigation handlers, the `display*` methods are not directly asserted.
-- **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
->>>>>>> 4d4c407e7fa0eb534e487e3afde640d43bb99b06
