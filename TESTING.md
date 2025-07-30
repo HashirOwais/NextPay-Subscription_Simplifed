@@ -10,7 +10,7 @@ This document describes the systematic testing plan for NextPay, covering unit t
 
 ## 2. Unit Testing
 
----
+Our unit testing strategy focuses on three core MVPs using control-flow analysis and prime path testing. We systematically test `db_module.addSubscription()` for input validation, `db_module.exportSubscriptions()` for CSV generation, and `db_module.deleteSubscription()` for database operations. Each method uses Mermaid flowcharts to identify prime paths, validated with JUnit test cases covering success and failure scenarios through path testing and data-flow analysis.
 
 ### MVP 1: `db_module.addSubscription(Subscription s)`
 
@@ -119,6 +119,7 @@ flowchart TD
 ---
 
 ## 3. Integration Testing
+Integration testing validates the interaction between our three core modules (UI, Subscriptions, and Database) through end-to-end CLI workflows. We test complete user scenarios spanning multiple modules, ensuring data flows correctly from user input through business logic to database persistence. Our approach uses sequential operations (add→view→delete) to validate that changes in one module are correctly reflected in dependent modules, ensuring the application functions as a cohesive system.
 
 * **Modules**: UI Module ↔ Subscriptions Module ↔ Database Module
 * **Scenario**: add → view → delete subscription via CLI commands
@@ -159,6 +160,7 @@ flowchart TD
 ---
 
 ## 4. Validation Testing
+Validation testing ensures NextPay meets user requirements through five systematic techniques: Boundary Value Analysis for edge cases, Equivalence Class Testing for input partitioning, Decision Table Testing for complex logic combinations, State-Transition Testing for UI flow validation, and Use-Case Testing for end-to-end scenarios. This approach validates proper handling of both valid inputs and graceful rejection of invalid data across our subscription management system.
 
 **Files and Methods Under Test**  
 - **subscriptions_module.java**  
@@ -276,6 +278,7 @@ flowchart TD
 
 
 ## 5. Module & Data Diagrams
+This section visualizes our NextPay system architecture through entity-relationship diagrams and module flow charts. The ERD shows the simple USER-SUBSCRIPTION relationship with key attributes, while the flow diagram illustrates data movement through our three-layer architecture from UI to database.
 
 <details>
 <summary>Mermaid ERD & Flow</summary>
@@ -305,6 +308,7 @@ flowchart LR
 ---
 
 ## 6. Control-Flow Graphs
+Control-flow graphs visualize the execution paths through key methods, showing decision points and possible outcomes. These diagrams map directly to our prime path testing strategy and help identify edge cases for comprehensive test coverage.
 
 #### 6.1 addSubscription
 
@@ -330,7 +334,7 @@ flowchart TD
 
 ---
 
-## 7.1 DU Paths & Test Cases
+## 7. DU Paths & Test Cases
 
 Below are the key definition–use paths for our NextPay core flows, along with corresponding test cases referencing the actual JUnit methods and source files.
 
@@ -508,6 +512,7 @@ flowchart TD
 ---
 
 ## 8. System Testing & Node Coverage
+System testing validates the complete NextPay application through finite state machine modeling of user workflows. We ensure node coverage by testing all system states (logged out/in, subscription presence) and state transitions (login, logout, add, delete operations) to verify the application behaves correctly across its entire lifecycle.
 
 * **Finite State Machine** for login & subscription lifecycle
 * **Node Coverage**: each state visited
@@ -523,6 +528,8 @@ stateDiagram-v2
 ---
 
 ## 9. Test Paths & Cases
+This section documents specific test paths and cases for our core subscription and CSV export functionality. Each test case maps to specific execution paths through the application, with corresponding flowcharts showing the decision points and outcomes for both successful and error scenarios.
+
 
 ### 9.1 Subscriptions
 
@@ -587,6 +594,8 @@ flowchart TD
 ---
 
 ## 10. Unit Test Classes & Coverage
+This section summarizes our comprehensive unit test suite covering all three core modules with high coverage rates. We implemented 65 total unit tests across UIModuleTest (interface handling), DBModuleTest (database operations), and SubscriptionsModuleTest (business logic), achieving 95%+ coverage on all modules through systematic testing of CRUD operations, user interactions, and data validation.
+
 
 | Test Class                | Target Module         | # Tests | Coverage |
 | ------------------------- | --------------------- | ------- | -------- |
@@ -602,6 +611,7 @@ flowchart TD
 
 
 ## 11. System Testing & Coverage
+System testing validates the complete NextPay application through end-to-end CLI scenarios and finite state machine modeling. We achieved 97 JUnit tests with zero failures, covering full user workflows (Login → Add → List → Update → Delete → Export), CLI navigation paths, and data persistence verification. Node coverage ensures all application states and transitions are tested through comprehensive FSM analysis.
 
 We performed **system testing** across the full CLI application, driving end-to-end scenarios via the UI module and verifying persistence in SQLite. 97 JUnit tests ran with zero failures, covering:
 
