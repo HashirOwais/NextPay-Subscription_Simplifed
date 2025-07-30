@@ -124,6 +124,8 @@ Integration testing validates the interaction between our three core modules (UI
 * **Modules**: UI Module ↔ Subscriptions Module ↔ Database Module
 * **Scenario**: add → view → delete subscription via CLI commands
 
+---
+
 ### 3.1 Test Cases
 
 | ID   | Action           | Steps                                   | Expected Outcome                |
@@ -153,9 +155,6 @@ flowchart TD
 |------|------------------|-----------------------------------------------|---------------------------------|
 | INT1 | Add then view    | 1. `ui.add("Netflix",...)`<br>2. `ui.list`    | Entry appears in DB and console |
 | INT2 | Delete after add | 1. Add subscription<br>2. `ui.delete(id)`     | Removed from DB; confirmation   |
-
-
-
 
 ---
 
@@ -275,8 +274,6 @@ flowchart TD
 
 ---
 
-
-
 ## 5. Module & Data Diagrams
 This section visualizes our NextPay system architecture through entity-relationship diagrams and module flow charts. The ERD shows the simple USER-SUBSCRIPTION relationship with key attributes, while the flow diagram illustrates data movement through our three-layer architecture from UI to database.
 
@@ -307,6 +304,8 @@ flowchart LR
 ## 6. Control-Flow Graphs
 Control-flow graphs visualize the execution paths through key methods, showing decision points and possible outcomes. These diagrams map directly to our prime path testing strategy and help identify edge cases for comprehensive test coverage.
 
+---
+
 #### 6.1 addSubscription
 
 ```mermaid
@@ -316,6 +315,8 @@ flowchart TD
   Check -- Yes --> Save[Save to DB] --> End
   Check -- No --> Error[Throw exception] --> End
 ```
+
+---
 
 #### 6.2 export CSV
 
@@ -329,13 +330,13 @@ flowchart TD
 
 ---
 
----
-
 ## 7. DU Paths & Test Cases
 
 Below are the key definition–use paths for our NextPay core flows, along with corresponding test cases referencing the actual JUnit methods and source files.
 
-### 7.1.1 addSubscription
+---
+
+### 7.1 addSubscription
 
 **DU Path 1 (happy path):**  
 ```mermaid
@@ -376,7 +377,7 @@ flowchart TD
 
 ---
 
-### 7.1.2 updateSubscription
+### 7.2 updateSubscription
 
 **DU Path 1 (happy path):**
 
@@ -414,7 +415,7 @@ flowchart TD
 
 ---
 
-### 7.1.3 deleteSubscription
+### 7.3 deleteSubscription
 
 **DU Path 1:**
 
@@ -435,7 +436,7 @@ flowchart TD
 
 ---
 
-### 7.1.4 exportSubscriptions
+### 7.4 exportSubscriptions
 
 **DU Path 1 (no rows):**
 
@@ -468,7 +469,7 @@ flowchart TD
 
 ---
 
-### 7.1.5 viewSubscriptions & sortSubscriptions
+### 7.5 viewSubscriptions & sortSubscriptions
 
 **DU Path (view all):**
 
@@ -527,6 +528,7 @@ stateDiagram-v2
 ## 9. Test Paths & Cases
 This section documents specific test paths and cases for our core subscription and CSV export functionality. Each test case maps to specific execution paths through the application, with corresponding flowcharts showing the decision points and outcomes for both successful and error scenarios.
 
+---
 
 ### 9.1 Subscriptions
 
@@ -553,6 +555,8 @@ flowchart TD
   Check -- No --> Error[Throw validation error]
   Error --> End
 ```
+
+---
 
 ### 9.2 CSV Export
 
@@ -600,12 +604,15 @@ This section summarizes our comprehensive unit test suite covering all three cor
 | `DBModuleTest`            | db\_module            | 30      | 98%      |
 | `SubscriptionsModuleTest` | subscriptions\_module | 15      | 96%      |
 
+---
+
 ### 10.1 Highlights
 
 * **UIModuleTest**: start/menu/login/add
 * **DBModuleTest**: connection, CRUD, export
 * **SubscriptionsModuleTest**: user validation, delete logic, summary, sort
 
+---
 
 ## 11. System Testing & Coverage
 System testing validates the complete NextPay application through end-to-end CLI scenarios and finite state machine modeling. We achieved 97 JUnit tests with zero failures, covering full user workflows (Login → Add → List → Update → Delete → Export), CLI navigation paths, and data persistence verification. Node coverage ensures all application states and transitions are tested through comprehensive FSM analysis.
@@ -616,6 +623,7 @@ We performed **system testing** across the full CLI application, driving end-to-
 * CLI menu navigation and error paths
 * Data persistence and CSV output
 
+---
 
 ### 11.1 Finite State Machine & Node Coverage
 
@@ -653,37 +661,24 @@ stateDiagram-v2
   MainMenu --> LoggedOut: handleMainMenuSelection(6)
   LoggedOut --> [*]: end session
 ```
----
-```mermaid
-stateDiagram-v2
-  LoggedOut --> LoggedIn: handleLogin(success)
-  LoggedIn --> MainMenu: displayMainMenu()
-  MainMenu --> AddFlow: handleAddSubscription()
-  AddFlow --> MainMenu: return
-  MainMenu --> ViewFlow: handleViewSubscriptions()
-  ViewFlow --> MainMenu: return
-  MainMenu --> UpdateFlow: handleUpdateSubscription()
-  UpdateFlow --> MainMenu: return
-  MainMenu --> DeleteFlow: handleDeleteSubscription()
-  DeleteFlow --> MainMenu: return
-  MainMenu --> ExportFlow: exportToCSV()
-  ExportFlow --> MainMenu: return
-  MainMenu --> LoggedOut: handleMainMenuSelection(Quit)
-```
-
 
 Every state and transition was exercised by at least one test, ensuring complete node coverage.
 
+---
+
 ### 11.2 Test & Coverage Summary
-- **Total tests**: 97 JUnit tests across `UITest`, `db_moduleTest`, `subscriptions_moduleTest`, and `AppTest`.
-- **Coverage (via JaCoCo)**:
+- **Total tests**: 93 JUnit tests across `UITest`, `db_moduleTest`, `subscriptions_moduleTest`, and `AppTest`.
+- **Code Coverage via Test Runner for Java (VsCode Extension)**:
   - `db_module.java`: **85.98%**
   - `subscriptions_module.java`: **91.67%**
-  - `UIModule.java`: **87.80%**
+  - `UIModule.java`: **89.02%**
   - `Subscription.java`: **58.93%**
   - `User.java`: **0.00%** (only simple getters/setters)
+  - `App.java`: **58.93%**
 
 Most core logic methods exceed 85% coverage; model classes have lower coverage due to trivial getters/setters and untested `toString()`.
+
+---
 
 ### 11.3 Limitations
 - **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.

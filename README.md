@@ -455,7 +455,7 @@ The following Gantt chart outlines all major tasks, their dependencies, slack ti
 | 3  | DB Schema & System Design          | 2            | 2 weeks  | 1     | Can begin slightly after design phase |
 | 4  | CLI Development & Core Features    | 3            | 4 weeks  | 0     | Core logic must be completed early    |
 | 5  | DB Integration & Connecting Filtering/Sorting | 4    | 2 weeks  | 0     | Built on finalized CLI + DB           |
-| 6  | Export/Import, Auth, Refactor      | 5            | 2 weeks  | 1     | Enhancements after core CLI done      |
+| 6  | Export, Auth, Refactor      | 5            | 2 weeks  | 1     | Enhancements after core CLI done      |
 | 7  | All Testing & Bug Fixes            | 4, 5, 6      | 3 weeks  | 0     | Tests must cover all finalized logic  |
 | 8  | Final Docs, Slides, Polish         | 7            | 1 week   | 0     | Must follow completion of dev & test  |
 
