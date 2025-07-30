@@ -248,15 +248,182 @@ flowchart TD
 
 ---
 
-## 7. Def‑Use Graphs
+---
 
+## 7.1 DU Paths & Test Cases
+
+Below are the key definition–use paths for our NextPay core flows, along with corresponding test cases referencing the actual JUnit methods and source files.
+
+### 7.1.1 addSubscription
+
+**DU Path 1 (happy path):**  
 ```mermaid
-graph LR
-  A[Define header] --> B[Use header]
-  B --> C[Define row] --> D[Use row] --> E[End]
+flowchart TD
+  A[Initialize Subscription s]
+  A --> B[def name = s.getSubscriptionsName]
+  B --> C[use name in validation db_module.addSubscription]
+  C --> D[def cost = s.getCost]
+  D --> E[use cost in validation]
+  E --> F[def isRecurring = s.isRecurring]
+  F --> G[use isRecurring in pstmt.setBoolean]
+  G --> H[def cycleType = s.getBillingCycleType]
+  H --> I[use cycleType in pstmt.setString]
+  I --> J[def date = s.getBillingCycleDate]
+  J --> K[use date.toString in pstmt.setString]
+  K --> L[def userId = s.getUserID]
+  L --> M[use userId in pstmt.setInt]
+  M --> N[INSERT executes]
+  N --> O[return true]
 ```
 
-Include similar DU graphs for add, remove, update methods.
+**DU Path 2 (validation fail):**
+
+```mermaid
+flowchart TD
+  A[Initialize Subscription s]
+  A --> B[def name = s.getSubscriptionsName]
+  B --> C[use name in validation]
+  C --> D[validation fails]
+  D --> E[return false]
+```
+
+| TC  | Path | Description              | Source Tests                                                               | Expected Result            |
+| --- | ---- | ------------------------ | -------------------------------------------------------------------------- | -------------------------- |
+| TC1 | P1   | Valid sub → inserted     | `db_moduleTest.addSubscription_ValidSubscription_True()` (db\_module.java) | returns `true` & row in DB |
+| TC2 | P2   | Empty name → rejected    | `db_moduleTest.addSubscription_EmptyName_ReturnsFalse()`                   | returns `false`, no insert |
+| TC3 | P2   | Negative cost → rejected | `db_moduleTest.addSubscription_NegativeCost_ReturnsFalse()`                | returns `false`, no insert |
+
+---
+
+### 7.1.2 updateSubscription
+
+**DU Path 1 (happy path):**
+
+```mermaid
+flowchart TD
+  A[Fetch Subscription s from DB]
+  A --> B[def name = s.getSubscriptionsName]
+  B --> C[use name in non-empty check]
+  C --> D[def cost = s.getCost]
+  D --> E[use cost in non-negative check]
+  E --> F[def cycleType = s.getBillingCycleType]
+  F --> G[use cycleType in UPDATE SET BillingCycleType]
+  G --> H[def date = s.getBillingCycleDate]
+  H --> I[use date.toString in UPDATE SET BillingCycleDate]
+  I --> J[execute UPDATE]
+  J --> K[return true]
+```
+
+**DU Path 2 (validation fail):**
+
+```mermaid
+flowchart TD
+  A[Fetch s]
+  A --> B[def cost = s.getCost]
+  B --> C[use cost in non-negative check]
+  C --> D[cost less than 0]
+  D --> E[return false]
+```
+
+| TC  | Path | Description              | Source Tests                                                                                                                    | Expected Result                |
+| --- | ---- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| TC4 | P1   | Valid update → persisted | `UITest.testHandleUpdateSubscription_ValidUpdate_ReturnsTrue()`<br>`db_moduleTest.updateSubscription_ValidUpdate_ReturnsTrue()` | returns `true`, DB row updated |
+| TC5 | P2   | Negative cost → rejected | `db_moduleTest.updateSubscription_NegativeCost_ReturnsFalse()`                                                                  | returns `false`, DB unchanged  |
+| TC6 | P2   | Empty name → rejected    | `db_moduleTest.updateSubscription_EmptyName_ReturnsFalse()`                                                                     | returns `false`, DB unchanged  |
+
+---
+
+### 7.1.3 deleteSubscription
+
+**DU Path 1:**
+
+```mermaid
+flowchart TD
+  A[Receive subscriptionId]
+  A --> B[def id = subscriptionId]
+  B --> C[use id in DELETE FROM Subscriptions WHERE SubscriptionID]
+  C --> D[execute DELETE]
+  D --> E[return true]
+```
+
+| TC  | Path | Description                                          | Source Tests                                                                                              | Expected Result            |
+| --- | ---- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------- |
+| TC7 | P1   | Existing ID → removed                                | `UITest.testDeleteSubscription_ValidDeletion_True()`<br>`db_moduleTest.deleteSubscription_ValidId_True()` | returns `true`, row gone   |
+| TC8 | P1   | Non‑existent ID → no error (impl detail)             | `UITest.testDeleteSubscription_NonExistentSubscription_False()`                                           | returns `false` (UI layer) |
+| TC9 | P1   | Wrong‑user delete → blocked in subscriptions\_module | `UITest.testDeleteSubscription_NotOwnedByUser_False()`                                                    | returns `false`            |
+
+---
+
+### 7.1.4 exportSubscriptions
+
+**DU Path 1 (no rows):**
+
+```mermaid
+flowchart TD
+  A[Prepare SELECT statement]
+  A --> B[use ResultSet rs]
+  B --> C[writer.writeNext header]
+  C --> D[rs.next returns false]
+  D --> E[return false]
+```
+
+**DU Path 2 (with rows):**
+
+```mermaid
+flowchart TD
+  A[Prepare SELECT statement]
+  A --> B[use ResultSet rs]
+  B --> C[writer.writeNext header]
+  C --> D[rs.next returns true]
+  D --> E[writer.writeNext row]
+  E --> D
+  D --> F[return true] 
+```
+
+| TC   | Path | Description        | Source Tests                                                                                                         | Expected Result                       |
+| ---- | ---- | ------------------ | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| TC10 | P1   | No subs for user   | `UITest.testExportToCSV_NoSubscriptions_ReturnsFalse()`                                                              | returns `false`, only header in CSV   |
+| TC11 | P2   | One + subs present | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue()`<br>`db_moduleTest.exportSubscriptions_WithValidUser_True()` | returns `true`, CSV has header + rows |
+
+---
+
+### 7.1.5 viewSubscriptions & sortSubscriptions
+
+**DU Path (view all):**
+
+```mermaid
+flowchart TD
+  A[Call getAllSubscriptionsForUser userId]
+  A --> B[use returned List in console-print loop]
+  B --> C[return true or false]
+```
+
+| TC   | Description                       | Source Tests                                                      | Expected Result |
+| ---- | --------------------------------- | ----------------------------------------------------------------- | --------------- |
+| TC12 | view no subs → prints none        | `UITest.testViewAllSubscriptions_NoSubscriptions_ReturnsFalse()`  | returns `false` |
+| TC13 | view with subs → prints & returns | `UITest.testViewAllSubscriptions_WithSubscriptions_ReturnsTrue()` | returns `true`  |
+
+**DU Path (sort):**
+
+```mermaid
+flowchart TD
+  A[Prompt sortOrder]
+  A --> B[def order = scanner.nextLine]
+  B --> C[use order in db.getAllSubscriptionsSortedByDate order]
+  C --> D[loop-print sorted list]
+  D --> E[return true or false]
+```
+
+| TC   | Description                         | Source Tests                                                                                                                                                       | Expected Result |
+| ---- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| TC14 | valid asc/desc → prints & returns   | `UITest.testHandleViewSubscriptions_SortByAsc_Covered()`<br>`UITest.testHandleViewSubscriptions_Case2_DescSortOrder_ReturnsTrue()`                                 | returns `true`  |
+| TC15 | invalid or empty list/order → false | `UITest.testHandleViewSubscriptions_Case2_EmptySubscriptions_ReturnsFalse()`<br>`UITest.testHandleViewSubscriptions_Case2_NullReturnFromController_ReturnsFalse()` | returns `false` |
+
+---
+
+> All DU paths above map directly into the JUnit methods in your
+> `db_moduleTest.java`, `subscriptions_moduleTest.java` and `UITest.java` files.
+> This ensures that every definition–use pair in your code is exercised by at least one test.
 
 ---
 
@@ -267,152 +434,52 @@ Include similar DU graphs for add, remove, update methods.
 
 ```mermaid
 stateDiagram-v2
-  LoggedOut --> LoggedIn: valid login
-  LoggedIn --> LoggedOut: logout
-  NoSubscriptions --> HasSubscriptions: add
-  HasSubscriptions --> NoSubscriptions: delete
-```
-
----
-
-## 9. Test Paths & Cases
-
-### 9.1 Subscriptions
-
-| ID  | Path              | Description                   | Expected Outcome |
-| --- | ----------------- | ----------------------------- | ---------------- |
-| TC1 | Start→Input→Save  | Add valid subscription        | Saved            |
-| TC2 | Start→Input→Error | Add invalid (empty name/cost) | Exception        |
-
-#### 9.1.1 Test Case Diagrams
-
-```mermaid
-flowchart TD
-  Start --> Input[Enter subscription data]
-  Input --> Check{Valid?}
-  Check -- Yes --> Save[Invoke addSubscription]
-  Save --> Verify[DB and return true]
-  Verify --> End
-```
-
-```mermaid
-flowchart TD
-  Start --> Input[Enter subscription data]
-  Input --> Check{Valid?}
-  Check -- No --> Error[Throw validation error]
-  Error --> End
-```
-
-9.2 CSV Export
-
-| ID  | Path                   | Description        | Expected Outcome |
-| --- | ---------------------- | ------------------ | ---------------- |
-| TC3 | Start→Header→End       | Export empty list  | Header only      |
-| TC4 | Start→Header→Write→End | Export two entries | Header + 2 rows  |
-
-#### 9.2.1 Test Case Diagrams
-
-```mermaid
-flowchart TD
-  Start --> Header[Write header]
-  Header --> Loop{Rows exist?}
-  Loop -- No --> End
-```
-
-```mermaid
-flowchart TD
-  Start --> Header[Write header]
-  Header --> Loop{Rows exist?}
-  Loop -- Yes --> WriteRow[Write first row]
-  WriteRow --> Loop
-  Loop -- Yes --> WriteRow2[Write second row]
-  WriteRow2 --> Loop
-  Loop -- No --> End
-```
-
----
-
-| ID  | Path                   | Description            | Expected        |
-| --- | ---------------------- | ---------------------- | --------------- |
-| TC3 | Start→Header→End       | Export empty list      | Header only     |
-| TC4 | Start→Header→Write→End | Export 2 subscriptions | Header + 2 rows |
-
----
-
-## 10. Unit Test Classes & Coverage
-
-| Test Class                | Target Module         | # Tests | Coverage |
-| ------------------------- | --------------------- | ------- | -------- |
-| `UIModuleTest`            | UIModule              | 20      | 95%      |
-| `DBModuleTest`            | db\_module            | 30      | 98%      |
-| `SubscriptionsModuleTest` | subscriptions\_module | 15      | 96%      |
-
-### 10.1 Highlights
-
-* **UIModuleTest**: start/menu/login/add
-* **DBModuleTest**: connection, CRUD, export
-* **SubscriptionsModuleTest**: user validation, delete logic, summary, sort
-
-## 11. System Testing & Coverage
-
-We performed **system testing** across the full CLI application, driving end-to-end scenarios via the UI module and verifying persistence in SQLite. 97 JUnit tests ran with zero failures, covering:
-
-* **Login** → Add → List → Update → Delete → Export flows
-* CLI menu navigation and error paths
-* Data persistence and CSV output
-
-### 11.1 Finite State Machine & Node Coverage
-
-We verified **node coverage** of the key application states via a finite-state machine (FSM). Each numbered transition maps to a UI action:
-
-```mermaid
-stateDiagram-v2
   [*] --> Initialize: start application
-  Initialize --> LoginPrompt: displayStartScreen()
-  LoginPrompt --> LoggedIn: handleLogin(success)
-  LoginPrompt --> [*]: handleStartSelection(Quit)
-  LoggedIn --> MainMenu: displayMainMenu()
+  Initialize --> LoginPrompt: displayStartScreen
+  LoginPrompt --> LoggedIn: handleLogin success
+  LoginPrompt --> [*]: handleStartSelection Quit
+  LoggedIn --> MainMenu: displayMainMenu
 
-  MainMenu --> AddFlow: handleMainMenuSelection(1)
-  AddFlow --> EnterAddDetails: displayAddSubscriptionMenu()
-  EnterAddDetails --> ValidateAdd: handleAddSubscription(userId)
+  MainMenu --> AddFlow: handleMainMenuSelection 1
+  AddFlow --> EnterAddDetails: displayAddSubscriptionMenu
+  EnterAddDetails --> ValidateAdd: handleAddSubscription userId
   ValidateAdd --> MainMenu: return to menu
 
-  MainMenu --> ViewFlow: handleMainMenuSelection(3)
-  ViewFlow --> ValidateView: handleViewSubscriptions(userId, choice)
+  MainMenu --> ViewFlow: handleMainMenuSelection 3
+  ViewFlow --> ValidateView: handleViewSubscriptions userId choice
   ValidateView --> MainMenu: return to menu
 
-  MainMenu --> UpdateFlow: handleMainMenuSelection(4)
-  UpdateFlow --> ValidateUpdate: handleUpdateSubscription(userId, subId)
+  MainMenu --> UpdateFlow: handleMainMenuSelection 4
+  UpdateFlow --> ValidateUpdate: handleUpdateSubscription userId subId
   ValidateUpdate --> MainMenu: return to menu
 
-  MainMenu --> DeleteFlow: handleMainMenuSelection(2)
-  DeleteFlow --> ValidateDelete: handleDeleteSubscription(userId, subId)
+  MainMenu --> DeleteFlow: handleMainMenuSelection 2
+  DeleteFlow --> ValidateDelete: handleDeleteSubscription userId subId
   ValidateDelete --> MainMenu: return to menu
 
-  MainMenu --> ExportFlow: handleMainMenuSelection(5)
-  ExportFlow --> ExecuteExport: exportToCSV(userId)
+  MainMenu --> ExportFlow: handleMainMenuSelection 5
+  ExportFlow --> ExecuteExport: exportToCSV userId
   ExecuteExport --> MainMenu: return to menu
 
-  MainMenu --> LoggedOut: handleMainMenuSelection(6)
+  MainMenu --> LoggedOut: handleMainMenuSelection 6
   LoggedOut --> [*]: end session
 ```
----
+
 ```mermaid
 stateDiagram-v2
-  LoggedOut --> LoggedIn: handleLogin(success)
-  LoggedIn --> MainMenu: displayMainMenu()
-  MainMenu --> AddFlow: handleAddSubscription()
+  LoggedOut --> LoggedIn: handleLogin success
+  LoggedIn --> MainMenu: displayMainMenu
+  MainMenu --> AddFlow: handleAddSubscription
   AddFlow --> MainMenu: return
-  MainMenu --> ViewFlow: handleViewSubscriptions()
+  MainMenu --> ViewFlow: handleViewSubscriptions
   ViewFlow --> MainMenu: return
-  MainMenu --> UpdateFlow: handleUpdateSubscription()
+  MainMenu --> UpdateFlow: handleUpdateSubscription
   UpdateFlow --> MainMenu: return
-  MainMenu --> DeleteFlow: handleDeleteSubscription()
+  MainMenu --> DeleteFlow: handleDeleteSubscription
   DeleteFlow --> MainMenu: return
-  MainMenu --> ExportFlow: exportToCSV()
+  MainMenu --> ExportFlow: exportToCSV
   ExportFlow --> MainMenu: return
-  MainMenu --> LoggedOut: handleMainMenuSelection(Quit)
+  MainMenu --> LoggedOut: handleMainMenuSelection Quit
 ```
 
 Every state and transition was exercised by at least one test, ensuring complete node coverage.
