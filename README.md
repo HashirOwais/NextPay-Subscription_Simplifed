@@ -376,55 +376,69 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 
 ### Meeting 8
 
-**Time**: July 09th, 2025, 5:10pm - 7:05pm <br>
-**Agenda**: Initilze and brainstorm functions for UI_module and Subscriptions_module
+**Time**: July 9th, 2025, 5:10pm – 7:05pm  
+**Agenda**: Initialize and brainstorm functions for `UI_module` and `Subscriptions_module`
 
-| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
-|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| Hashir Owais     | Implement and test functions for updating, filtering subscriptions by name and date. | Completed | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. |
-| Muhammad Tariq   | Implement and test functions to add, delete, and view subscriptions. | Completed | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. |
-| Simran Gahra     | Implement and test functions for DB creation and initialization, user authentication, and exporting subscriptions to CSV. | Completed | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. |
+| Team Member     | Previous Task                                                                 | Completion State | Next Task                                                                                      |
+|------------------|------------------------------------------------------------------------------|------------------|------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Implement and test functions for updating, filtering subscriptions by name and date.            | Completed        | Draft CLI layout and define interaction flow for filtering options in `UI_module`.            |
+| Muhammad Tariq   | Implement and test functions to add, delete, and view subscriptions.      | Completed        | Define function responsibilities and parameters for adding/deleting subscriptions.            |
+| Simran Gahra     | Implement and test functions for DB creation and initialization, user authentication, and exporting subscriptions to CSV.                     | Completed        | Determine data requirements and interface signatures between DB and `Subscriptions_module`.   |
 
 ---
 
 ### Meeting 9
 
-**Time**: July 16th, 2025, 10:25am - 1:55pm <br>
-**Agenda**: Impliment functions for UI_module and Subscriptions_module
+**Time**: July 16th, 2025, 10:25am – 1:55pm  
+**Agenda**: Implement functions for `UI_module` and `Subscriptions_module`
 
-| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
-|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| Hashir Owais     | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. |
-| Muhammad Tariq   | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. |
-| Simran Gahra     | Brainstorm pseudo functions and their parameters for UI_module and Subscriptions_module. | Completed | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. Complete meeting minutes to ensure everything up to date. |
+| Team Member     | Previous Task                                                                 | Completion State | Next Task                                                                                      |
+|------------------|------------------------------------------------------------------------------|------------------|------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Draft CLI layout and define interaction flow for filtering options in `UI_module`.                              | Completed        | Merge and test filtering commands in UI; validate against edge cases.                         |
+| Muhammad Tariq   | Define function responsibilities and parameters for adding/deleting subscriptions.                              | Completed        | Merge add/delete logic into main branch and resolve integration conflicts.                    |
+| Simran Gahra     | Determine data requirements and interface signatures between DB and `Subscriptions_module`.                             | Completed        | Test DB interactions with live CLI; ensure robust error handling and logging.                 |
 
 ---
 
 ### Meeting 10
 
-**Time**: July 22nd, 2025, 5:25pm - 7:30pm <br>
-**Agenda**: Merge All Code for UI_module and Subscriptions_module.
+**Time**: July 22nd, 2025, 5:25pm – 7:30pm  
+**Agenda**: Merge code for `UI_module` and `Subscriptions_module`
 
-| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
-|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| Hashir Owais     | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. | Completed | Begin work on the project mangement aspect of this project. |
-| Muhammad Tariq   | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. | Completed | Begin work on the project mangement aspect of this project. |
-| Simran Gahra     | Merge your git branch with dev branch. Refactor and resolve bugs resultant of the branch merges. Complete meeting minutes to ensure everything up to date. | Completed | Begin work on the project mangement aspect of this project. |
+| Team Member     | Previous Task                                                                 | Completion State | Next Task                                                                                      |
+|------------------|------------------------------------------------------------------------------|------------------|------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Merge and test filtering commands in UI; validate against edge cases.                        | Completed        | Begin test case drafting for UI routing and input validation.                                 |
+| Muhammad Tariq   | Merge add/delete logic into main branch and resolve integration conflicts.                                  | Completed        | Begin unit test creation for core subscription operations.                                    |
+| Simran Gahra     | Test DB interactions with live CLI; ensure robust error handling and logging.                               | Completed        | Ensure testable state of DB components and complete meeting minutes.                          |
 
 ---
 
 ### Meeting 11
 
-**Time**: July 24nd, 2025, 2:00pm - 3:15pm <br>
-**Agenda**: Overall Code Coverage for NextPay Application
+**Time**: July 24th, 2025, 2:00pm – 3:15pm  
+**Agenda**: Improve code coverage for the application
 
-| Team Member     | Previous Task                                      | Completion State | Next Task                                                                                      |
-|------------------|----------------------------------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| Hashir Owais     | Begin work on the project mangement aspect of this project. | In Progress | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. |
-| Muhammad Tariq   | Begin work on the project mangement aspect of this project. | In Progress | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. |
-| Simran Gahra     | Begin work on the project mangement aspect of this project. | In Progress | Focus on writing and improving app test cases with the goal of pushing overall test coverage beyond 75%. Also begin outlining and planning upcoming documentation work. |
+| Team Member     | Previous Task                                                                 | Completion State | Next Task                                                                                      |
+|------------------|------------------------------------------------------------------------------|------------------|------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Begin test case drafting for UI routing and input validation.                          | In Progress      | Expand CLI testing to cover invalid inputs and command boundaries.                            |
+| Muhammad Tariq   | Begin unit test creation for core subscription operations.                              | In Progress      | Strengthen test cases for logic and edge cases; target >75% coverage.                         |
+| Simran Gahra     | Ensure testable state of DB components and complete meeting minutes.                          | In Progress      | Define `TESTING.md` layout and gather equivalence/boundary test inputs.                       |
 
 ---
+
+### Meeting 12
+
+**Time**: July 29th, 2025, 3:35pm – 7:15pm  
+**Agenda**: Begin formal testing and finalize `TESTING.md`
+
+| Team Member     | Previous Task                                                                 | Completion State | Next Task                                                                                      |
+|------------------|------------------------------------------------------------------------------|------------------|------------------------------------------------------------------------------------------------|
+| Hashir Owais     | Expand CLI testing to cover invalid inputs and command boundaries.                     | In Progress      | Complete path/data flow testing and state transition scenarios.                               |
+| Muhammad Tariq   | Strengthen test cases for logic and edge cases; target >75% coverage.                  | In Progress      | Conduct decision table and integration tests. Format test sections in `TESTING.md`.           |
+| Simran Gahra     | Define `TESTING.md` layout and gather equivalence/boundary test inputs.                  | In Progress      | Execute use case and equivalence class tests. Finalize formatting and QA review.              |
+
+---
+
 ## 5. Project Management
 
 The following Gantt chart outlines all major tasks, their dependencies, slack time, and the critical path for the NextPay project.
@@ -439,7 +453,7 @@ The following Gantt chart outlines all major tasks, their dependencies, slack ti
 ## 6. Conclusion and Future Work
 
 ### Conclusion
-The NextPay subscription tracking application succesfully achieved all primary design functions and objectives while satisifying the comprehensive testing requirements of ENSE 375. Our team brought there minds together to develope a fully functional Java Based CLI Application that addresses the core problem of subscription management throguh systematic softare developemt and rigirous testing practices such as Test Driven Development (TDD). The key achievements include:
+The NextPay subscription tracking application succesfully achieved all primary design functions and objectives while satisifying the comprehensive testing requirements of ENSE 375. Our team brought there minds together to develope a fully functional Java Based CLI Application that addresses the core problem of subscription management throguh systematic software development and rigirous testing practices such as Test Driven Development (TDD). The key achievements include:
 - Efficently adding, updating, deleting user subscriptions with completed CRUD fucntionality.
 - Managing user accounts.
 - Sorting subscriptions by billing dates in ascending or descending order.
@@ -448,7 +462,7 @@ The NextPay subscription tracking application succesfully achieved all primary d
 - Storing all data securely in a local SQLite database system
 - Providing an intuitive CLI for streamlined subscription management.
 
-By achieving thes objectives, we satisfied the goals of Java based develoment. systematic JUnit testing, local data storage, and user friendliness while meeting all ENSE 375 testing requirements.
+By achieving thes objectives, we satisfied the goals of Java based development. systematic JUnit testing, local data storage, and user friendliness while meeting all ENSE 375 testing requirements.
 
 ### Future Work
 While the final solution meets the current needs of individual subscription management, there are opportunies for future improvements:
