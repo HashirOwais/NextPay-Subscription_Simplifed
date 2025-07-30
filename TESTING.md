@@ -514,66 +514,50 @@ flowchart TD
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Initialize: start application
-  Initialize --> LoginPrompt: displayStartScreen
-  LoginPrompt --> LoggedIn: handleLogin success
-  LoginPrompt --> [*]: handleStartSelection Quit
-  LoggedIn --> MainMenu: displayMainMenu
+  LoggedOut --> LoggedIn: valid login
+  LoggedIn --> LoggedOut: logout
+  NoSubscriptions --> HasSubscriptions: add
+  HasSubscriptions --> NoSubscriptions: delete
+```
 
-  MainMenu --> AddFlow: handleMainMenuSelection 1
-  AddFlow --> EnterAddDetails: displayAddSubscriptionMenu
-  EnterAddDetails --> ValidateAdd: handleAddSubscription userId
-  ValidateAdd --> MainMenu: return to menu
+---
 
-  MainMenu --> ViewFlow: handleMainMenuSelection 3
-  ViewFlow --> ValidateView: handleViewSubscriptions userId choice
-  ValidateView --> MainMenu: return to menu
+## 9. Test Paths & Cases
 
-  MainMenu --> UpdateFlow: handleMainMenuSelection 4
-  UpdateFlow --> ValidateUpdate: handleUpdateSubscription userId subId
-  ValidateUpdate --> MainMenu: return to menu
+### 9.1 Subscriptions
 
-  MainMenu --> DeleteFlow: handleMainMenuSelection 2
-  DeleteFlow --> ValidateDelete: handleDeleteSubscription userId subId
-  ValidateDelete --> MainMenu: return to menu
+| ID  | Path              | Description                   | Expected Outcome |
+| --- | ----------------- | ----------------------------- | ---------------- |
+| TC1 | Start→Input→Save  | Add valid subscription        | Saved            |
+| TC2 | Start→Input→Error | Add invalid (empty name/cost) | Exception        |
 
-  MainMenu --> ExportFlow: handleMainMenuSelection 5
-  ExportFlow --> ExecuteExport: exportToCSV userId
-  ExecuteExport --> MainMenu: return to menu
+#### 9.1.1 Test Case Diagrams
 
-  MainMenu --> LoggedOut: handleMainMenuSelection 6
-  LoggedOut --> [*]: end session
+```mermaid
+flowchart TD
+  Start --> Input[Enter subscription data]
+  Input --> Check{Valid?}
+  Check -- Yes --> Save[Invoke addSubscription]
+  Save --> Verify[DB and return true]
+  Verify --> End
 ```
 
 ```mermaid
-stateDiagram-v2
-  LoggedOut --> LoggedIn: handleLogin success
-  LoggedIn --> MainMenu: displayMainMenu
-  MainMenu --> AddFlow: handleAddSubscription
-  AddFlow --> MainMenu: return
-  MainMenu --> ViewFlow: handleViewSubscriptions
-  ViewFlow --> MainMenu: return
-  MainMenu --> UpdateFlow: handleUpdateSubscription
-  UpdateFlow --> MainMenu: return
-  MainMenu --> DeleteFlow: handleDeleteSubscription
-  DeleteFlow --> MainMenu: return
-  MainMenu --> ExportFlow: exportToCSV
-  ExportFlow --> MainMenu: return
-  MainMenu --> LoggedOut: handleMainMenuSelection Quit
+flowchart TD
+  Start --> Input[Enter subscription data]
+  Input --> Check{Valid?}
+  Check -- No --> Error[Throw validation error]
+  Error --> End
 ```
 
-Every state and transition was exercised by at least one test, ensuring complete node coverage.
+### 9.2 CSV Export
 
-### 11.2 Test & Coverage Summary
-- **Total tests**: 97 JUnit tests across `UITest`, `db_moduleTest`, `subscriptions_moduleTest`, and `AppTest`.
-- **Coverage (via JaCoCo)**:
-  - `db_module.java`: **85.98%**
-  - `subscriptions_module.java`: **91.67%**
-  - `UIModule.java`: **87.80%**
-  - `Subscription.java`: **58.93%**
-  - `User.java`: **0.00%** (only simple getters/setters)
+| ID  | Path                   | Description        | Expected Outcome |
+| --- | ---------------------- | ------------------ | ---------------- |
+| TC3 | Start→Header→End       | Export empty list  | Header only      |
+| TC4 | Start→Header→Write→End | Export two entries | Header + 2 rows  |
 
-Most core logic methods exceed 85% coverage; model classes have lower coverage due to trivial getters/setters and untested `toString()`.
+#### 9.2.1 Test Case Diagrams
 
 ```mermaid
 flowchart TD
@@ -615,6 +599,89 @@ flowchart TD
 * **UIModuleTest**: start/menu/login/add
 * **DBModuleTest**: connection, CRUD, export
 * **SubscriptionsModuleTest**: user validation, delete logic, summary, sort
+
+
+## 11. System Testing & Coverage
+
+We performed **system testing** across the full CLI application, driving end-to-end scenarios via the UI module and verifying persistence in SQLite. 97 JUnit tests ran with zero failures, covering:
+
+* **Login** → Add → List → Update → Delete → Export flows
+* CLI menu navigation and error paths
+* Data persistence and CSV output
+
+
+### 11.1 Finite State Machine & Node Coverage
+
+We verified **node coverage** of the key application states via a finite-state machine (FSM). Each numbered transition maps to a UI action:
+
+```mermaid
+stateDiagram-v2
+  [*] --> Initialize: start application
+  Initialize --> LoginPrompt: displayStartScreen()
+  LoginPrompt --> LoggedIn: handleLogin(success)
+  LoginPrompt --> [*]: handleStartSelection(Quit)
+  LoggedIn --> MainMenu: displayMainMenu()
+
+  MainMenu --> AddFlow: handleMainMenuSelection(1)
+  AddFlow --> EnterAddDetails: displayAddSubscriptionMenu()
+  EnterAddDetails --> ValidateAdd: handleAddSubscription(userId)
+  ValidateAdd --> MainMenu: return to menu
+
+  MainMenu --> ViewFlow: handleMainMenuSelection(3)
+  ViewFlow --> ValidateView: handleViewSubscriptions(userId, choice)
+  ValidateView --> MainMenu: return to menu
+
+  MainMenu --> UpdateFlow: handleMainMenuSelection(4)
+  UpdateFlow --> ValidateUpdate: handleUpdateSubscription(userId, subId)
+  ValidateUpdate --> MainMenu: return to menu
+
+  MainMenu --> DeleteFlow: handleMainMenuSelection(2)
+  DeleteFlow --> ValidateDelete: handleDeleteSubscription(userId, subId)
+  ValidateDelete --> MainMenu: return to menu
+
+  MainMenu --> ExportFlow: handleMainMenuSelection(5)
+  ExportFlow --> ExecuteExport: exportToCSV(userId)
+  ExecuteExport --> MainMenu: return to menu
+
+  MainMenu --> LoggedOut: handleMainMenuSelection(6)
+  LoggedOut --> [*]: end session
+```
+---
+```mermaid
+stateDiagram-v2
+  LoggedOut --> LoggedIn: handleLogin(success)
+  LoggedIn --> MainMenu: displayMainMenu()
+  MainMenu --> AddFlow: handleAddSubscription()
+  AddFlow --> MainMenu: return
+  MainMenu --> ViewFlow: handleViewSubscriptions()
+  ViewFlow --> MainMenu: return
+  MainMenu --> UpdateFlow: handleUpdateSubscription()
+  UpdateFlow --> MainMenu: return
+  MainMenu --> DeleteFlow: handleDeleteSubscription()
+  DeleteFlow --> MainMenu: return
+  MainMenu --> ExportFlow: exportToCSV()
+  ExportFlow --> MainMenu: return
+  MainMenu --> LoggedOut: handleMainMenuSelection(Quit)
+```
+
+
+Every state and transition was exercised by at least one test, ensuring complete node coverage.
+
+### 11.2 Test & Coverage Summary
+- **Total tests**: 97 JUnit tests across `UITest`, `db_moduleTest`, `subscriptions_moduleTest`, and `AppTest`.
+- **Coverage (via JaCoCo)**:
+  - `db_module.java`: **85.98%**
+  - `subscriptions_module.java`: **91.67%**
+  - `UIModule.java`: **87.80%**
+  - `Subscription.java`: **58.93%**
+  - `User.java`: **0.00%** (only simple getters/setters)
+
+Most core logic methods exceed 85% coverage; model classes have lower coverage due to trivial getters/setters and untested `toString()`.
+
+### 11.3 Limitations
+- **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.
+- **UI menus** and CLI prompts are difficult to fully automate; while we test navigation handlers, the `display*` methods are not directly asserted.
+- **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
 
 
 ---

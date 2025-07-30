@@ -447,6 +447,23 @@ The following Gantt chart outlines all major tasks, their dependencies, slack ti
 </div>
 
 
+### 5.1 Task Breakdown & Predecessors
+| ID | Task Name                          | Predecessors | Duration | Slack | Notes                                 |
+|----|------------------------------------| ------------ |----------|-------|---------------------------------------|
+| 1  | Planning & Team Formation          | —            | 2 weeks  | 0     | Critical path begins here             |
+| 2  | Design Requirements & Constraints  | 1            | 2 weeks  | 0     | Informs DB and CLI requirements       |
+| 3  | DB Schema & System Design          | 2            | 2 weeks  | 1     | Can begin slightly after design phase |
+| 4  | CLI Development & Core Features    | 3            | 4 weeks  | 0     | Core logic must be completed early    |
+| 5  | DB Integration & Connecting Filtering/Sorting | 4    | 2 weeks  | 0     | Built on finalized CLI + DB           |
+| 6  | Export/Import, Auth, Refactor      | 5            | 2 weeks  | 1     | Enhancements after core CLI done      |
+| 7  | All Testing & Bug Fixes            | 4, 5, 6      | 3 weeks  | 0     | Tests must cover all finalized logic  |
+| 8  | Final Docs, Slides, Polish         | 7            | 1 week   | 0     | Must follow completion of dev & test  |
+
+### 5.2 Slack Time
+- Task 3 (DB Schema) and Task 6 (Enhancements) each have about 1 week of slack, giving flexibility if earlier tasks are delayed.
+- All other tasks have zero slack.
+- **Critical Path:** Task 1 → Task 2 → Task 4 → Task 5 → Task 7 → Task 8
+
 ---
 
 ## 6. Conclusion and Future Work
