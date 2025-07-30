@@ -46,7 +46,7 @@ In today's digital age, managing multiple subscription services - such as stream
 
 To address this need, our project, **NextPay**, introduces a Java-based Command-Line Interface (CLI) application that centralizes the tracking and management of user subscriptions. Developed as part of the ENSE 375 Software Testing and Validation course, NextPay emphasizes rigorous test-driven development (TDD) using Java and JUnit, with all data securely stored locally via SQLite.
 
-The application's design supports key features such as adding and removing subscriptions, filtering and sorting, cost calculations, renewal reminders, and CSV export/import. These features not only streamline subscription management but also serve as practical domains for applying systematic software testing methodologies required by the course, including boundary value, equivalence class, state transition, and use case testing.
+The application's design supports key features such as adding and removing subscriptions, filtering and sorting, cost calculations, renewal reminders, and CSV export. These features not only streamline subscription management but also serve as practical domains for applying systematic software testing methodologies required by the course, including boundary value, equivalence class, state transition, and use case testing.
 
 The sections that follow in this report detail the design problem and requirements, document alternative and final solutions, explain team collaboration and management practices, and summarize testing approaches and project outcomes. This structure provides a comprehensive overview of our engineering and testing process, ensuring both practical effectiveness and alignment with ENSE 375 objectives.
 
@@ -234,7 +234,6 @@ Block Diagram (Fig. 1)
 - Countdown to Next Payment
 - Monthly and Yearly Cost Summaries
 - Export to CSV (Excel-compatible)
-- Import from CSV
 - Local Data Storage using SQLite
 
 ---
@@ -255,7 +254,7 @@ Block Diagram (Fig. 1)
 - No Cloud Backup – All data is local; risk of data loss without manual backups.
 - Single-User Local Storage – No multi-user online support.
 - Limited Error Handling – Basic error handling for CLI; advanced validation could be improved.
-- Manual Export/Import for Backup – Automation for backups is not implemented.
+- Manual Export for Backup – Automation for backups is not implemented.
 
 ---
 
@@ -280,7 +279,7 @@ While the lack of a graphical user interface is a limitation, the focus on corre
 | Cloud Backup                 | Yes – Built-in through hosting                                        | Partial – Depends on implementation                                    | No – Local only; manual backups required                               |
 | Multi-User Support           | Yes – Account-based via backend                                       | Partial – Some mobile apps support this                                | No – Single-user local only                                            |
 | Error Handling               | Moderate – Backend can handle exceptions                              | Moderate – Platform-dependent                                          | Basic – CLI-based, limited validation                                  |
-| Automation for Backups       | Possible – Through backend scripts                                    | Limited – Could be automated with OS tools                             | Not Implemented – Manual export/import required                        |
+| Automation for Backups       | Possible – Through backend scripts                                    | Limited – Could be automated with OS tools                             | Not Implemented – Manual export required                        |
 
 ---
 
