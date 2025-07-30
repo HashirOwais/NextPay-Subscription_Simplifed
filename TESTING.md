@@ -1,10 +1,10 @@
 # TESTING.md
 
-> **Note:** All diagrams in this document use Mermaid syntax for flowcharts, ERDs, state machines, and graphs.
+**Note:** All diagrams in this document use Mermaid syntax for flowcharts, ERDs, state machines, and graphs.
 
 ## 1. Overview
 
-This document describes the systematic testing plan for NextPay, covering unit tests, integration tests, and validation techniques as per ENSE 375 requirements. All JUnit tests have been implemented; this report outlines the test design, control and data-flow analyses, and key test cases.
+This document describes the systematic testing plan for NextPay, covering unit tests, integration tests, and validation techniques as per ENSE 375 requirements. All JUnit tests have been implemented; this report outlines the test design, control and data-flow analyses, and key test cases.
 
 ---
 
@@ -91,8 +91,8 @@ flowchart TD
 
 ### 4.2 Equivalence Class Testing
 
-* **Cost**: Valid > 0; Invalid ≤ 0
-* **Name**: Valid length 1–100; Invalid empty or > 100
+* **Cost**: Valid > 0; Invalid ≤ 0
+* **Name**: Valid length 1–100; Invalid empty or > 100
 
 ### 4.3 Decision Table
 
@@ -124,35 +124,22 @@ Diagrams below ensure transitions between:
 
 ```mermaid
 erDiagram
-  USER ||--o{ SUBSCRIPTION : "has"
-  USER {
-    int userID PK
-    string username
-    string password
-  }
+  USER ||--o{ SUBSCRIPTION : owns
   SUBSCRIPTION {
-    int subscriptionID PK
-    string subscriptionsName
+    int id PK
+    string name
     double cost
-    boolean isRecurring
-    string billingCycleType
-    date billingCycleDate
-    int userID FK
+    boolean recurring
+    string cycleType
+    date nextBilling
   }
 ```
 
 ```mermaid
 flowchart LR
-  UIModule[UIModule]
-  SubMod[subscriptions_module]
-  DBMod[db_module]
-  Models((models package))
-
-  Models --> User[User]
-  Models --> Subscription[Subscription]
-  UIModule --> SubMod
-  SubMod --> DBMod
-  DBMod --> Models
+  UIModule --> SubMod[subscriptions_module]
+  SubMod --> DBMod[db_module]
+  DBMod --> SQLite[(nextpay.db)]
 ```
 
 </details>
@@ -288,9 +275,6 @@ flowchart TD
 * **DBModuleTest**: connection, CRUD, export
 * **SubscriptionsModuleTest**: user validation, delete logic, summary, sort
 
----
-
----
 
 ## 11. System Testing & Coverage
 
@@ -299,6 +283,7 @@ We performed **system testing** across the full CLI application, driving end-to-
 * **Login** → Add → List → Update → Delete → Export flows
 * CLI menu navigation and error paths
 * Data persistence and CSV output
+
 
 ### 11.1 Finite State Machine & Node Coverage
 
@@ -335,9 +320,9 @@ stateDiagram-v2
 
   MainMenu --> LoggedOut: handleMainMenuSelection(6)
   LoggedOut --> [*]: end session
-
 ```
-mermaid
+---
+```mermaid
 stateDiagram-v2
   LoggedOut --> LoggedIn: handleLogin(success)
   LoggedIn --> MainMenu: displayMainMenu()
@@ -352,6 +337,8 @@ stateDiagram-v2
   MainMenu --> ExportFlow: exportToCSV()
   ExportFlow --> MainMenu: return
   MainMenu --> LoggedOut: handleMainMenuSelection(Quit)
+```
+
 
 Every state and transition was exercised by at least one test, ensuring complete node coverage.
 
@@ -370,3 +357,5 @@ Most core logic methods exceed 85% coverage; model classes have lower coverage d
 - **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.
 - **UI menus** and CLI prompts are difficult to fully automate; while we test navigation handlers, the `display*` methods are not directly asserted.
 - **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
+
+---
