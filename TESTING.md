@@ -155,7 +155,11 @@ flowchart TD
 | INT1 | Add then view    | 1. `ui.add("Netflix",...)`<br>2. `ui.list`    | Entry appears in DB and console |
 | INT2 | Delete after add | 1. Add subscription<br>2. `ui.delete(id)`     | Removed from DB; confirmation   |
 
+
+
+
 ---
+
 
 ## 4. Validation Testing
 
