@@ -466,7 +466,7 @@ The following Gantt chart outlines all major tasks, their dependencies, slack ti
 ### 5.2 Slack Time
 - Task 3 (DB Schema) and Task 6 (Enhancements) each have about 1 week of slack, giving flexibility if earlier tasks are delayed.
 - All other tasks have zero slack.
-- Critical Path: Task 1 → Task 2 → Task 4 → Task 5 → Task 7 → Task 8
+- **Critical Path:** Task 1 → Task 2 → Task 4 → Task 5 → Task 7 → Task 8
 
 ---
 
