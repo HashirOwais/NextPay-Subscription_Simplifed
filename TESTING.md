@@ -78,10 +78,8 @@ flowchart TD
   ReturnTrue --> End
 ```
 
-*(Note: your code always returns true on JDBC execution, but subscriptions\_module enforces ownership.)*
 
 **Prime Paths**
-
 - **P1**: Start → Delete → ReturnTrue → End
 
 **Test Cases**
@@ -96,13 +94,13 @@ flowchart TD
 
 ### 2.1 Path Testing
 
-* **Target**: `SubscriptionService.addSubscription(...)`
+* **Target**: `SubscriptionModule.addSubscription(Subscription s)`
   * Paths:
     * Valid input → subscription saved (happy path)
     * Null/empty name → `IllegalArgumentException`
     * Negative cost → validation error
 
-* **Target**: `SubscriptionService.removeSubscription(id)`
+* **Target**: `SubscriptionModule.removeSubscription(id)`
   * Paths:
     * Existing ID → removed successfully
     * Nonexistent ID → returns `false`

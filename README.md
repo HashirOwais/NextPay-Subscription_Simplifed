@@ -456,7 +456,7 @@ The following Gantt chart outlines all major tasks, their dependencies, slack ti
 ## 6. Conclusion and Future Work
 
 ### Conclusion
-The NextPay subscription tracking application succesfully achieved all primary design functions and objectives while satisifying the comprehensive testing requirements of ENSE 375. Our team brought there minds together to develope a fully functional Java Based CLI Application that addresses the core problem of subscription management throguh systematic softare developemt and rigirous testing practices such as Test Driven Development (TDD). The key achievements include:
+The NextPay subscription tracking application succesfully achieved all primary design functions and objectives while satisifying the comprehensive testing requirements of ENSE 375. Our team brought there minds together to develope a fully functional Java Based CLI Application that addresses the core problem of subscription management throguh systematic software development and rigirous testing practices such as Test Driven Development (TDD). The key achievements include:
 - Efficently adding, updating, deleting user subscriptions with completed CRUD fucntionality.
 - Managing user accounts.
 - Sorting subscriptions by billing dates in ascending or descending order.
@@ -465,7 +465,7 @@ The NextPay subscription tracking application succesfully achieved all primary d
 - Storing all data securely in a local SQLite database system
 - Providing an intuitive CLI for streamlined subscription management.
 
-By achieving thes objectives, we satisfied the goals of Java based develoment. systematic JUnit testing, local data storage, and user friendliness while meeting all ENSE 375 testing requirements.
+By achieving thes objectives, we satisfied the goals of Java based development. systematic JUnit testing, local data storage, and user friendliness while meeting all ENSE 375 testing requirements.
 
 ### Future Work
 While the final solution meets the current needs of individual subscription management, there are opportunies for future improvements:
