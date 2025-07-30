@@ -171,7 +171,7 @@ This architecture limited our ability to apply structured testing techniques, pa
 Since ENSE 375 places strong emphasis on test-driven development using JUnit and clear, structured testing strategies, this solution did not align well with our goals. We therefore chose not to implement the mobile architecture.
 
  
-### 3.3 Final Solution
+### 3.3 Final Solution - Java CLI App
 
 After evaluating the web and mobile application designs, we selected a Command-Line Interface (CLI) Java Application with an SQLite local database as our final solution. This decision was driven primarily by the project’s focus on test-driven development (TDD) using Maven and structured testing techniques such as:
   - Boundary value testing
