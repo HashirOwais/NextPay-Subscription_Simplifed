@@ -280,8 +280,7 @@ flowchart TD
 ## 5. Module & Data Diagrams
 This section visualizes our NextPay system architecture through entity-relationship diagrams and module flow charts. The ERD shows the simple USER-SUBSCRIPTION relationship with key attributes, while the flow diagram illustrates data movement through our three-layer architecture from UI to database.
 
-<details>
-<summary>Mermaid ERD & Flow</summary>
+### ERD & Flow Diagrams
 
 ```mermaid
 erDiagram
@@ -302,8 +301,6 @@ flowchart LR
   SubMod --> DBMod[db_module]
   DBMod --> SQLite[(nextpay.db)]
 ```
-
-</details>
 
 ---
 
