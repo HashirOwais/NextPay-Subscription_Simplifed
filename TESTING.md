@@ -472,7 +472,7 @@ flowchart TD
   Error --> End
 ```
 
-9.2 CSV Export
+### 9.2 CSV Export
 
 | ID  | Path                   | Description        | Expected Outcome |
 | --- | ---------------------- | ------------------ | ---------------- |
