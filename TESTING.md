@@ -1,9 +1,10 @@
 # TESTING.md
 
-> **Note:** All diagrams in this document use Mermaid syntax for flowcharts, ERDs, state machines, and graphs.
+**Note:** All diagrams in this document use Mermaid syntax for flowcharts, ERDs, state machines, and graphs.
 
 ## 1. Overview
 
+This document describes the systematic testing plan for NextPay, covering unit tests, integration tests, and validation techniques as per ENSE 375 requirements. All JUnit tests have been implemented; this report outlines the test design, control and data-flow analyses, and key test cases.
 This document describes the systematic testing plan for NextPay, covering unit tests, integration tests, and validation techniques as per ENSE 375 requirements. All JUnit tests have been implemented; this report outlines the test design, control and data-flow analyses, and key test cases.
 
 ---
@@ -357,6 +358,5 @@ Most core logic methods exceed 85% coverage; model classes have lower coverage d
 - **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.
 - **UI menus** and CLI prompts are difficult to fully automate; while we test navigation handlers, the `display*` methods are not directly asserted.
 - **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
-
 
 ---
