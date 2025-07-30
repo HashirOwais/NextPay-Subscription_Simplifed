@@ -105,16 +105,46 @@ flowchart TD
     * Existing ID → removed successfully
     * Nonexistent ID → returns `false`
 
-### 2.2 Data-Flow Testing
+### 2.2 Data-Flow Testing 
 
-* **Target**: `SubscriptionCSVExporter.export(List<Subscription>)`
-  * Definitions:
-    * DU1: Header row definition → use
-    * DU2: Subscription field definition → use
-  * Tests:
-    * Single subscription → header + one data row
-    * Multiple subscriptions → header + multiple rows
-    * Empty list → header only
+To demonstrate **All-Uses** coverage, we enumerate every definition (def) and use (use) of our key variables in `db_module.addSubscription(Subscription s)` (and similarly for the other core methods), map out all def→use paths, and tie each path back to JUnit tests.
+
+#### 2.2.1 Defs & Uses for `addSubscription()`
+```text
+Variable: name
+  defs: line 12 (`String name = s.getSubscriptionsName();`)
+  uses:
+    - line 15: predicate-use (`if (name == null || name.trim().isEmpty())`)
+    - line 20: computation-use (`pstmt.setString(2, name);`)
+
+Variable: cost
+  defs: line 13 (`double cost = s.getCost();`)
+  uses:
+    - line 16: predicate-use (`if (cost < 0)`)
+    - line 21: computation-use (`pstmt.setDouble(3, cost);`)
+
+Variable: date
+  defs: line 14 (`LocalDate date = s.getBillingCycleDate();`)
+  uses:
+    - line 17: predicate-use (`if (date.isBefore(LocalDate.now()))`)
+    - line 22: computation-use (`pstmt.setString(5, date.toString());`)
+````
+
+#### 2.2.2 DU-Path Mapping & Coverage
+
+| DU ID | Definition Site | Use Site                   | Test Method                                   |
+| ----- | --------------- | -------------------------- | --------------------------------------------- |
+| DU1   | L12 (name def)  | L15 (name predicate-use)   | `addSubscription_EmptyName_ReturnsFalse()`    |
+| DU2   | L12             | L20 (name computation-use) | `addSubscription_ValidSubscription_True()`    |
+| DU3   | L13 (cost def)  | L16 (cost predicate-use)   | `addSubscription_NegativeCost_ReturnsFalse()` |
+| DU4   | L13             | L21 (cost computation-use) | `addSubscription_ValidSubscription_True()`    |
+| DU5   | L14 (date def)  | L17 (date predicate-use)   | `addSubscription_PastDate_ReturnsFalse()`     |
+| DU6   | L14             | L22 (date computation-use) | `addSubscription_ValidSubscription_True()`    |
+
+* **All-Defs**: each def (DU1, DU3, DU5) reaches at least one use.
+* **All-P-Uses vs. All-C-Uses**: both predicate-uses (DU1, DU3, DU5) and computation-uses (DU2, DU4, DU6) are covered.
+* **All-DU-Paths**: both the “fail fast” and “happy” paths for each variable are exercised.
+
 
 ---
 
@@ -509,20 +539,47 @@ flowchart TD
 
 ---
 
-## 8. System Testing & Node Coverage
-System testing validates the complete NextPay application through finite state machine modeling of user workflows. We ensure node coverage by testing all system states (logged out/in, subscription presence) and state transitions (login, logout, add, delete operations) to verify the application behaves correctly across its entire lifecycle.
+## 8. System Testing & Node Coverage 
 
-* **Finite State Machine** for login & subscription lifecycle
-* **Node Coverage**: each state visited
+We treat our CLI + subscription flows as an Finite State Machine, number each state, then map which JUnit tests visit each node to demonstrate **100% node coverage**.
+
+### 8.1 Finite State Machine
 
 ```mermaid
 stateDiagram-v2
-  LoggedOut --> LoggedIn: valid login
-  LoggedIn --> LoggedOut: logout
-  NoSubscriptions --> HasSubscriptions: add
-  HasSubscriptions --> NoSubscriptions: delete
+    [*] --> [1]LoggedOut
+    [1]LoggedOut --> [2]LoginPrompt: handleLogin()
+    [2]LoginPrompt --> [3]LoggedIn: validCreds
+    [2]LoginPrompt --> [1]LoggedOut: cancel/invalid
+    [3]LoggedIn --> [4]MainMenu: displayMenu()
+    [4]MainMenu --> [5]AddFlow: handleAddSubscription()
+    [5]AddFlow --> [4]MainMenu: success/cancel
+    [4]MainMenu --> [6]ViewFlow: handleViewSubscriptions()
+    [6]ViewFlow --> [4]MainMenu: return
+    [4]MainMenu --> [7]UpdateFlow: handleUpdateSubscription()
+    [7]UpdateFlow --> [4]MainMenu: success/cancel
+    [4]MainMenu --> [8]DeleteFlow: handleDeleteSubscription()
+    [8]DeleteFlow --> [4]MainMenu: success/reject
+    [4]MainMenu --> [9]ExportFlow: exportToCSV()
+    [9]ExportFlow --> [4]MainMenu: return
+    [4]MainMenu --> [1]LoggedOut: Quit
 ```
 
+### 8.2 Node-to-Test Mapping
+
+| Node | State       | Test Method(s)                                                    |
+| ---- | ----------- | ----------------------------------------------------------------- |
+| 1    | LoggedOut   | `UITest.testStartUp_ShowsLogin()`                                 |
+| 2    | LoginPrompt | `UITest.testInvalidLogin_ReturnsToPrompt()`                       |
+| 3    | LoggedIn    | `UITest.testValidLogin_LeadsToMenu()`                             |
+| 4    | MainMenu    | `UITest.testDisplayMenu_AfterLogin()`                             |
+| 5    | AddFlow     | `UITest.testHandleAddSubscription_Valid_ReturnsTrue()`            |
+| 6    | ViewFlow    | `UITest.testViewAllSubscriptions_WithSubscriptions_ReturnsTrue()` |
+| 7    | UpdateFlow  | `UITest.testHandleUpdateSubscription_ValidUpdate_ReturnsTrue()`   |
+| 8    | DeleteFlow  | `UITest.testDeleteSubscription_ValidDeletion_True()`              |
+| 9    | ExportFlow  | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue()`          |
+
+* **Coverage:** 9/9 nodes exercised → **100% node coverage**.
 ---
 
 ## 9. Test Paths & Cases
