@@ -277,8 +277,7 @@ flowchart TD
 
 ## 5. Module & Data Diagrams
 
-<details>
-<summary>Mermaid ERD & Flow</summary>
+### ERD & Flow Diagrams
 
 ```mermaid
 erDiagram
@@ -299,8 +298,6 @@ flowchart LR
   SubMod --> DBMod[db_module]
   DBMod --> SQLite[(nextpay.db)]
 ```
-
-</details>
 
 ---
 
