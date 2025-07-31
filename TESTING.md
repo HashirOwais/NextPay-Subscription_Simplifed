@@ -54,7 +54,7 @@ flowchart TD
 
 
 
-####  Prime Paths (PPC)
+#### 2.1.1 Prime Paths (PPC)
 
 | ID  | Prime Path                                                            | Description                        |
 |-----|----------------------------------------------------------------------|------------------------------------|
@@ -65,7 +65,7 @@ flowchart TD
 
 ---
 
-####  Path Testing Summary Table
+#### 2.1.2 Path Testing Summary Table
 
 | Path ID | Test Requirement (Path Description)                                                     | JUnit Test Case Name                                       | Expected Outcome            | Actual Result        |
 |---------|------------------------------------------------------------------------------------------|------------------------------------------------------------|-----------------------------|----------------------|
@@ -131,7 +131,7 @@ flowchart TD
 
 ---
 
-####  DU Paths: Definition–Use Chains
+#### 2.2.1 DU Paths: Definition–Use Chains
 
 | ID   | DU Path          | Description                            |
 |------|------------------|----------------------------------------|
@@ -142,7 +142,7 @@ flowchart TD
 
 ---
 
-####  Actual JUnit Test Cases for Data‑Flow
+#### 2.2.2 Actual JUnit Test Cases for Data‑Flow
 
 | ID   | DU Path(s)      | Description              | Test Method Name                                          | Expected Result             |
 |------|------------------|--------------------------|-----------------------------------------------------------|-----------------------------|
@@ -151,7 +151,7 @@ flowchart TD
 | TC6  | DU1              | Empty name               | `updateSubscription_EmptyName_ReturnsFalse()`             | returns `false`, no update  |
 
 ---
-#### Data flow Summary Table
+#### 2.2.3 Data flow Summary Table
 
 | DU ID | Test Requirement (Definition–Use Chain Description)             | JUnit Test Case Name                                      | Expected Result            | Actual Result      |
 |-------|------------------------------------------------------------------|-----------------------------------------------------------|-----------------------------|--------------------|
@@ -513,7 +513,7 @@ stateDiagram-v2
     [4]MainMenu --> [1]LoggedOut: Quit
 ```
 
-### 4.4.1 Node-to-Test Mapping
+#### 4.4.1 Node-to-Test Mapping
 
 | Node | State       | Test Method(s)                                                    |
 | ---- | ----------- | ----------------------------------------------------------------- |
@@ -529,6 +529,20 @@ stateDiagram-v2
 
 * **Coverage:** 9/9 nodes exercised → **100% node coverage**.
 ---
+
+#### 4.4.2 State-Transision Testing Table
+
+| Node | Test Requirement (State/Transition)                         | JUnit Test Method Name                                            | Expected Result                     | Actual Result   |
+|------|-------------------------------------------------------------|-------------------------------------------------------------------|--------------------------------------|-----------------|
+| N1   | Entering initial LoggedOut state                            | `UITest.testStartUp_ShowsLogin()`                                 | Login prompt shown                   | ✅ As Expected  |
+| N2   | Handle login prompt and invalid login (stay in N2/N1 loop)  | `UITest.testInvalidLogin_ReturnsToPrompt()`                       | Returns to login                     | ✅ As Expected  |
+| N3   | Valid login transition to LoggedIn state                    | `UITest.testValidLogin_LeadsToMenu()`                             | Proceeds to menu                     | ✅ As Expected  |
+| N4   | Main menu state presented                                   | `UITest.testDisplayMenu_AfterLogin()`                             | Menu options visible                 | ✅ As Expected  |
+| N5   | Transition to AddFlow, then return to MainMenu              | `UITest.testHandleAddSubscription_Valid_ReturnsTrue()`            | Subscription added, return to menu   | ✅ As Expected  |
+| N6   | ViewFlow state → view subscriptions                         | `UITest.testViewAllSubscriptions_WithSubscriptions_ReturnsTrue()` | Subscription list shown              | ✅ As Expected  |
+| N7   | UpdateFlow → valid update and return                        | `UITest.testHandleUpdateSubscription_ValidUpdate_ReturnsTrue()`   | Update confirmed                     | ✅ As Expected  |
+| N8   | DeleteFlow → valid delete and return                        | `UITest.testDeleteSubscription_ValidDeletion_True()`              | Row removed                          | ✅ As Expected  |
+| N9   | ExportFlow → export CSV and return                          | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue()`          | File created, returns to menu        | ✅ As Expected  |
 
 ### 4.5 Use-Case Testing
 
