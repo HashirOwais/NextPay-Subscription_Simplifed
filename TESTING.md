@@ -315,6 +315,7 @@ Name Length Testing<br>
 | BVA-N5  | Name length = 99 → Just below maximum boundary (valid)     | `addSubscription_Valid99Chars_ReturnsTrue`   | Accepted         | ✅ As Expected |
 | BVA-N6  | Name length = 100 → At maximum boundary (valid)            | `addSubscription_Valid100Chars_ReturnsTrue`  | Accepted         | ✅ As Expected |
 | BVA-N7  | Name length = 101 → Above maximum boundary (invalid)       | `addSubscription_LongName_ReturnsFalse`      | Rejected         | ✅ As Expected |
+
 Boundaries: Min = 1, Min+ = 2, Max– = 99, Max = 100
 
 Menu Choice Testing <br>
