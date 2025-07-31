@@ -65,16 +65,20 @@ flowchart TD
 
 ---
 
-####  Actual JUnit Test Cases
+####  Path Testing Summary Table
 
-| ID   | Path | Description                    | Test Method Name                                       | Expected Outcome           |
-|------|------|--------------------------------|--------------------------------------------------------|----------------------------|
-| TC1  | P3   | Valid subscription input       | `addSubscription_ValidSubscription_True()`            | returns `true`, DB insert  |
-| TC2  | P3   | Valid non-recurring input      | `addSubscription_ValidNonRecurringSubscription_True()`| returns `true`, DB insert  |
-| TC3  | P1   | Empty name                     | `addSubscription_EmptyName_ReturnsFalse()`            | returns `false`, no insert |
-| TC4  | P1   | Negative cost                  | `addSubscription_NegativeCost_ReturnsFalse()`         | returns `false`, no insert |
+| Path ID | Test Requirement (Path Description)                                                     | JUnit Test Case Name                                       | Expected Outcome            | Actual Result        |
+|---------|------------------------------------------------------------------------------------------|------------------------------------------------------------|-----------------------------|----------------------|
+| P1      | N1 → N2 → N3(No) → N10 → N12  → Validation fails (invalid name or cost)                 | `addSubscription_EmptyName_ReturnsFalse()`                 | returns `false`, no insert  | ✅ As Expected       |
+| P1      | N1 → N2 → N3(No) → N10 → N12  → Validation fails (invalid name or cost)                 | `addSubscription_NegativeCost_ReturnsFalse()`              | returns `false`, no insert  | ✅ As Expected       |
+| P2      | N1 → N2 → N3(Yes) → N4 → N5 → N6(No) → N9 → N12 → Insert failed (rows = 0)              | *(No direct test implemented)*                             | returns `false`             | ❌ Not Covered       |
+| P3      | N1 → N2 → N3(Yes) → N4 → N5 → N6(Yes) → N7 → N8 → N9 → N12 → Full success               | `addSubscription_ValidSubscription_True()`                 | returns `true`, DB insert   | ✅ As Expected       |
+| P3      | N1 → N2 → N3(Yes) → N4 → N5 → N6(Yes) → N7 → N8 → N9 → N12 → Full success               | `addSubscription_ValidNonRecurringSubscription_True()`     | returns `true`, DB insert   | ✅ As Expected       |
+| P4      | N4 → N11 → N10 → N12 → DB exception triggers → catch & return false                    | *(No direct test implemented)*                             | returns `false`, print err  | ❌ Not Covered       |
 
 🔸 Note: No existing test explicitly triggers P2 or P4 
+
+
 
 
 ### 2.2 Data‑Flow Testing
@@ -89,7 +93,7 @@ flowchart TD
 
 ---
 
-### MVP 1: Definitions and Uses for `updateSubscription(Subscription s)`
+#### Definitions and Uses for `updateSubscription(Subscription s)`
 
 ```mermaid
 flowchart TD
@@ -145,6 +149,16 @@ flowchart TD
 | TC4  | DU1, DU2–DU4     | Valid update             | `updateSubscription_ValidUpdate_ReturnsTrue()`           | returns `true`, DB updated  |
 | TC5  | DU2              | Negative cost            | `updateSubscription_NegativeCost_ReturnsFalse()`          | returns `false`, no update  |
 | TC6  | DU1              | Empty name               | `updateSubscription_EmptyName_ReturnsFalse()`             | returns `false`, no update  |
+
+---
+#### Data flow Summary Table
+
+| DU ID | Test Requirement (Definition–Use Chain Description)             | JUnit Test Case Name                                      | Expected Result            | Actual Result      |
+|-------|------------------------------------------------------------------|-----------------------------------------------------------|-----------------------------|--------------------|
+| DU1   | N2 → N3 → N4 → `name` used in null/empty check                  | `updateSubscription_EmptyName_ReturnsFalse()`             | returns `false`, no update | ✅ As Expected     |
+| DU2   | N5 → N6 → N7 → `cost` used in <0 validation                     | `updateSubscription_NegativeCost_ReturnsFalse()`          | returns `false`, no update | ✅ As Expected     |
+| DU3   | N8 → N9 → `cycleType` used in SQL bind                          | `updateSubscription_ValidUpdate_ReturnsTrue()`            | returns `true`, DB updated | ✅ As Expected     |
+| DU4   | N10 → N11 → `billingDate` used in SQL bind                      | `updateSubscription_ValidUpdate_ReturnsTrue()`            | returns `true`, DB updated | ✅ As Expected     |
 
 ---
 
