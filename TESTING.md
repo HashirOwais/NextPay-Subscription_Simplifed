@@ -271,8 +271,6 @@ We pick values at, just below, and just above each boundary to exercise edge cas
 > **Example:**  
 > Calling `db_module.updateSubscription(s)` with `s.getCost() = -5.00` returns `false`.
 
-
-
 #### Menu Choice Testing:
 
 |Test Case|Menu Choice|Expected Result|Actual Result|
@@ -289,6 +287,50 @@ We pick values at, just below, and just above each boundary to exercise edge cas
 
 
 
+### Boundary Value Analysis Summary Table (addSubscription)
+
+Cost Field Testing<br>
+**Target Methods**: db_module.addSubscription(), db_module.updateSubscription(), UIModule.handleAddSubscription(), UIModule.handleUpdateSubscription()
+
+| Test ID | Test Requirement (Boundary Description)              | JUnit Test Case Name                         | Expected Outcome | Actual Result |
+| ------- | ---------------------------------------------------- | -------------------------------------------- | ---------------- | ------------- |
+| BVA-C1  | Cost = -0.01 → Below minimum boundary (invalid)      | `addSubscription_NegativeCost_ReturnsFalse`  | Rejected         | ✅ As Expected |
+| BVA-C2  | Cost = 0 → At minimum boundary (valid)               | `addSubscription_ValidCost_ReturnsTrue`      | Accepted         | ✅ As Expected |
+| BVA-C3  | Cost = 0.01 → Just above minimum boundary (valid)    | `addSubscription_ValidCost_ReturnsTrue`      | Accepted         | ✅ As Expected |
+| BVA-C4  | Cost = 9999.99 → Just below maximum boundary (valid) | `addSubscription_ValidHighCost_ReturnsTrue`  | Accepted         | ✅ As Expected |
+| BVA-C5  | Cost = 10000 → At maximum boundary (valid)           | `addSubscription_ValidMaxCost_ReturnsTrue`   | Accepted         | ✅ As Expected |
+| BVA-C6  | Cost = 10000.01 → Above maximum boundary (invalid)   | `addSubscription_ExcessiveCost_ReturnsFalse` | Rejected         | ✅ As Expected |
+
+Boundaries: Min = 0, Min+ = 0.01, Max– = 9999.99, Max = 10000
+
+Name Length Testing<br>
+**Target Methods**: db_module.addSubscription(), db_module.updateSubscription(), UIModule.handleAddSubscription(), UIModule.handleUpdateSubscription()
+
+| Test ID | Test Requirement (Boundary Description)                    | JUnit Test Case Name                         | Expected Outcome | Actual Result |
+| ------- | ---------------------------------------------------------- | -------------------------------------------- | ---------------- | ------------- |
+| BVA-N1  | Name length = 0 (empty) → Below minimum boundary (invalid) | `addSubscription_EmptyName_ReturnsFalse`     | Rejected         | ✅ As Expected |
+| BVA-N2  | Name length = 1 → At minimum boundary (valid)              | `addSubscription_SingleChar_ReturnsTrue`     | Accepted         | ✅ As Expected |
+| BVA-N3  | Name length = 2 → Just above minimum boundary (valid)      | `addSubscription_ValidShortName_ReturnsTrue` | Accepted         | ✅ As Expected |
+| BVA-N4  | Name length = 50 → Mid-range boundary (valid)              | `addSubscription_ValidName_ReturnsTrue`      | Accepted         | ✅ As Expected |
+| BVA-N5  | Name length = 99 → Just below maximum boundary (valid)     | `addSubscription_Valid99Chars_ReturnsTrue`   | Accepted         | ✅ As Expected |
+| BVA-N6  | Name length = 100 → At maximum boundary (valid)            | `addSubscription_Valid100Chars_ReturnsTrue`  | Accepted         | ✅ As Expected |
+| BVA-N7  | Name length = 101 → Above maximum boundary (invalid)       | `addSubscription_LongName_ReturnsFalse`      | Rejected         | ✅ As Expected |
+Boundaries: Min = 1, Min+ = 2, Max– = 99, Max = 100
+
+Menu Choice Testing <br>
+**Target Methods**: UIModule.handleMainMenuSelection(), UIModule.handleStartSelection()
+
+| Test ID | Test Requirement (Boundary Description)                 | JUnit Test Case Name                                | Expected Outcome | Actual Result |
+| ------- | ------------------------------------------------------- | --------------------------------------------------- | ---------------- | ------------- |
+| BVA-M1  | Menu choice = 0 → Below minimum boundary (invalid)      | `handleMenuSelection_ZeroChoice_ReturnsNegOne`      | Rejected (-1)    | ✅ As Expected |
+| BVA-M2  | Menu choice = 1 → At minimum boundary (valid)           | `handleMenuSelection_ValidChoice1_Returns1`         | Accepted (1)     | ✅ As Expected |
+| BVA-M3  | Menu choice = 2 → Just above minimum boundary (valid)   | `handleMenuSelection_ValidChoice2_Returns2`         | Accepted (2)     | ✅ As Expected |
+| BVA-M4  | Menu choice = 5 → Just below maximum boundary (valid)   | `handleMenuSelection_ValidChoice5_Returns5`         | Accepted (5)     | ✅ As Expected |
+| BVA-M5  | Menu choice = 6 → At maximum boundary (valid)           | `handleMenuSelection_ValidChoice6_ReturnsZero`      | Accepted (0)     | ✅ As Expected |
+| BVA-M6  | Menu choice = 7 → Above maximum boundary (invalid)      | `handleMenuSelection_InvalidChoice7_ReturnsNegOne`  | Rejected (-1)    | ✅ As Expected |
+| BVA-M7  | Menu choice = 99 → Far above maximum boundary (invalid) | `handleMenuSelection_InvalidChoice99_ReturnsNegOne` | Rejected (-1)    | ✅ As Expected |
+
+Boundaries: Min = 1, Min+ = 2, Max– = 5, Max = 6
 
 
 ---
@@ -381,6 +423,90 @@ Target Methods: db_module.isUserValid(String username, String password), subscri
 **Classes**
 - Valid: Both username and password match predefined record.
 - Invalid: Any combination where username doesnt exist, password is wrong or either field is empty
+
+
+### Equivilance Class Testing Summary Table 
+#### Add Subscription Summary
+
+Cost Field Testing
+**Target Methods**: db_module.addSubscription(), db_module.updateSubscription(), subscriptions_module.addSubscription(), subscriptions_module.updateSubscription(), UIModule.handleAddSubscription(), UIModule.handleUpdateSubscription()
+| Test ID | Test Requirement (Equivalence Class Description)         | JUnit Test Case Name                        | Expected Outcome | Actual Result |
+| ------- | -------------------------------------------------------- | ------------------------------------------- | ---------------- | ------------- |
+| ECT-C1  | Cost = -5.00 → Invalid class (< 0)                       | `addSubscription_NegativeCost_ReturnsFalse` | Rejected         | ✅ As Expected |
+| ECT-C2  | Cost = 0.00 → Valid class (= 0, free subscription)       | `addSubscription_ValidCost_ReturnsTrue`     | Accepted         | ✅ As Expected |
+| ECT-C3  | Cost = 10.99 → Valid class (> 0, standard pricing)       | `addSubscription_ValidCost_ReturnsTrue`     | Accepted         | ✅ As Expected |
+| ECT-C4  | Cost = 9999.99 → Valid class (high value, within limits) | `addSubscription_ValidHighCost_ReturnsTrue` | Accepted         | ✅ As Expected |
+Classes: Valid ≥ 0 (including free) | Invalid < 0
+
+Name Field Testing
+**Target Methods**: db_module.addSubscription(), db_module.updateSubscription(), subscriptions_module.addSubscription(), subscriptions_module.updateSubscription(), UIModule.handleAddSubscription(), UIModule.handleUpdateSubscription()
+
+| Test ID | Test Requirement (Equivalence Class Description)         | JUnit Test Case Name                     | Expected Outcome | Actual Result |
+| ------- | -------------------------------------------------------- | ---------------------------------------- | ---------------- | ------------- |
+| ECT-N1  | Name = "" → Invalid class (empty string)                 | `addSubscription_EmptyName_ReturnsFalse` | Rejected         | ✅ As Expected |
+| ECT-N2  | Name = "A" → Valid class (1 character, minimum valid)    | `addSubscription_SingleChar_ReturnsTrue` | Accepted         | ✅ As Expected |
+| ECT-N3  | Name = "Netflix" → Valid class (normal service name)     | `addSubscription_ValidName_ReturnsTrue`  | Accepted         | ✅ As Expected |
+| ECT-N4  | Name = 101-char → Invalid class (exceeds maximum length) | `addSubscription_LongName_ReturnsFalse`  | Rejected         | ✅ As Expected |
+
+Classes: Valid 1–100 characters | Invalid empty or > 100 characters
+
+
+
+Cycle Type Testing
+**Target Methods**: db_module.addSubscription(), db_module.updateSubscription(), subscriptions_module.addSubscription(), subscriptions_module.updateSubscription(), UIModule.handleAddSubscription(), UIModule.handleUpdateSubscription()
+| Test ID | Test Requirement (Equivalence Class Description)             | JUnit Test Case Name                        | Expected Outcome | Actual Result |
+| ------- | ------------------------------------------------------------ | ------------------------------------------- | ---------------- | ------------- |
+| ECT-CT1 | CycleType = "monthly" → Valid class (standard billing cycle) | `addSubscription_ValidCycle_ReturnsTrue`    | Accepted         | ✅ As Expected |
+| ECT-CT2 | CycleType = "yearly" → Valid class (annual billing cycle)    | `addSubscription_ValidCycle_ReturnsTrue`    | Accepted         | ✅ As Expected |
+| ECT-CT3 | CycleType = "one-time" → Valid class (single payment)        | `addSubscription_ValidOneTime_ReturnsTrue`  | Accepted         | ✅ As Expected |
+| ECT-CT4 | CycleType = "weekly" → Invalid class (unsupported cycle)     | `addSubscription_InvalidCycle_ReturnsFalse` | Rejected         | ✅ As Expected |
+| ECT-CT5 | CycleType = "" → Invalid class (empty cycle type)            | `addSubscription_EmptyCycle_ReturnsFalse`   | Rejected         | ✅ As Expected |
+
+
+#### User Authentication Testing Summary
+
+Username Field Testing
+**Target Methods:** db_module.isUserValid(String username, String password), subscriptions_module.isUserValid(User user), UIModule.handleLogin(String username, String password)
+| Test ID | Test Requirement (Equivalence Class Description)               | JUnit Test Case Name                       | Expected Outcome | Actual Result |
+| ------- | -------------------------------------------------------------- | ------------------------------------------ | ---------------- | ------------- |
+| ECT-U1  | Username = "" → Invalid class (empty username)                 | `isUserValid_EmptyUsername_ReturnsFalse`   | Rejected (false) | ✅ As Expected |
+| ECT-U2  | Username = "testuser" → Valid class (existing user)            | `isUserValid_ValidCredentials_ReturnsTrue` | Accepted (true)  | ✅ As Expected |
+| ECT-U3  | Username = "nonexistent" → Invalid class (user doesn't exist)  | `isUserValid_NonExistentUser_ReturnsFalse` | Rejected (false) | ✅ As Expected |
+| ECT-U4  | Username = null → Invalid class (null username)                | `isUserValid_NullUsername_ReturnsFalse`    | Rejected (false) | ✅ As Expected |
+| ECT-U5  | Username = "user with spaces" → Invalid class (invalid format) | `isUserValid_InvalidFormat_ReturnsFalse`   | Rejected (false) | ✅ As Expected |
+
+Classes: Valid existing username | Invalid (empty/null/non-existing)
+
+
+
+Password Field Testing
+Target Methods: db_module.isUserValid(String username, String password), subscriptions_module.isUserValid(User user), UIModule.handleLogin(String username, String password)
+
+|Test ID|Test Requirement (Equivalence Class Description)|JUnit Test Case Name|Expected Outcome|Actual Result|
+|---|---|---|---|---|
+|ECT-P1|Password = "" → Invalid class (empty password)|`isUserValid_EmptyPassword_ReturnsFalse`|Rejected (false)|✅ As Expected|
+|ECT-P2|Password = "password123" → Valid class (correct password)|`isUserValid_ValidCredentials_ReturnsTrue`|Accepted (true)|✅ As Expected|
+|ECT-P3|Password = "wrongpassword" → Invalid class (incorrect password)|`isUserValid_WrongPassword_ReturnsFalse`|Rejected (false)|✅ As Expected|
+|ECT-P4|Password = null → Invalid class (null password)|`isUserValid_NullPassword_ReturnsFalse`|Rejected (false)|✅ As Expected|
+|ECT-P5|Password = "short" → Invalid class (incorrect password)|`isUserValid_ShortPassword_ReturnsFalse`|Rejected (false)|✅ As Expected|
+
+Classes: Valid correct password | Invalid (empty/null/incorrect)
+
+Combined Authentication Testing
+Target Methods: db_module.isUserValid(String username, String password), subscriptions_module.isUserValid(User user), UIModule.handleLogin(String username, String password)
+
+
+| Test ID | Test Requirement (Equivalence Class Description)                              | JUnit Test Case Name                       | Expected Outcome | Actual Result |
+| ------- | ----------------------------------------------------------------------------- | ------------------------------------------ | ---------------- | ------------- |
+| ECT-A1  | Username="testuser", Password="password123" → Valid class (both correct)      | `isUserValid_ValidCredentials_ReturnsTrue` | Accepted (true)  | ✅ As Expected |
+| ECT-A2  | Username="testuser", Password="wrongpass" → Invalid class (wrong password)    | `isUserValid_WrongPassword_ReturnsFalse`   | Rejected (false) | ✅ As Expected |
+| ECT-A3  | Username="wronguser", Password="password123" → Invalid class (wrong username) | `isUserValid_WrongUsername_ReturnsFalse`   | Rejected (false) | ✅ As Expected |
+| ECT-A4  | Username="", Password="password123" → Invalid class (empty username)          | `isUserValid_EmptyUsername_ReturnsFalse`   | Rejected (false) | ✅ As Expected |
+| ECT-A5  | Username="testuser", Password="" → Invalid class (empty password)             | `isUserValid_EmptyPassword_ReturnsFalse`   | Rejected (false) | ✅ As Expected |
+| ECT-A6  | Username="", Password="" → Invalid class (both empty)                         | `isUserValid_BothEmpty_ReturnsFalse`       | Rejected (false) | ✅ As Expected |
+| ECT-A7  | Username=null, Password=null → Invalid class (both null)                      | `isUserValid_BothNull_ReturnsFalse`        | Rejected (false) | ✅ As Expected |
+
+Classes: Valid (both username and password match predefined record) | Invalid (any combination where username doesn't exist, password is wrong, or either field is empty/null)
 
 
 
