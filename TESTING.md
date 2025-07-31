@@ -458,6 +458,11 @@ This routine first checks that the requested subscription exists and is owned by
 | **C₁** | `subscriptionExists(subId)` | row with `subId` is present in DB |
 | **C₂** | `isOwner(userId, subId)`    | row belongs to calling user       |
 
+| ID     | Action stub (system response)                                      |
+| ------ | ------------------------------------------------------------------ |
+| **A₁** | **Reject** – return `false`                                        |
+| **A₂** | **Accept** – call `db.deleteSubscription()` and return its Boolean |
+
 
 #### 4.3.2.2 Full Decision Table (4 raw rules)
 
@@ -490,6 +495,26 @@ Because rule R4 trigger the same action as R1, they are merged, leaving the mini
 
 
 **Coverage Claim** – The three test cases satisfy **Each-Rule** and **Each-Action** coverage; they also achieve **pair-wise (2-way) combination** because any two conditions toggle across the set.
+
+#### 4.3.3 Decision Table Summary Tables
+
+#### addSubscription
+
+| Path ID | Test Requirement (Rule / Scenario)             | JUnit Test Case Name                          | Expected Outcome                  | Actual Result\* |
+| ------- | ---------------------------------------------- | --------------------------------------------- | --------------------------------- | --------------- |
+| **R1**  | Reject invalid **name** (`C₁ = F`)             | `addSubscription_EmptyName_ReturnsFalse()`    | returns `false`; no DB insert     | ✅ As Expected   |
+| **R2**  | Reject invalid **cost** (`C₂ = F`)             | `addSubscription_NegativeCost_ReturnsFalse()` | returns `false`; no DB insert     | ✅ As Expected   |
+| **R3**  | Reject invalid **cycle type** (`C₃ = F`)       | `addSubscription_InvalidCycle_ReturnsFalse()` | returns `false`; no DB insert     | ✅ As Expected   |
+| **R4**  | Accept when all predicates true → row inserted | `addSubscription_ValidSubscription_True()`    | returns `true`; row present in DB | ✅ As Expected   |
+
+#### handleDeleteSubscription
+
+| Path ID | Test Requirement (Rule / Scenario)                       | JUnit / UI Test Case Name                                     | Expected Outcome              | Actual Result\* |
+| ------- | -------------------------------------------------------- | ------------------------------------------------------------- | ----------------------------- | --------------- |
+| **R1**  | Row **does not exist** (`C₁ = F`)                        | `UITest.testDeleteSubscription_NonExistentSubscription_False` | returns `false`; DB unchanged | ✅ As Expected   |
+| **R2**  | Row exists but **caller not owner** (`C₁ = T`, `C₂ = F`) | `UITest.testDeleteSubscription_NotOwnedByUser_False`          | returns `false`; row remains  | ✅ As Expected   |
+| **R3**  | Row exists **and** caller is owner (`C₁ = T`, `C₂ = T`)  | `UITest.testDeleteSubscription_ValidDeletion_True`            | returns `true`; row removed   | ✅ As Expected   |
+
 
 ---
 
