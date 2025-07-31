@@ -10,10 +10,9 @@ This document describes the systematic testing plan for NextPay, covering unit t
 
 ## 2. Specification Based Testing
 
----
-Here’s the full Path Testing section in Markdown format with the improved Mermaid graph and test case table, ready for your report:
 
-⸻
+
+
 
 
 ## 2.1 Path Testing
@@ -26,9 +25,7 @@ Here’s the full Path Testing section in Markdown format with the improved Merm
 
 ---
 
-Our unit testing strategy focuses on three core MVPs using control-flow analysis and prime path testing. We systematically test `db_module.addSubscription()` for input validation, `db_module.exportSubscriptions()` for CSV generation, and `db_module.deleteSubscription()` for database operations. Each method uses Mermaid flowcharts to identify prime paths, validated with JUnit test cases covering success and failure scenarios through path testing and data-flow analysis.
 
-### MVP 1: `db_module.addSubscription(Subscription s)`
 
 ```mermaid
 flowchart TD
@@ -92,7 +89,7 @@ flowchart TD
 
 ---
 
-### Definitions and Uses for `updateSubscription(Subscription s)`
+### MVP 1: Definitions and Uses for `updateSubscription(Subscription s)`
 
 ```mermaid
 flowchart TD
@@ -126,12 +123,11 @@ flowchart TD
   N12 --> N18 --> N17 --> N19
   N13 --> N18
   N14 --> N18
-
 ```
 
 ---
 
-###  DU Paths: Definition–Use Chains
+### 📌 DU Paths: Definition–Use Chains
 
 | ID   | DU Path          | Description                            |
 |------|------------------|----------------------------------------|
@@ -142,7 +138,7 @@ flowchart TD
 
 ---
 
-###  Actual JUnit Test Cases for Data‑Flow
+### ✅ Actual JUnit Test Cases for Data‑Flow
 
 | ID   | DU Path(s)      | Description              | Test Method Name                                          | Expected Result             |
 |------|------------------|--------------------------|-----------------------------------------------------------|-----------------------------|
@@ -152,80 +148,14 @@ flowchart TD
 
 ---
 
-  Start --> Delete[Execute DELETE WHERE SubscriptionID=subId]
-  Delete --> ReturnTrue[return true]
-  ReturnTrue --> End
-```
+### ✅ Lecture Alignment
 
+This implementation follows **ENSE 375 lecture slides** on data‑flow coverage:
+- A single method is selected for detailed analysis.
+- Definitions and uses of key variables are tracked through the control flow.
+- Definition-use paths (DU pairs) are explicitly listed.
+- Each DU is validated with actual unit test coverage where possible.
 
-**Prime Paths**
-- **P1**: Start → Delete → ReturnTrue → End
-
-**Test Cases**
-
-| ID  | Path | Description                                      | Source Tests                                                                                                                                                                | Expected                                              |
-|-----|------|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| TC6 | P1   | Direct delete on existing ID                     | `db_moduleTest.deleteSubscription_ValidId_True`                                                                                                                            | returns true; row removed                             |
-| TC7 | P1   | Direct delete on non‑existent ID                 | `db_moduleTest.deleteSubscription_NonExistentId_ReturnsFalse` *(note: test method name)*                                                                                   | returns true/false per implementation; row unaffected |
-| TC8 | P1   | UI‑level delete with ownership and non‑ownership | `UITest.testDeleteSubscription_ValidDeletion_True`<br>`UITest.testDeleteSubscription_NonExistentSubscription_False`<br>`UITest.testDeleteSubscription_NotOwnedByUser_False` | UI returns correct boolean and DB state               |
-
----
-
-### 2.1 Path Testing
-
-* **Target**: `SubscriptionModule.addSubscription(Subscription s)`
-  * Paths:
-    * Valid input → subscription saved (happy path)
-    * Null/empty name → `IllegalArgumentException`
-    * Negative cost → validation error
-
-* **Target**: `SubscriptionModule.removeSubscription(id)`
-  * Paths:
-    * Existing ID → removed successfully
-    * Nonexistent ID → returns `false`
-
-### 2.2 Data-Flow Testing 
-
-To demonstrate **All-Uses** coverage, we enumerate every definition (def) and use (use) of our key variables in `db_module.addSubscription(Subscription s)` (and similarly for the other core methods), map out all def→use paths, and tie each path back to JUnit tests.
-
-#### 2.2.1 Defs & Uses for `addSubscription()`
-```text
-Variable: name
-  defs: line 12 (`String name = s.getSubscriptionsName();`)
-  uses:
-    - line 15: predicate-use (`if (name == null || name.trim().isEmpty())`)
-    - line 20: computation-use (`pstmt.setString(2, name);`)
-
-Variable: cost
-  defs: line 13 (`double cost = s.getCost();`)
-  uses:
-    - line 16: predicate-use (`if (cost < 0)`)
-    - line 21: computation-use (`pstmt.setDouble(3, cost);`)
-
-Variable: date
-  defs: line 14 (`LocalDate date = s.getBillingCycleDate();`)
-  uses:
-    - line 17: predicate-use (`if (date.isBefore(LocalDate.now()))`)
-    - line 22: computation-use (`pstmt.setString(5, date.toString());`)
-````
-
-#### 2.2.2 DU-Path Mapping & Coverage
-
-| DU ID | Definition Site | Use Site                   | Test Method                                   |
-| ----- | --------------- | -------------------------- | --------------------------------------------- |
-| DU1   | L12 (name def)  | L15 (name predicate-use)   | `addSubscription_EmptyName_ReturnsFalse()`    |
-| DU2   | L12             | L20 (name computation-use) | `addSubscription_ValidSubscription_True()`    |
-| DU3   | L13 (cost def)  | L16 (cost predicate-use)   | `addSubscription_NegativeCost_ReturnsFalse()` |
-| DU4   | L13             | L21 (cost computation-use) | `addSubscription_ValidSubscription_True()`    |
-| DU5   | L14 (date def)  | L17 (date predicate-use)   | `addSubscription_PastDate_ReturnsFalse()`     |
-| DU6   | L14             | L22 (date computation-use) | `addSubscription_ValidSubscription_True()`    |
-
-* **All-Defs**: each def (DU1, DU3, DU5) reaches at least one use.
-* **All-P-Uses vs. All-C-Uses**: both predicate-uses (DU1, DU3, DU5) and computation-uses (DU2, DU4, DU6) are covered.
-* **All-DU-Paths**: both the “fail fast” and “happy” paths for each variable are exercised.
-
-
----
 
 ## 3. Integration Testing
 Integration testing validates the interaction between our three core modules (UI, Subscriptions, and Database) through end-to-end CLI workflows. We test complete user scenarios spanning multiple modules, ensuring data flows correctly from user input through business logic to database persistence. Our approach uses sequential operations (add→view→delete) to validate that changes in one module are correctly reflected in dependent modules, ensuring the application functions as a cohesive system.
