@@ -266,6 +266,39 @@ The CLI design minimizes setup overhead, improves development speed, and makes t
 
 While the lack of a graphical user interface is a limitation, the focus on correctness, functionality, and systematic testing fully satisfies the course requirements.
 
+
+#### 3.3.6  Module & Data Diagrams
+This section visualizes our NextPay system architecture through entity-relationship diagrams and module flow charts. The ERD shows the simple USER-SUBSCRIPTION relationship with key attributes, while the flow diagram illustrates data movement through our three-layer architecture from UI to database.
+
+##### ERD & Flow Diagrams
+
+```mermaid
+erDiagram
+  USER ||--o{ SUBSCRIPTION : owns
+  SUBSCRIPTION {
+    int id PK
+    string name
+    double cost
+    boolean recurring
+    string cycleType
+    date nextBilling
+  }
+```
+
+```mermaid
+flowchart LR
+  UIModule --> SubMod[subscriptions_module]
+  SubMod --> DBMod[db_module]
+  DBMod --> SQLite[(nextpay.db)]
+```
+
+---
+
+
+
+
+
+
 #### Final Considerations Comparison Table
 
 | Criterion                        | Solution 1 (Web App)                                                  | Solution 2 (Mobile App)                                              | Final Solution (CLI App)                                                  |
