@@ -428,8 +428,8 @@ Target Methods: db_module.isUserValid(String username, String password), subscri
 ### Equivilance Class Testing Summary Table 
 #### Add Subscription Summary
 
-Cost Field Testing
-**Target Methods**: db_module.addSubscription(), db_module.updateSubscription(), subscriptions_module.addSubscription(), subscriptions_module.updateSubscription(), UIModule.handleAddSubscription(), UIModule.handleUpdateSubscription()
+Cost Field Testing Summary<br>
+**Target Methods**: `db_module.addSubscription()`, `db_module.updateSubscription()`, `subscriptions_module.addSubscription()`, `subscriptions_module.updateSubscription()`, `UIModule.handleAddSubscription()`, `UIModule.handleUpdateSubscription()`
 | Test ID | Test Requirement (Equivalence Class Description)         | JUnit Test Case Name                        | Expected Outcome | Actual Result |
 | ------- | -------------------------------------------------------- | ------------------------------------------- | ---------------- | ------------- |
 | ECT-C1  | Cost = -5.00 → Invalid class (< 0)                       | `addSubscription_NegativeCost_ReturnsFalse` | Rejected         | ✅ As Expected |
@@ -438,8 +438,8 @@ Cost Field Testing
 | ECT-C4  | Cost = 9999.99 → Valid class (high value, within limits) | `addSubscription_ValidHighCost_ReturnsTrue` | Accepted         | ✅ As Expected |
 Classes: Valid ≥ 0 (including free) | Invalid < 0
 
-Name Field Testing
-**Target Methods**: db_module.addSubscription(), db_module.updateSubscription(), subscriptions_module.addSubscription(), subscriptions_module.updateSubscription(), UIModule.handleAddSubscription(), UIModule.handleUpdateSubscription()
+Name Field Testing Summary<br>
+**Target Methods**: `db_module.addSubscription()`, `db_module.updateSubscription()`, `subscriptions_module.addSubscription()`, `subscriptions_module.updateSubscription()`, `UIModule.handleAddSubscription()`, `UIModule.handleUpdateSubscription()`
 
 | Test ID | Test Requirement (Equivalence Class Description)         | JUnit Test Case Name                     | Expected Outcome | Actual Result |
 | ------- | -------------------------------------------------------- | ---------------------------------------- | ---------------- | ------------- |
@@ -452,8 +452,8 @@ Classes: Valid 1–100 characters | Invalid empty or > 100 characters
 
 
 
-Cycle Type Testing
-**Target Methods**: db_module.addSubscription(), db_module.updateSubscription(), subscriptions_module.addSubscription(), subscriptions_module.updateSubscription(), UIModule.handleAddSubscription(), UIModule.handleUpdateSubscription()
+Cycle Type Testing Summary<br>
+**Target Methods**: `db_module.addSubscription()`, `db_module.updateSubscription()`, `subscriptions_module.addSubscription()`, `subscriptions_module.updateSubscription()`, `UIModule.handleAddSubscription()`, `UIModule.handleUpdateSubscription()`
 | Test ID | Test Requirement (Equivalence Class Description)             | JUnit Test Case Name                        | Expected Outcome | Actual Result |
 | ------- | ------------------------------------------------------------ | ------------------------------------------- | ---------------- | ------------- |
 | ECT-CT1 | CycleType = "monthly" → Valid class (standard billing cycle) | `addSubscription_ValidCycle_ReturnsTrue`    | Accepted         | ✅ As Expected |
@@ -465,8 +465,8 @@ Cycle Type Testing
 
 #### User Authentication Testing Summary
 
-Username Field Testing
-**Target Methods:** db_module.isUserValid(String username, String password), subscriptions_module.isUserValid(User user), UIModule.handleLogin(String username, String password)
+Username Field Testing<br>
+**Target Methods:** `db_module.isUserValid(String username, String password)`, `subscriptions_module.isUserValid(User user)`, `UIModule.handleLogin(String username, String password)`
 | Test ID | Test Requirement (Equivalence Class Description)               | JUnit Test Case Name                       | Expected Outcome | Actual Result |
 | ------- | -------------------------------------------------------------- | ------------------------------------------ | ---------------- | ------------- |
 | ECT-U1  | Username = "" → Invalid class (empty username)                 | `isUserValid_EmptyUsername_ReturnsFalse`   | Rejected (false) | ✅ As Expected |
@@ -479,8 +479,8 @@ Classes: Valid existing username | Invalid (empty/null/non-existing)
 
 
 
-Password Field Testing
-Target Methods: db_module.isUserValid(String username, String password), subscriptions_module.isUserValid(User user), UIModule.handleLogin(String username, String password)
+Password Field Testing Summary <br>
+Target Methods: `db_module.isUserValid(String username, String password)`, `subscriptions_module.isUserValid(User user)`, `UIModule.handleLogin(String username, String password)`
 
 |Test ID|Test Requirement (Equivalence Class Description)|JUnit Test Case Name|Expected Outcome|Actual Result|
 |---|---|---|---|---|
@@ -492,8 +492,8 @@ Target Methods: db_module.isUserValid(String username, String password), subscri
 
 Classes: Valid correct password | Invalid (empty/null/incorrect)
 
-Combined Authentication Testing
-Target Methods: db_module.isUserValid(String username, String password), subscriptions_module.isUserValid(User user), UIModule.handleLogin(String username, String password)
+Combined Authentication Testing<br>
+Target Methods: `db_module.isUserValid(String username, String password)`, `subscriptions_module.isUserValid(User user)`, `UIModule.handleLogin(String username, String password)`
 
 
 | Test ID | Test Requirement (Equivalence Class Description)                              | JUnit Test Case Name                       | Expected Outcome | Actual Result |
