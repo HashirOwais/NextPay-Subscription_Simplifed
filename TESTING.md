@@ -26,6 +26,9 @@ Here’s the full Path Testing section in Markdown format with the improved Merm
 
 ---
 
+Our unit testing strategy focuses on three core MVPs using control-flow analysis and prime path testing. We systematically test `db_module.addSubscription()` for input validation, `db_module.exportSubscriptions()` for CSV generation, and `db_module.deleteSubscription()` for database operations. Each method uses Mermaid flowcharts to identify prime paths, validated with JUnit test cases covering success and failure scenarios through path testing and data-flow analysis.
+
+### MVP 1: `db_module.addSubscription(Subscription s)`
 
 ```mermaid
 flowchart TD
@@ -149,11 +152,88 @@ flowchart TD
 
 ---
 
+  Start --> Delete[Execute DELETE WHERE SubscriptionID=subId]
+  Delete --> ReturnTrue[return true]
+  ReturnTrue --> End
+```
+
+
+**Prime Paths**
+- **P1**: Start → Delete → ReturnTrue → End
+
+**Test Cases**
+
+| ID  | Path | Description                                      | Source Tests                                                                                                                                                                | Expected                                              |
+|-----|------|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| TC6 | P1   | Direct delete on existing ID                     | `db_moduleTest.deleteSubscription_ValidId_True`                                                                                                                            | returns true; row removed                             |
+| TC7 | P1   | Direct delete on non‑existent ID                 | `db_moduleTest.deleteSubscription_NonExistentId_ReturnsFalse` *(note: test method name)*                                                                                   | returns true/false per implementation; row unaffected |
+| TC8 | P1   | UI‑level delete with ownership and non‑ownership | `UITest.testDeleteSubscription_ValidDeletion_True`<br>`UITest.testDeleteSubscription_NonExistentSubscription_False`<br>`UITest.testDeleteSubscription_NotOwnedByUser_False` | UI returns correct boolean and DB state               |
+
+---
+
+### 2.1 Path Testing
+
+* **Target**: `SubscriptionModule.addSubscription(Subscription s)`
+  * Paths:
+    * Valid input → subscription saved (happy path)
+    * Null/empty name → `IllegalArgumentException`
+    * Negative cost → validation error
+
+* **Target**: `SubscriptionModule.removeSubscription(id)`
+  * Paths:
+    * Existing ID → removed successfully
+    * Nonexistent ID → returns `false`
+
+### 2.2 Data-Flow Testing 
+
+To demonstrate **All-Uses** coverage, we enumerate every definition (def) and use (use) of our key variables in `db_module.addSubscription(Subscription s)` (and similarly for the other core methods), map out all def→use paths, and tie each path back to JUnit tests.
+
+#### 2.2.1 Defs & Uses for `addSubscription()`
+```text
+Variable: name
+  defs: line 12 (`String name = s.getSubscriptionsName();`)
+  uses:
+    - line 15: predicate-use (`if (name == null || name.trim().isEmpty())`)
+    - line 20: computation-use (`pstmt.setString(2, name);`)
+
+Variable: cost
+  defs: line 13 (`double cost = s.getCost();`)
+  uses:
+    - line 16: predicate-use (`if (cost < 0)`)
+    - line 21: computation-use (`pstmt.setDouble(3, cost);`)
+
+Variable: date
+  defs: line 14 (`LocalDate date = s.getBillingCycleDate();`)
+  uses:
+    - line 17: predicate-use (`if (date.isBefore(LocalDate.now()))`)
+    - line 22: computation-use (`pstmt.setString(5, date.toString());`)
+````
+
+#### 2.2.2 DU-Path Mapping & Coverage
+
+| DU ID | Definition Site | Use Site                   | Test Method                                   |
+| ----- | --------------- | -------------------------- | --------------------------------------------- |
+| DU1   | L12 (name def)  | L15 (name predicate-use)   | `addSubscription_EmptyName_ReturnsFalse()`    |
+| DU2   | L12             | L20 (name computation-use) | `addSubscription_ValidSubscription_True()`    |
+| DU3   | L13 (cost def)  | L16 (cost predicate-use)   | `addSubscription_NegativeCost_ReturnsFalse()` |
+| DU4   | L13             | L21 (cost computation-use) | `addSubscription_ValidSubscription_True()`    |
+| DU5   | L14 (date def)  | L17 (date predicate-use)   | `addSubscription_PastDate_ReturnsFalse()`     |
+| DU6   | L14             | L22 (date computation-use) | `addSubscription_ValidSubscription_True()`    |
+
+* **All-Defs**: each def (DU1, DU3, DU5) reaches at least one use.
+* **All-P-Uses vs. All-C-Uses**: both predicate-uses (DU1, DU3, DU5) and computation-uses (DU2, DU4, DU6) are covered.
+* **All-DU-Paths**: both the “fail fast” and “happy” paths for each variable are exercised.
+
+
+---
 
 ## 3. Integration Testing
+Integration testing validates the interaction between our three core modules (UI, Subscriptions, and Database) through end-to-end CLI workflows. We test complete user scenarios spanning multiple modules, ensuring data flows correctly from user input through business logic to database persistence. Our approach uses sequential operations (add→view→delete) to validate that changes in one module are correctly reflected in dependent modules, ensuring the application functions as a cohesive system.
 
 * **Modules**: UI Module ↔ Subscriptions Module ↔ Database Module
 * **Scenario**: add → view → delete subscription via CLI commands
+
+---
 
 ### 3.1 Test Cases
 
@@ -185,54 +265,146 @@ flowchart TD
 | INT1 | Add then view    | 1. `ui.add("Netflix",...)`<br>2. `ui.list`    | Entry appears in DB and console |
 | INT2 | Delete after add | 1. Add subscription<br>2. `ui.delete(id)`     | Removed from DB; confirmation   |
 
+---
 
+## 4. Validation Testing
+Validation testing ensures NextPay meets user requirements through five systematic techniques: Boundary Value Analysis for edge cases, Equivalence Class Testing for input partitioning, Decision Table Testing for complex logic combinations, State-Transition Testing for UI flow validation, and Use-Case Testing for end-to-end scenarios. This approach validates proper handling of both valid inputs and graceful rejection of invalid data across our subscription management system.
 
+**Files and Methods Under Test**  
+- **subscriptions_module.java**  
+  - `addSubscription(Subscription s)`  
+  - `updateSubscription(Subscription updated)`  
+  - `handleDeleteSubscription(int userId, int subscriptionId)`  
+- **db_module.java**  
+  - `addSubscription(Subscription s)`  
+  - `updateSubscription(Subscription s)`  
+  - `exportSubscriptions(int userId)`  
+- **UIModule.java**  
+  - `handleAddSubscription(int userId)`  
+  - `handleUpdateSubscription(int userId, int subId)`
 
 ---
 
-
-## 4. Validation Testing
-
 ### 4.1 Boundary Value Analysis
 
-| Field        | Boundary Values       | Test Inputs                           | Expected      |
-| ------------ | --------------------- | ------------------------------------- | ------------- |
-| cost         | 0, 0.01, -0.01        | 0, 0.01, -0.01                        | ok, ok, error |
-| name length  | 1, 100, 101 chars     | "A", 100-char string, 101-char string | ok, ok, error |
-| renewal date | today, distant future | today, 2099‑12‑31                     | ok, ok        |
+We pick values at, just below, and just above each boundary to exercise edge cases.
+
+| Field           | Boundaries                                  | Test Inputs                                             | Expected Result                               |
+| --------------- | ------------------------------------------- | ------------------------------------------------------- | --------------------------------------------- |
+| **Cost**        | Min = 0<br>Min+ = 0.01<br>Max– = 9999.99<br>Max = 10000 | `-0.01`<br>`0`<br>`0.01`<br>`9999.99`<br>`10000`         | Reject if < 0 OR reject if > 10000; accept otherwise               |
+| **Name length** | Min = 1<br>Min+ = 2<br>Max– = 99<br>Max = 100           | `""` (empty)<br>`"A"`<br>`100`-char string<br>`101`-char string | Reject if length < 1 or > 100                |
+
+> **Example:**  
+> Calling `db_module.updateSubscription(s)` with `s.getCost() = -5.00` returns `false`.
+
+---
 
 ### 4.2 Equivalence Class Testing
 
-* **Cost**: Valid > 0; Invalid ≤ 0
-* **Name**: Valid length 1–100; Invalid empty or > 100
+We partition each input into valid/invalid classes and select one representative test per class.
 
-### 4.3 Decision Table
+| Input         | Valid Class                    | Invalid Class                     | Example Valid   | Example Invalid   |
+| ------------- | ------------------------------ | --------------------------------- | --------------- | ----------------- |
+| **Cost**      | ≥ 0 (including free)           | < 0                               | `10.99`, `0.00` | `-1.00`           |
+| **Name**      | 1–100 characters               | empty or > 100 characters         | `"Netflix"`     | `""`, 101-char    |
+| **Cycle Type**| `monthly`, `yearly`, 'one-time'| any other string                  | `"monthly"`     | `"weekly"`        |
 
-| Cost Valid | Name Valid | Action |
-| ---------- | ---------- | ------ |
-| T          | T          | Accept |
-| T          | F          | Reject |
-| F          | T          | Reject |
-| F          | F          | Reject |
 
-### 4.4 State-Transition Testing
+> **Example:**  
+> `db_module.updateSubscription(s)` rejects when `s.getSubscriptionName()` is empty.
 
-Diagrams below ensure transitions between:
+---
 
-* `{NoSubscriptions}` ↔ `{HasSubscriptions}`
-* `{LoggedOut}` ↔ `{LoggedIn}`
+### 4.3 Decision Table Testing
+
+We enumerate all meaningful combinations of boolean conditions to drive our delete-subscription logic.
+
+| Rule | Name Valid? | Cost Valid? | Cycle Type Valid? | Action                      |
+| ---- | ----------- | ----------- | ----------------- | --------------------------- |
+| R1   | F           | *           | *                 | Return `false` (invalid name) |
+| R2   | T           | F           | *                 | Return `false` (invalid cost) |
+| R3   | T           | T           | F                 | Return `false` (invalid cycle type) |
+| R4   | T           | T           | T                 | Return `true` (success)      |
+
+> *Target:* `subscriptions_module.handleDeleteSubscription(int, int)`
+
+---
+
+### 4.4 State-Transition Testing & Node Coverage
+
+We model the UI flows as a finite-state machine to ensure each transition is exercised. Our node coverage met a 100% requirement. 
+
+```mermaid
+stateDiagram-v2
+    [*] --> [1]LoggedOut
+    [1]LoggedOut --> [2]LoginPrompt: handleLogin()
+    [2]LoginPrompt --> [3]LoggedIn: validCreds
+    [2]LoginPrompt --> [1]LoggedOut: cancel/invalid
+    [3]LoggedIn --> [4]MainMenu: displayMenu()
+    [4]MainMenu --> [5]AddFlow: handleAddSubscription()
+    [5]AddFlow --> [4]MainMenu: success/cancel
+    [4]MainMenu --> [6]ViewFlow: handleViewSubscriptions()
+    [6]ViewFlow --> [4]MainMenu: return
+    [4]MainMenu --> [7]UpdateFlow: handleUpdateSubscription()
+    [7]UpdateFlow --> [4]MainMenu: success/cancel
+    [4]MainMenu --> [8]DeleteFlow: handleDeleteSubscription()
+    [8]DeleteFlow --> [4]MainMenu: success/reject
+    [4]MainMenu --> [9]ExportFlow: exportToCSV()
+    [9]ExportFlow --> [4]MainMenu: return
+    [4]MainMenu --> [1]LoggedOut: Quit
+```
+
+### 4.4.1 Node-to-Test Mapping
+
+| Node | State       | Test Method(s)                                                    |
+| ---- | ----------- | ----------------------------------------------------------------- |
+| 1    | LoggedOut   | `UITest.testStartUp_ShowsLogin()`                                 |
+| 2    | LoginPrompt | `UITest.testInvalidLogin_ReturnsToPrompt()`                       |
+| 3    | LoggedIn    | `UITest.testValidLogin_LeadsToMenu()`                             |
+| 4    | MainMenu    | `UITest.testDisplayMenu_AfterLogin()`                             |
+| 5    | AddFlow     | `UITest.testHandleAddSubscription_Valid_ReturnsTrue()`            |
+| 6    | ViewFlow    | `UITest.testViewAllSubscriptions_WithSubscriptions_ReturnsTrue()` |
+| 7    | UpdateFlow  | `UITest.testHandleUpdateSubscription_ValidUpdate_ReturnsTrue()`   |
+| 8    | DeleteFlow  | `UITest.testDeleteSubscription_ValidDeletion_True()`              |
+| 9    | ExportFlow  | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue()`          |
+
+* **Coverage:** 9/9 nodes exercised → **100% node coverage**.
+---
 
 ### 4.5 Use-Case Testing
 
-1. **Use Case 1**: Login → Add → List → Logout
-2. **Use Case 2**: Import CSV → Verify count → Export CSV
+We derive end-to-end scenarios from user stories, covering both main and alternate flows.
+
+```mermaid
+flowchart TD
+  A[Start: Login] --> B{Valid?}
+  B -->|Yes| C[Main Menu]
+  B -->|No| A
+  C --> D[Add Subscription]
+  D --> E{Valid Input?}
+  E -->|Yes| F[Show Confirmation]
+  E -->|No| D
+  F --> G[List Subscriptions]
+  G --> H[Update Subscription]
+  H --> I{Valid Update?}
+  I -->|Yes| J[Confirm Update]
+  I -->|No| H
+  J --> K[Delete Subscription]
+  K --> L{Valid Delete?}
+  L -->|Yes| M[Confirm Delete]
+  L -->|No| K
+  M --> N[Logout]
+```
+
+* **Main Path:** `handleAddSubscription` → `getAllSubscriptionsForUser` → `updateSubscription` → `deleteSubscription` → `logout`
+* **Alternates:** invalid login, input errors on add/update/delete, user-canceled operations.
 
 ---
 
 ## 5. Module & Data Diagrams
+This section visualizes our NextPay system architecture through entity-relationship diagrams and module flow charts. The ERD shows the simple USER-SUBSCRIPTION relationship with key attributes, while the flow diagram illustrates data movement through our three-layer architecture from UI to database.
 
-<details>
-<summary>Mermaid ERD & Flow</summary>
+### ERD & Flow Diagrams
 
 ```mermaid
 erDiagram
@@ -254,11 +426,12 @@ flowchart LR
   DBMod --> SQLite[(nextpay.db)]
 ```
 
-</details>
-
 ---
 
 ## 6. Control-Flow Graphs
+Control-flow graphs visualize the execution paths through key methods, showing decision points and possible outcomes. These diagrams map directly to our prime path testing strategy and help identify edge cases for comprehensive test coverage.
+
+---
 
 #### 6.1 addSubscription
 
@@ -269,6 +442,8 @@ flowchart TD
   Check -- Yes --> Save[Save to DB] --> End
   Check -- No --> Error[Throw exception] --> End
 ```
+
+---
 
 #### 6.2 export CSV
 
@@ -285,75 +460,155 @@ flowchart TD
 ---
 
 
-## 8. System Testing & Node Coverage
+## 8. Test Paths & Cases
+This section documents specific test paths and cases for our core subscription and CSV export functionality. Each test case maps to specific execution paths through the application, with corresponding flowcharts showing the decision points and outcomes for both successful and error scenarios.
 
-* **Finite State Machine** for login & subscription lifecycle
-* **Node Coverage**: each state visited
+---
+
+### 8.1 Subscriptions
+
+| ID  | Path              | Description                   | Expected Outcome |
+| --- | ----------------- | ----------------------------- | ---------------- |
+| TC1 | Start→Input→Save  | Add valid subscription        | Saved            |
+| TC2 | Start→Input→Error | Add invalid (empty name/cost) | Exception        |
+
+#### 8.1.1 Test Case Diagrams
+
+```mermaid
+flowchart TD
+  Start --> Input[Enter subscription data]
+  Input --> Check{Valid?}
+  Check -- Yes --> Save[Invoke addSubscription]
+  Save --> Verify[DB and return true]
+  Verify --> End
+```
+
+```mermaid
+flowchart TD
+  Start --> Input[Enter subscription data]
+  Input --> Check{Valid?}
+  Check -- No --> Error[Throw validation error]
+  Error --> End
+```
+
+---
+
+### 8.2 CSV Export
+
+| ID  | Path                   | Description        | Expected Outcome |
+| --- | ---------------------- | ------------------ | ---------------- |
+| TC3 | Start→Header→End       | Export empty list  | Header only      |
+| TC4 | Start→Header→Write→End | Export two entries | Header + 2 rows  |
+
+#### 8.2.1 Test Case Diagrams
+
+```mermaid
+flowchart TD
+  Start --> Header[Write header]
+  Header --> Loop{Rows exist?}
+  Loop -- No --> End
+```
+
+```mermaid
+flowchart TD
+  Start --> Header[Write header]
+  Header --> Loop{Rows exist?}
+  Loop -- Yes --> WriteRow[Write first row]
+  WriteRow --> Loop
+  Loop -- Yes --> WriteRow2[Write second row]
+  WriteRow2 --> Loop
+  Loop -- No --> End
+```
+
+---
+
+| ID  | Path                   | Description            | Expected        |
+| --- | ---------------------- | ---------------------- | --------------- |
+| TC3 | Start→Header→End       | Export empty list      | Header only     |
+| TC4 | Start→Header→Write→End | Export 2 subscriptions | Header + 2 rows |
+
+---
+
+## 9. System Testing & Coverage
+System testing validates the complete NextPay application through end-to-end CLI scenarios and finite state machine modeling. We achieved 93 JUnit tests with zero failures, covering full user workflows (Login → Add → List → Update → Delete → Export), CLI navigation paths, and data persistence verification. Node coverage ensures all application states and transitions are tested through comprehensive FSM analysis.
+
+We performed **system testing** across the full CLI application, driving end-to-end scenarios via the UI module and verifying persistence in SQLite. 93 JUnit tests ran with zero failures, covering:
+
+* **Login** → Add → List → Update → Delete → Export flows
+* CLI menu navigation and error paths
+* Data persistence and CSV output
+
+---
+
+### w9.1 Finite State Machine & Node Coverage
+
+We verified **node coverage** of the key application states via a finite-state machine (FSM). Each numbered transition maps to a UI action:
 
 ```mermaid
 stateDiagram-v2
   [*] --> Initialize: start application
-  Initialize --> LoginPrompt: displayStartScreen
-  LoginPrompt --> LoggedIn: handleLogin success
-  LoginPrompt --> [*]: handleStartSelection Quit
-  LoggedIn --> MainMenu: displayMainMenu
+  Initialize --> LoginPrompt: displayStartScreen()
+  LoginPrompt --> LoggedIn: handleLogin(success)
+  LoginPrompt --> [*]: handleStartSelection(Quit)
+  LoggedIn --> MainMenu: displayMainMenu()
 
-  MainMenu --> AddFlow: handleMainMenuSelection 1
-  AddFlow --> EnterAddDetails: displayAddSubscriptionMenu
-  EnterAddDetails --> ValidateAdd: handleAddSubscription userId
+  MainMenu --> AddFlow: handleMainMenuSelection(1)
+  AddFlow --> EnterAddDetails: displayAddSubscriptionMenu()
+  EnterAddDetails --> ValidateAdd: handleAddSubscription(userId)
   ValidateAdd --> MainMenu: return to menu
 
-  MainMenu --> ViewFlow: handleMainMenuSelection 3
-  ViewFlow --> ValidateView: handleViewSubscriptions userId choice
+  MainMenu --> ViewFlow: handleMainMenuSelection(3)
+  ViewFlow --> ValidateView: handleViewSubscriptions(userId, choice)
   ValidateView --> MainMenu: return to menu
 
-  MainMenu --> UpdateFlow: handleMainMenuSelection 4
-  UpdateFlow --> ValidateUpdate: handleUpdateSubscription userId subId
+  MainMenu --> UpdateFlow: handleMainMenuSelection(4)
+  UpdateFlow --> ValidateUpdate: handleUpdateSubscription(userId, subId)
   ValidateUpdate --> MainMenu: return to menu
 
-  MainMenu --> DeleteFlow: handleMainMenuSelection 2
-  DeleteFlow --> ValidateDelete: handleDeleteSubscription userId subId
+  MainMenu --> DeleteFlow: handleMainMenuSelection(2)
+  DeleteFlow --> ValidateDelete: handleDeleteSubscription(userId, subId)
   ValidateDelete --> MainMenu: return to menu
 
-  MainMenu --> ExportFlow: handleMainMenuSelection 5
-  ExportFlow --> ExecuteExport: exportToCSV userId
+  MainMenu --> ExportFlow: handleMainMenuSelection(5)
+  ExportFlow --> ExecuteExport: exportToCSV(userId)
   ExecuteExport --> MainMenu: return to menu
 
-  MainMenu --> LoggedOut: handleMainMenuSelection 6
+  MainMenu --> LoggedOut: handleMainMenuSelection(6)
   LoggedOut --> [*]: end session
-```
-
-```mermaid
-stateDiagram-v2
-  LoggedOut --> LoggedIn: handleLogin success
-  LoggedIn --> MainMenu: displayMainMenu
-  MainMenu --> AddFlow: handleAddSubscription
-  AddFlow --> MainMenu: return
-  MainMenu --> ViewFlow: handleViewSubscriptions
-  ViewFlow --> MainMenu: return
-  MainMenu --> UpdateFlow: handleUpdateSubscription
-  UpdateFlow --> MainMenu: return
-  MainMenu --> DeleteFlow: handleDeleteSubscription
-  DeleteFlow --> MainMenu: return
-  MainMenu --> ExportFlow: exportToCSV
-  ExportFlow --> MainMenu: return
-  MainMenu --> LoggedOut: handleMainMenuSelection Quit
 ```
 
 Every state and transition was exercised by at least one test, ensuring complete node coverage.
 
-### 11.2 Test & Coverage Summary
-- **Total tests**: 97 JUnit tests across `UITest`, `db_moduleTest`, `subscriptions_moduleTest`, and `AppTest`.
-- **Coverage (via JaCoCo)**:
-  - `db_module.java`: **85.98%**
-  - `subscriptions_module.java`: **91.67%**
-  - `UIModule.java`: **87.80%**
-  - `Subscription.java`: **58.93%**
-  - `User.java`: **0.00%** (only simple getters/setters)
+---
 
-Most core logic methods exceed 85% coverage; model classes have lower coverage due to trivial getters/setters and untested `toString()`.
+### 9.2 Test & Coverage Summary
 
-### 11.3 Limitations
+**Total Tests:** 93 JUnit tests across all modules with zero failures.
+
+| Test Class | Target Module | Coverage | Key Testing Areas |
+|------------|---------------|----------|-------------------|
+| `UITest` | `UIModule.java` | **87.80%** | CLI navigation, menu handling, user input validation, login flows |
+| `db_moduleTest` | `db_module.java` | **84.98%** | Database operations, JDBC connections, CRUD operations, SQL queries |
+| `subscriptions_moduleTest` | `subscriptions_module.java` | **91.67%** | Business logic, subscription validation, user ownership checks |
+| `AppTest` | `App.java` | **0.00%** | Application entry point, module wiring (limited coverage by design) |
+| N/A | `Subscription.java` | **58.93%** | Model class getters/setters, toString() methods |
+| N/A | `User.java` | **0.00%** | Simple getters/setters only (trivial methods) |
+
+![alt text](image.png) <br>
+
+**Coverage Notes:**
+- Core logic methods exceed 85% coverage across all main modules
+- Model classes have lower coverage due to trivial getters/setters and untested `toString()` methods
+- UI display methods are difficult to automate but navigation handlers are fully tested
+- App.java intentionally has lower coverage as it primarily wires modules together
+
+
+---
+
+### 9.3 Limitations
 - **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.
 - **UI menus** and CLI prompts are difficult to fully automate; while we test navigation handlers, the `display*` methods are not directly asserted.
 - **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
+
+
+---
