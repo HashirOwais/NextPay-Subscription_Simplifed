@@ -202,6 +202,15 @@ flowchart TD
 | INT1 | Add then view    | 1. `ui.add("Netflix",...)`<br>2. `ui.list`    | Entry appears in DB and console |
 | INT2 | Delete after add | 1. Add subscription<br>2. `ui.delete(id)`     | Removed from DB; confirmation   |
 
+
+#### 3.1.2 Integration-Test Summary Table
+
+| Path ID   | Test Requirement (Scenario)                                                                     | Integration Test Case Name                  | Expected Outcome                                                                                      | **Actual Result**                               |
+| --------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| **INT-1** | **Add → View** – user adds “Netflix”, then lists subs → entry must appear in console **and** DB | `IntegrationTest_AddThenView_ReturnsTrue`   | • method chain returns `true` <br>• row printed to console <br>• row present in `Subscriptions` table | ✅ All three conditions observed during last run |
+| **INT-2** | **Delete after Add** – create sub, then delete → row must disappear from both console and DB    | `IntegrationTest_AddThenDelete_ReturnsTrue` | • method chain returns `true` <br>• “deleted” confirmation shown <br>• row no longer in DB            | ✅ Row removed; confirmation displayed           |
+
+
 ---
 
 ## 4. Validation Testing
