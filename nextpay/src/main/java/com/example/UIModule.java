@@ -135,7 +135,7 @@ public class UIModule {
                     System.out.print("Is recurring (true/false): ");
                     boolean isRecurring = Boolean.parseBoolean(scanner.nextLine());
                     
-                    System.out.print("Enter billing cycle type (monthly/yearly): ");
+                    System.out.print("Enter billing cycle type (monthly/yearly/one-time): ");
                     String cycleType = scanner.nextLine();
                     
                     System.out.print("Enter billing date (YYYY-MM-DD): ");

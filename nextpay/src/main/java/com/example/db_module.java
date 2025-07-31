@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -147,7 +148,9 @@ public class db_module {
     String sql = "INSERT INTO Subscriptions (SubscriptionsName, Cost, IsRecurring, BillingCycleType, BillingCycleDate, UserID) VALUES (?, ?, ?, ?, ?, ?)";
     String sqlLastId = "SELECT last_insert_rowid()";
 
-    if (s.getSubscriptionsName() == null || s.getSubscriptionsName().trim().isEmpty() || s.getCost() < 0) {
+    String[] validCycleTypes = {"monthly", "yearly", "one-time"};
+
+    if (s.getSubscriptionsName() == null || s.getSubscriptionsName().trim().isEmpty() || s.getSubscriptionsName().length() >= 100 || s.getCost() < 0 || s.getCost() > 10000 || s.getBillingCycleType() == null ||!Arrays.asList(validCycleTypes).contains(s.getBillingCycleType().toLowerCase())) {
         return false;
     }
    
