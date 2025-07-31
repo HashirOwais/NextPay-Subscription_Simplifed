@@ -288,8 +288,6 @@ We partition each input into valid/invalid classes and select one representative
 
 #### Name Field Testing:
 
-**Target Methods:** `db_module.addSubscription()`, `db_module.updateSubscription()`, `UIModule.handleAddSubscription()`, `UIModule.handleUpdateSubscription()`
-
 
 |Test Case|Input Value|Equivalence Class|Expected Result|Actual Result|
 |---|---|---|---|---|
@@ -301,7 +299,6 @@ We partition each input into valid/invalid classes and select one representative
 **Classes:** Valid 1–100 characters | Invalid empty or > 100 characters
 
 #### Cycle Type Testing:
-**Target Methods:** `db_module.addSubscription()`, `db_module.updateSubscription()`, `UIModule.handleAddSubscription()`, `UIModule.handleUpdateSubscription()`
 
 
 |Test Case|Input Value|Equivalence Class|Expected Result|Actual Result|
