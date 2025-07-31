@@ -629,9 +629,9 @@ flowchart TD
 ---
 
 ## 9. System Testing & Coverage
-System testing validates the complete NextPay application through end-to-end CLI scenarios and finite state machine modeling. We achieved 97 JUnit tests with zero failures, covering full user workflows (Login → Add → List → Update → Delete → Export), CLI navigation paths, and data persistence verification. Node coverage ensures all application states and transitions are tested through comprehensive FSM analysis.
+System testing validates the complete NextPay application through end-to-end CLI scenarios and finite state machine modeling. We achieved 93 JUnit tests with zero failures, covering full user workflows (Login → Add → List → Update → Delete → Export), CLI navigation paths, and data persistence verification. Node coverage ensures all application states and transitions are tested through comprehensive FSM analysis.
 
-We performed **system testing** across the full CLI application, driving end-to-end scenarios via the UI module and verifying persistence in SQLite. 97 JUnit tests ran with zero failures, covering:
+We performed **system testing** across the full CLI application, driving end-to-end scenarios via the UI module and verifying persistence in SQLite. 93 JUnit tests ran with zero failures, covering:
 
 * **Login** → Add → List → Update → Delete → Export flows
 * CLI menu navigation and error paths
@@ -686,12 +686,14 @@ Every state and transition was exercised by at least one test, ensuring complete
 
 | Test Class | Target Module | Coverage | Key Testing Areas |
 |------------|---------------|----------|-------------------|
-| `UITest` | `UIModule.java` | **89.02%** | CLI navigation, menu handling, user input validation, login flows |
-| `db_moduleTest` | `db_module.java` | **85.98%** | Database operations, JDBC connections, CRUD operations, SQL queries |
+| `UITest` | `UIModule.java` | **87.80%** | CLI navigation, menu handling, user input validation, login flows |
+| `db_moduleTest` | `db_module.java` | **84.98%** | Database operations, JDBC connections, CRUD operations, SQL queries |
 | `subscriptions_moduleTest` | `subscriptions_module.java` | **91.67%** | Business logic, subscription validation, user ownership checks |
-| `AppTest` | `App.java` | **58.93%** | Application entry point, module wiring (limited coverage by design) |
+| `AppTest` | `App.java` | **0.00%** | Application entry point, module wiring (limited coverage by design) |
 | N/A | `Subscription.java` | **58.93%** | Model class getters/setters, toString() methods |
 | N/A | `User.java` | **0.00%** | Simple getters/setters only (trivial methods) |
+
+![alt text](image.png) <br>
 
 **Coverage Notes:**
 - Core logic methods exceed 85% coverage across all main modules
