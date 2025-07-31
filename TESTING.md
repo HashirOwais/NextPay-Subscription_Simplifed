@@ -205,6 +205,8 @@ Validation testing ensures NextPay meets user requirements through five systemat
 - **UIModule.java**  
   - `handleAddSubscription(int userId)`  
   - `handleUpdateSubscription(int userId, int subId)`
+  - `handleMainMenuSelection(int choice)`
+  - `handleStartSelection(int choice)` 
 
 ---
 
