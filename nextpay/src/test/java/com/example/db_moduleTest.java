@@ -1,4 +1,5 @@
 package com.example;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -8,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
@@ -307,6 +310,34 @@ public class db_moduleTest {
         HashMap<String, List<Subscription>> summaryMap = db_module.getMonthlySubscriptionSummary(1);
         String summary = summaryMap.keySet().iterator().next();
         assertTrue(summary.contains("You have 3 monthly subscriptions") && summary.contains("27.99"));
+    }
+
+    @Test
+    public void addSubscription_InvalidCycle_ReturnsFalse() throws SQLException {
+        int TEST_USER_ID = 1; 
+        Subscription invalidCycleSub = new Subscription(
+                0,                     
+                "Netflix",               
+                9.99,                   
+                false,                    
+                "weekly",               
+                LocalDate.now().plusDays(1), 
+                TEST_USER_ID);      
+
+        boolean result = db_module.addSubscription(invalidCycleSub);
+
+        assertFalse(result, "addSubscription should reject an unsupported cycle type");
+
+        // Optional safety-check: confirm nothing slipped into the DB
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:nextpay.db");
+             PreparedStatement ps = conn.prepareStatement(
+                "SELECT COUNT(*) FROM Subscriptions WHERE SubscriptionsName = ? AND UserID = ?")) {
+            ps.setString(1, "Netflix");
+            ps.setInt(2, TEST_USER_ID);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            assertEquals(0, rs.getInt(1), "Subscription with invalid cycle type must not be persisted");
+        }
     }
 
     @Test

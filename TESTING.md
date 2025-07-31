@@ -307,18 +307,67 @@ We partition each input into valid/invalid classes and select one representative
 
 ---
 
-### 4.3 Decision Table Testing
+### 4.3 Decision Table Testing 
+Our objective is to verify db_module.addSubscription(Subscription s) under every meaningful combination of its validation checks.
+The procedure strictly follows the lecture algorithm (identify → enumerate → map → prune → derive tests) .
 
-We enumerate all meaningful combinations of boolean conditions to drive our delete-subscription logic.
+#### 4.3.1 Condition & Action Stubs
 
-| Rule | Name Valid? | Cost Valid? | Cycle Type Valid? | Action                      |
-| ---- | ----------- | ----------- | ----------------- | --------------------------- |
-| R1   | F           | *           | *                 | Return `false` (invalid name) |
-| R2   | T           | F           | *                 | Return `false` (invalid cost) |
-| R3   | T           | T           | F                 | Return `false` (invalid cycle type) |
-| R4   | T           | T           | T                 | Return `true` (success)      |
+| ID     | Condition stub                              |
+| ------ | ------------------------------------------- |
+| **C₁** | `isNameValid(s.getSubscriptionsName())`     |
+| **C₂** | `isCostValid(s.getCost())`                  |
+| **C₃** | `isCycleTypeValid(s.getBillingCycleType())` |
 
-> *Target:* `subscriptions_module.handleDeleteSubscription(int, int)`
+
+| ID     | System action                                           |
+| ------ | ------------------------------------------------------- |
+| **A₁** | *Reject* → return `false` due to **invalid name**       |
+| **A₂** | *Reject* → return `false` due to **invalid cost**       |
+| **A₃** | *Reject* → return `false` due to **invalid cycle type** |
+| **A₄** | *Accept* → insert row and return `true`                 |
+
+
+
+#### 4.3.2 Full Decision Table (8 Rules)
+
+| Rule | C₁ | C₂ | C₃ | A₁ | A₂ | A₃ | A₄ |
+| ---- | -- | -- | -- | -- | -- | -- | -- |
+| R1   | F  | –  | –  | X  |    |    |    |
+| R2   | T  | F  | –  |    | X  |    |    |
+| R3   | T  | T  | F  |    |    | X  |    |
+| R4   | T  | T  | T  |    |    |    | X  |
+| R5   | F  | F  | –  | X  |    |    |    |
+| R6   | F  | T  | F  | X  |    |    |    |
+| R7   | T  | F  | F  |    | X  |    |    |
+| R8   | F  | F  | F  | X  |    |    |    |
+
+
+“–” means “don’t-care” (condition value irrelevant for that rule).
+
+#### 4.3.3 Rule Reduction
+Because rules R5–R8 trigger the same action as R1–R3, they are merged, leaving the minimal decision table below:
+
+| Rule   | C₁ | C₂ | C₃ | Result                       |
+| ------ | -- | -- | -- | ---------------------------- |
+| **R1** | F  | –  | –  | `false` — invalid name       |
+| **R2** | T  | F  | –  | `false` — invalid cost       |
+| **R3** | T  | T  | F  | `false` — invalid cycle type |
+| **R4** | T  | T  | T  | `true` — success             |
+
+
+#### 4.3.4 Derived Test Cases
+
+| TC  | Rule | Representative input (`name`, `cost`, `cycle`) | JUnit method                                                | Expected           |
+| --- | ---- | ---------------------------------------------- | ----------------------------------------------------------- | ------------------ |
+| DT1 | R1   | `("", 9.99, "monthly")`                        | `addSubscription_EmptyName_ReturnsFalse`                    | `false`            |
+| DT2 | R2   | `("Netflix", -1.00, "monthly")`                | `addSubscription_NegativeCost_ReturnsFalse`                 | `false`            |
+| DT3 | R3   | `("Netflix", 9.99, "weekly")`                  | `addSubscription_InvalidCycle_ReturnsFalse` | `false`            |
+| DT4 | R4   | `("Spotify", 8.99, "monthly")`                 | `addSubscription_ValidSubscription_True`                    | `true` & row in DB |
+
+
+
+**Coverage Claim** – The four test cases satisfy **Each-Rule** and **Each-Action** coverage; they also achieve **pair-wise (2-way) combination** because any two conditions toggle across the set.
 
 ---
 
@@ -365,7 +414,105 @@ stateDiagram-v2
 
 ### 4.5 Use-Case Testing
 
-We derive end-to-end scenarios from user stories, covering both main and alternate flows.
+Use-case testing validates complete user journeys rather than isolated functions. For each core story we document - in the same style used elsewhere in this document - the happy path, every extension (alternate/exception flow), and the concrete JUnit or integration test that drives the path.
+
+#### 4.5.1 UC-01 Log in / Log out
+
+| Item                      | Details                                                                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Goal**                  | User gains authenticated access and eventually logs out.                                                                            |
+| **Primary actor**         | Registered user                                                                                                                     |
+| **Pre-conditions**        | Application running; user account exists                                                                                            |
+| **Main success scenario** | 1. Display login prompt → 2. User enters valid credentials → 3. System shows main menu → 4. User selects **Quit** → 5. Session ends |
+| **Extensions**            | **E1**: Invalid credentials ⇒ show error and re-prompt (loop to step 1).                                                            |
+| **Post-condition**        | Session closed, no lingering state                                                                                                  |
+
+| TC ID    | Path          | Driver                                    | Expected        |
+| -------- | ------------- | ----------------------------------------- | --------------- |
+| UC-01-H  | happy         | `UITest.testValidLogin_LeadsToMenu`       | Menu shown      |
+| UC-01-E1 | invalid creds | `UITest.testInvalidLogin_ReturnsToPrompt` | Re-prompt login |
+
+
+#### 4.5.2 UC-02 Add Subscription
+
+| Item                      | Details                                                                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Goal**                  | User records a new subscription                                                                                          |
+| **Pre-conditions**        | UC-01 completed (user at main menu)                                                                                      |
+| **Main success scenario** | 1. Choose “Add” → 2. Enter valid name/cost/cycle/date → 3. System stores subscription → 4. Confirmation shown            |
+| **Extensions**            | **E1**: Any field invalid ⇒ show error, stay in Add menu.<br>**E2**: User cancels ⇒ return to main menu without changes. |
+| **Post-condition**        | New row in `Subscriptions` table (unless E1/E2)                                                                          |
+
+| TC ID    | Path          | Driver                                                    | Expected            |
+| -------- | ------------- | --------------------------------------------------------- | ------------------- |
+| UC-02-H  | happy         | `UITest.testHandleAddSubscription_Valid_ReturnsTrue`      | Row created, `true` |
+| UC-02-E1 | invalid input | `db_moduleTest.addSubscription_NegativeCost_ReturnsFalse` | `false`, no row     |
+| UC-02-E2 | cancelled     | `UITest.testHandleAddSubscription_Cancel_ReturnsFalse`    | `false`, no row     |
+
+#### 4.5.3 UC-03 View Subscriptions
+
+| Item                      | Details                                                           |
+| ------------------------- | ----------------------------------------------------------------- |
+| **Goal**                  | User lists existing subscriptions (optionally sorted)             |
+| **Main success scenario** | 1. Choose “View” → 2. Select sort order → 3. System displays list |
+| **Extensions**            | **E1**: No rows ⇒ show “none found”, return `false`.              |
+| **Post-condition**        | Screen refreshed; no DB change                                    |
+
+| TC ID    | Path       | Driver                                                          | Expected               |
+| -------- | ---------- | --------------------------------------------------------------- | ---------------------- |
+| UC-03-H  | happy      | `UITest.testViewAllSubscriptions_WithSubscriptions_ReturnsTrue` | `true`, list printed   |
+| UC-03-E1 | empty list | `UITest.testViewAllSubscriptions_NoSubscriptions_ReturnsFalse`  | `false`, message shown |
+
+#### 4.5.4 UC-04 Update Subscription
+
+| Item                      | Details                                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Goal**                  | User edits an existing subscription                                                                                                   |
+| **Main success scenario** | 1. Choose “Update” → 2. Enter ID → 3. Provide valid edits → 4. System updates DB → 5. Confirmation shown                              |
+| **Extensions**            | **E1**: ID not found ⇒ error, stay in Update.<br>**E2**: Invalid edits ⇒ error, remain in Update.<br>**E3**: Cancel ⇒ abandon update. |
+| **Post-condition**        | Row updated (happy only)                                                                                                              |
+
+| TC ID    | Path         | Driver                                                        | Expected            |
+| -------- | ------------ | ------------------------------------------------------------- | ------------------- |
+| UC-04-H  | happy        | `UITest.testHandleUpdateSubscription_ValidUpdate_ReturnsTrue` | `true`, row changed |
+| UC-04-E1 | ID not found | `UITest.testHandleUpdateSubscription_InvalidId_ReturnsFalse`  | `false`, no change  |
+| UC-04-E2 | bad data     | `db_moduleTest.updateSubscription_NegativeCost_ReturnsFalse`  | `false`, no change  |
+
+
+#### 4.5.5 UC-05 Delete Subscription
+
+| Item                      | Details                                                                                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Goal**                  | User removes a subscription they own                                                               |
+| **Main success scenario** | 1. Choose “Delete” → 2. Enter ID → 3. System verifies ownership → 4. Row deleted → 5. Confirmation |
+| **Extensions**            | **E1**: ID does not exist ⇒ error.<br>**E2**: Not owner ⇒ error.<br>**E3**: User cancels.          |
+| **Post-condition**        | Row removed (happy only)                                                                           |
+
+| TC ID    | Path        | Driver                                                        | Expected         |
+| -------- | ----------- | ------------------------------------------------------------- | ---------------- |
+| UC-05-H  | happy       | `UITest.testDeleteSubscription_ValidDeletion_True`            | `true`, row gone |
+| UC-05-E1 | ID missing  | `UITest.testDeleteSubscription_NonExistentSubscription_False` | `false`          |
+| UC-05-E2 | wrong owner | `UITest.testDeleteSubscription_NotOwnedByUser_False`          | `false`          |
+
+
+#### 4.5.6 UC-06 Export to CSV
+
+| Item                      | Details                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| **Goal**                  | User exports their subscriptions to a CSV file                                 |
+| **Main success scenario** | 1. Choose “Export” → 2. System queries DB → 3. CSV generated → 4. Confirmation |
+| **Extensions**            | **E1**: No subscriptions ⇒ CSV has only header; return `false`.                |
+| **Post-condition**        | File created on disk (happy or E1)                                             |
+
+| TC ID    | Path       | Driver                                                 | Expected               |
+| -------- | ---------- | ------------------------------------------------------ | ---------------------- |
+| UC-06-H  | happy      | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue` | `true`, file with rows |
+| UC-06-E1 | empty list | `UITest.testExportToCSV_NoSubscriptions_ReturnsFalse`  | `false`, header only   |
+
+
+#### 4.5.7 End-to-End Scenario Map
+
+The figure below consolidates the main success paths (UC-02 → UC-03 → UC-04 → UC-05 → UC-06) with login/logout wrapping, matching the CLI flow.
 
 ```mermaid
 flowchart TD
@@ -387,6 +534,8 @@ flowchart TD
   L -->|No| K
   M --> N[Logout]
 ```
+Each labelled node is reached by at least one of the test cases in UC-01 – UC-06, ensuring full traversal of the primary system workflow along with all significant alternate branches.
+
 
 * **Main Path:** `handleAddSubscription` → `getAllSubscriptionsForUser` → `updateSubscription` → `deleteSubscription` → `logout`
 * **Alternates:** invalid login, input errors on add/update/delete, user-canceled operations.
@@ -753,18 +902,18 @@ Every state and transition was exercised by at least one test, ensuring complete
 
 ### 9.2 Test & Coverage Summary
 
-**Total Tests:** 93 JUnit tests across all modules with zero failures.
+**Total Tests:** 94 JUnit tests across all modules with zero failures.
 
 | Test Class | Target Module | Coverage | Key Testing Areas |
 |------------|---------------|----------|-------------------|
 | `UITest` | `UIModule.java` | **87.80%** | CLI navigation, menu handling, user input validation, login flows |
-| `db_moduleTest` | `db_module.java` | **84.98%** | Database operations, JDBC connections, CRUD operations, SQL queries |
+| `db_moduleTest` | `db_module.java` | **85.35%** | Database operations, JDBC connections, CRUD operations, SQL queries |
 | `subscriptions_moduleTest` | `subscriptions_module.java` | **91.67%** | Business logic, subscription validation, user ownership checks |
 | `AppTest` | `App.java` | **0.00%** | Application entry point, module wiring (limited coverage by design) |
 | N/A | `Subscription.java` | **58.93%** | Model class getters/setters, toString() methods |
 | N/A | `User.java` | **0.00%** | Simple getters/setters only (trivial methods) |
 
-![alt text](image.png) <br>
+![alt text](Docs/image.png)
 
 **Coverage Notes:**
 - Core logic methods exceed 85% coverage across all main modules
