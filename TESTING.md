@@ -8,115 +8,147 @@ This document describes the systematic testing plan for NextPay, covering unit t
 
 ---
 
-## 2. Unit Testing
+## 2. Specification Based Testing
+
+---
+Here’s the full Path Testing section in Markdown format with the improved Mermaid graph and test case table, ready for your report:
+
+⸻
+
+
+## 2.1 Path Testing
+
+- **Target**: `db_module.addSubscription(Subscription s)`
+- **Paths Covered**:
+  - Valid input → saved successfully → returns true
+  - Empty name or negative cost → validation fails → returns false
+  - Exception in DB layer → returns false (though not directly unit-tested)
 
 ---
 
-### MVP 1: `db_module.addSubscription(Subscription s)`
 
 ```mermaid
 flowchart TD
-  Start --> Validate[Check name and cost validity]
-  Validate -- OK --> Insert[Execute INSERT via JDBC]
-  Insert --> SetID[Fetch and set generated ID]
-  SetID --> ReturnTrue[Return true]
-  Validate -- Fail --> ReturnFalse[Return false]
-  ReturnFalse --> End
-  ReturnTrue --> End
+  N1([N1: Start])
+  N2[N2: Validate name, cost, billingCycleType]
+  N3{N3: Validation OK?}
+  N4[N4: Try DB Connection]
+  N5[N5: Prepare & execute INSERT]
+  N6{N6: Insert successful?}
+  N7[N7: Fetch last inserted ID]
+  N8[N8: Set ID on object]
+  N9[N9: Return true]
+  N10[N10: Return false]
+  N11[N11: Caught SQL Exception → printStackTrace]
+  N12([N12: End])
+
+  N1 --> N2 --> N3
+  N3 -- No --> N10 --> N12
+  N3 -- Yes --> N4 --> N5 --> N6
+  N6 -- Yes --> N7 --> N8 --> N9 --> N12
+  N6 -- No --> N9 --> N12
+  N4 --> N11 --> N10 --> N12
+  N5 --> N11
+  N7 --> N11
 ```
 
-**Prime Paths**
 
-- **P1**: Start → Validate(OK) → Insert → SetID → ReturnTrue → End
-- **P2**: Start → Validate(Fail) → ReturnFalse → End
 
-**Test Cases**
+### 📌 Prime Paths (PPC)
 
-| ID  | Path | Description                                 | Source Tests                                              | Expected                 |
-|-----|------|---------------------------------------------|----------------------------------------------------------|--------------------------|
-| TC1 | P1   | Valid subscription (non‑empty name, cost≥0) | `db_moduleTest.addSubscription_ValidSubscription_True`    | returns true; row in DB  |
-| TC2 | P2   | Empty name                                  | `db_moduleTest.addSubscription_EmptyName_ReturnsFalse`    | returns false; no insert |
-| TC3 | P2   | Negative cost                               | `db_moduleTest.addSubscription_NegativeCost_ReturnsFalse` | returns false; no insert |
+| ID  | Prime Path                                                            | Description                        |
+|-----|----------------------------------------------------------------------|------------------------------------|
+| P1  | N1 → N2 → N3(No) → N10 → N12                                         | Validation fails                   |
+| P2  | N1 → N2 → N3(Yes) → N4 → N5 → N6(No) → N9 → N12                      | Insert returns 0 rows (edge case) |
+| P3  | N1 → N2 → N3(Yes) → N4 → N5 → N6(Yes) → N7 → N8 → N9 → N12           | Full happy path                    |
+| P4  | N4 → N11 → N10 → N12                                                 | DB exception                       |
 
 ---
 
-### MVP 2: `db_module.exportSubscriptions(int userId)`
+### ✅ Actual JUnit Test Cases
+
+| ID   | Path | Description                    | Test Method Name                                       | Expected Outcome           |
+|------|------|--------------------------------|--------------------------------------------------------|----------------------------|
+| TC1  | P3   | Valid subscription input       | `addSubscription_ValidSubscription_True()`            | returns `true`, DB insert  |
+| TC2  | P3   | Valid non-recurring input      | `addSubscription_ValidNonRecurringSubscription_True()`| returns `true`, DB insert  |
+| TC3  | P1   | Empty name                     | `addSubscription_EmptyName_ReturnsFalse()`            | returns `false`, no insert |
+| TC4  | P1   | Negative cost                  | `addSubscription_NegativeCost_ReturnsFalse()`         | returns `false`, no insert |
+
+🔸 Note: No existing test explicitly triggers P2 or P4 
+
+
+### 2.2 Data‑Flow Testing
+
+**Target**: `db_module.updateSubscription(Subscription s)`
+
+- **Definitions & Uses**:  
+  - **DU1**: `def name = s.getSubscriptionsName` → `use name in null/empty check`  
+  - **DU2**: `def cost = s.getCost` → `use cost in cost < 0 check`  
+  - **DU3**: `def cycleType = s.getBillingCycleType` → `use cycleType in SQL binding`  
+  - **DU4**: `def date = s.getBillingCycleDate` → `use date in SQL binding`
+
+---
+
+### Definitions and Uses for `updateSubscription(Subscription s)`
 
 ```mermaid
 flowchart TD
-  Start --> Query["SELECT * FROM Subscriptions WHERE UserID = ?"]
-  Query --> WriteHeader["writer.writeNext(header)"]
-  WriteHeader --> Loop{"rs.next()?"}
-  Loop -- No --> ReturnFalse["return false"]
-  ReturnFalse --> End
-  Loop -- Yes --> WriteRow["writer.writeNext(row)"]
-  WriteRow --> Loop
-  Loop -- EndOfRows --> ReturnTrue["return true"]
-  ReturnTrue --> End
+  N1([N1: Start])
+  N2[N2: def name = s.getSubscriptionsName]
+  N3[N3: use name in null/empty check]
+  N4{N4: Name valid?}
+  N5[N5: def cost = s.getCost]
+  N6[N6: use cost in <0 check]
+  N7{N7: Cost valid?}
+  N8[N8: def cycleType = s.getBillingCycleType]
+  N9[N9: use cycleType in SQL bind]
+  N10[N10: def date = s.getBillingCycleDate]
+  N11[N11: use date in SQL bind]
+  N12[N12: Try DB Connection]
+  N13[N13: Prepare & bind values]
+  N14[N14: Execute update]
+  N15{N15: rows > 0?}
+  N16[N16: Return true]
+  N17[N17: Return false]
+  N18[N18: SQL Exception → printStackTrace]
+  N19([N19: End])
+
+  N1 --> N2 --> N3 --> N4
+  N4 -- No --> N17 --> N19
+  N4 -- Yes --> N5 --> N6 --> N7
+  N7 -- No --> N17 --> N19
+  N7 -- Yes --> N8 --> N9 --> N10 --> N11 --> N12 --> N13 --> N14 --> N15
+  N15 -- Yes --> N16 --> N19
+  N15 -- No --> N17 --> N19
+  N12 --> N18 --> N17 --> N19
+  N13 --> N18
+  N14 --> N18
+
 ```
 
-**Prime Paths**
+---
 
-- **P1** (no rows): Start → Query → WriteHeader → Loop(No) → ReturnFalse → End
-- **P2** (some rows): Start → Query → WriteHeader → Loop(Yes…) → WriteRow→…→ ReturnTrue → End
+###  DU Paths: Definition–Use Chains
 
-**Test Cases**
-
-| ID  | Path | Description                     | Source Tests                                                                                                     | Expected                                |
-|-----|------|---------------------------------|------------------------------------------------------------------------------------------------------------------|-----------------------------------------|
-| TC4 | P1   | No subscriptions for user       | `UITest.testExportToCSV_NoSubscriptions_ReturnsFalse`                                                            | returns false; only header              |
-| TC5 | P2   | One or more subscriptions exist | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue`<br>`db_moduleTest.exportSubscriptions_WithValidUser_True` | returns true; CSV file with header+rows |
+| ID   | DU Path          | Description                            |
+|------|------------------|----------------------------------------|
+| DU1  | N2 → N3 → N4      | Name defined & used in name check      |
+| DU2  | N5 → N6 → N7      | Cost defined & used in cost check      |
+| DU3  | N8 → N9           | CycleType defined & used in SQL bind   |
+| DU4  | N10 → N11         | BillingDate defined & used in SQL bind |
 
 ---
 
-### MVP 3: `db_module.deleteSubscription(int subId)`
+###  Actual JUnit Test Cases for Data‑Flow
 
-```mermaid
-flowchart TD
-  Start --> Delete[Execute DELETE WHERE SubscriptionID=subId]
-  Delete --> ReturnTrue[return true]
-  ReturnTrue --> End
-```
-
-
-**Prime Paths**
-- **P1**: Start → Delete → ReturnTrue → End
-
-**Test Cases**
-
-| ID  | Path | Description                                      | Source Tests                                                                                                                                                                | Expected                                              |
-|-----|------|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| TC6 | P1   | Direct delete on existing ID                     | `db_moduleTest.deleteSubscription_ValidId_True`                                                                                                                            | returns true; row removed                             |
-| TC7 | P1   | Direct delete on non‑existent ID                 | `db_moduleTest.deleteSubscription_NonExistentId_ReturnsFalse` *(note: test method name)*                                                                                   | returns true/false per implementation; row unaffected |
-| TC8 | P1   | UI‑level delete with ownership and non‑ownership | `UITest.testDeleteSubscription_ValidDeletion_True`<br>`UITest.testDeleteSubscription_NonExistentSubscription_False`<br>`UITest.testDeleteSubscription_NotOwnedByUser_False` | UI returns correct boolean and DB state               |
+| ID   | DU Path(s)      | Description              | Test Method Name                                          | Expected Result             |
+|------|------------------|--------------------------|-----------------------------------------------------------|-----------------------------|
+| TC4  | DU1, DU2–DU4     | Valid update             | `updateSubscription_ValidUpdate_ReturnsTrue()`           | returns `true`, DB updated  |
+| TC5  | DU2              | Negative cost            | `updateSubscription_NegativeCost_ReturnsFalse()`          | returns `false`, no update  |
+| TC6  | DU1              | Empty name               | `updateSubscription_EmptyName_ReturnsFalse()`             | returns `false`, no update  |
 
 ---
 
-### 2.1 Path Testing
-
-* **Target**: `SubscriptionModule.addSubscription(Subscription s)`
-  * Paths:
-    * Valid input → subscription saved (happy path)
-    * Null/empty name → `IllegalArgumentException`
-    * Negative cost → validation error
-
-* **Target**: `SubscriptionModule.removeSubscription(id)`
-  * Paths:
-    * Existing ID → removed successfully
-    * Nonexistent ID → returns `false`
-
-### 2.2 Data-Flow Testing
-
-* **Target**: `SubscriptionCSVExporter.export(List<Subscription>)`
-  * Definitions:
-    * DU1: Header row definition → use
-    * DU2: Subscription field definition → use
-  * Tests:
-    * Single subscription → header + one data row
-    * Multiple subscriptions → header + multiple rows
-    * Empty list → header only
-
----
 
 ## 3. Integration Testing
 
@@ -252,182 +284,6 @@ flowchart TD
 
 ---
 
-## 7.1 DU Paths & Test Cases
-
-Below are the key definition–use paths for our NextPay core flows, along with corresponding test cases referencing the actual JUnit methods and source files.
-
-### 7.1.1 addSubscription
-
-**DU Path 1 (happy path):**  
-```mermaid
-flowchart TD
-  A[Initialize Subscription s]
-  A --> B[def name = s.getSubscriptionsName]
-  B --> C[use name in validation db_module.addSubscription]
-  C --> D[def cost = s.getCost]
-  D --> E[use cost in validation]
-  E --> F[def isRecurring = s.isRecurring]
-  F --> G[use isRecurring in pstmt.setBoolean]
-  G --> H[def cycleType = s.getBillingCycleType]
-  H --> I[use cycleType in pstmt.setString]
-  I --> J[def date = s.getBillingCycleDate]
-  J --> K[use date.toString in pstmt.setString]
-  K --> L[def userId = s.getUserID]
-  L --> M[use userId in pstmt.setInt]
-  M --> N[INSERT executes]
-  N --> O[return true]
-```
-
-**DU Path 2 (validation fail):**
-
-```mermaid
-flowchart TD
-  A[Initialize Subscription s]
-  A --> B[def name = s.getSubscriptionsName]
-  B --> C[use name in validation]
-  C --> D[validation fails]
-  D --> E[return false]
-```
-
-| TC  | Path | Description              | Source Tests                                                               | Expected Result            |
-| --- | ---- | ------------------------ | -------------------------------------------------------------------------- | -------------------------- |
-| TC1 | P1   | Valid sub → inserted     | `db_moduleTest.addSubscription_ValidSubscription_True()` (db\_module.java) | returns `true` & row in DB |
-| TC2 | P2   | Empty name → rejected    | `db_moduleTest.addSubscription_EmptyName_ReturnsFalse()`                   | returns `false`, no insert |
-| TC3 | P2   | Negative cost → rejected | `db_moduleTest.addSubscription_NegativeCost_ReturnsFalse()`                | returns `false`, no insert |
-
----
-
-### 7.1.2 updateSubscription
-
-**DU Path 1 (happy path):**
-
-```mermaid
-flowchart TD
-  A[Fetch Subscription s from DB]
-  A --> B[def name = s.getSubscriptionsName]
-  B --> C[use name in non-empty check]
-  C --> D[def cost = s.getCost]
-  D --> E[use cost in non-negative check]
-  E --> F[def cycleType = s.getBillingCycleType]
-  F --> G[use cycleType in UPDATE SET BillingCycleType]
-  G --> H[def date = s.getBillingCycleDate]
-  H --> I[use date.toString in UPDATE SET BillingCycleDate]
-  I --> J[execute UPDATE]
-  J --> K[return true]
-```
-
-**DU Path 2 (validation fail):**
-
-```mermaid
-flowchart TD
-  A[Fetch s]
-  A --> B[def cost = s.getCost]
-  B --> C[use cost in non-negative check]
-  C --> D[cost less than 0]
-  D --> E[return false]
-```
-
-| TC  | Path | Description              | Source Tests                                                                                                                    | Expected Result                |
-| --- | ---- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
-| TC4 | P1   | Valid update → persisted | `UITest.testHandleUpdateSubscription_ValidUpdate_ReturnsTrue()`<br>`db_moduleTest.updateSubscription_ValidUpdate_ReturnsTrue()` | returns `true`, DB row updated |
-| TC5 | P2   | Negative cost → rejected | `db_moduleTest.updateSubscription_NegativeCost_ReturnsFalse()`                                                                  | returns `false`, DB unchanged  |
-| TC6 | P2   | Empty name → rejected    | `db_moduleTest.updateSubscription_EmptyName_ReturnsFalse()`                                                                     | returns `false`, DB unchanged  |
-
----
-
-### 7.1.3 deleteSubscription
-
-**DU Path 1:**
-
-```mermaid
-flowchart TD
-  A[Receive subscriptionId]
-  A --> B[def id = subscriptionId]
-  B --> C[use id in DELETE FROM Subscriptions WHERE SubscriptionID]
-  C --> D[execute DELETE]
-  D --> E[return true]
-```
-
-| TC  | Path | Description                                          | Source Tests                                                                                              | Expected Result            |
-| --- | ---- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------- |
-| TC7 | P1   | Existing ID → removed                                | `UITest.testDeleteSubscription_ValidDeletion_True()`<br>`db_moduleTest.deleteSubscription_ValidId_True()` | returns `true`, row gone   |
-| TC8 | P1   | Non‑existent ID → no error (impl detail)             | `UITest.testDeleteSubscription_NonExistentSubscription_False()`                                           | returns `false` (UI layer) |
-| TC9 | P1   | Wrong‑user delete → blocked in subscriptions\_module | `UITest.testDeleteSubscription_NotOwnedByUser_False()`                                                    | returns `false`            |
-
----
-
-### 7.1.4 exportSubscriptions
-
-**DU Path 1 (no rows):**
-
-```mermaid
-flowchart TD
-  A[Prepare SELECT statement]
-  A --> B[use ResultSet rs]
-  B --> C[writer.writeNext header]
-  C --> D[rs.next returns false]
-  D --> E[return false]
-```
-
-**DU Path 2 (with rows):**
-
-```mermaid
-flowchart TD
-  A[Prepare SELECT statement]
-  A --> B[use ResultSet rs]
-  B --> C[writer.writeNext header]
-  C --> D[rs.next returns true]
-  D --> E[writer.writeNext row]
-  E --> D
-  D --> F[return true] 
-```
-
-| TC   | Path | Description        | Source Tests                                                                                                         | Expected Result                       |
-| ---- | ---- | ------------------ | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| TC10 | P1   | No subs for user   | `UITest.testExportToCSV_NoSubscriptions_ReturnsFalse()`                                                              | returns `false`, only header in CSV   |
-| TC11 | P2   | One + subs present | `UITest.testExportToCSV_WithSubscriptions_ReturnsTrue()`<br>`db_moduleTest.exportSubscriptions_WithValidUser_True()` | returns `true`, CSV has header + rows |
-
----
-
-### 7.1.5 viewSubscriptions & sortSubscriptions
-
-**DU Path (view all):**
-
-```mermaid
-flowchart TD
-  A[Call getAllSubscriptionsForUser userId]
-  A --> B[use returned List in console-print loop]
-  B --> C[return true or false]
-```
-
-| TC   | Description                       | Source Tests                                                      | Expected Result |
-| ---- | --------------------------------- | ----------------------------------------------------------------- | --------------- |
-| TC12 | view no subs → prints none        | `UITest.testViewAllSubscriptions_NoSubscriptions_ReturnsFalse()`  | returns `false` |
-| TC13 | view with subs → prints & returns | `UITest.testViewAllSubscriptions_WithSubscriptions_ReturnsTrue()` | returns `true`  |
-
-**DU Path (sort):**
-
-```mermaid
-flowchart TD
-  A[Prompt sortOrder]
-  A --> B[def order = scanner.nextLine]
-  B --> C[use order in db.getAllSubscriptionsSortedByDate order]
-  C --> D[loop-print sorted list]
-  D --> E[return true or false]
-```
-
-| TC   | Description                         | Source Tests                                                                                                                                                       | Expected Result |
-| ---- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
-| TC14 | valid asc/desc → prints & returns   | `UITest.testHandleViewSubscriptions_SortByAsc_Covered()`<br>`UITest.testHandleViewSubscriptions_Case2_DescSortOrder_ReturnsTrue()`                                 | returns `true`  |
-| TC15 | invalid or empty list/order → false | `UITest.testHandleViewSubscriptions_Case2_EmptySubscriptions_ReturnsFalse()`<br>`UITest.testHandleViewSubscriptions_Case2_NullReturnFromController_ReturnsFalse()` | returns `false` |
-
----
-
-> All DU paths above map directly into the JUnit methods in your
-> `db_moduleTest.java`, `subscriptions_moduleTest.java` and `UITest.java` files.
-> This ensures that every definition–use pair in your code is exercised by at least one test.
-
----
 
 ## 8. System Testing & Node Coverage
 
