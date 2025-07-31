@@ -244,7 +244,7 @@ We enumerate all meaningful combinations of boolean conditions to drive our dele
 | ---- | ----------- | ----------- | ----------------- | --------------------------- |
 | R1   | F           | *           | *                 | Return `false` (invalid name) |
 | R2   | T           | F           | *                 | Return `false` (invalid cost) |
-| R3   | T           | T           | F                 | Delete in DB, but flag error |
+| R3   | T           | T           | F                 | Return `false` (invalid cycle type) |
 | R4   | T           | T           | T                 | Return `true` (success)      |
 
 > *Target:* `subscriptions_module.handleDeleteSubscription(int, int)`
@@ -628,27 +628,7 @@ flowchart TD
 
 ---
 
-## 9. Unit Test Classes & Coverage
-This section summarizes our comprehensive unit test suite covering all three core modules with high coverage rates. We implemented 65 total unit tests across UIModuleTest (interface handling), DBModuleTest (database operations), and SubscriptionsModuleTest (business logic), achieving 95%+ coverage on all modules through systematic testing of CRUD operations, user interactions, and data validation.
-
-
-| Test Class                | Target Module         | # Tests | Coverage |
-| ------------------------- | --------------------- | ------- | -------- |
-| `UIModuleTest`            | UIModule              | 20      | 95%      |
-| `DBModuleTest`            | db\_module            | 30      | 98%      |
-| `SubscriptionsModuleTest` | subscriptions\_module | 15      | 96%      |
-
----
-
-### 9.1 Highlights
-
-* **UIModuleTest**: start/menu/login/add
-* **DBModuleTest**: connection, CRUD, export
-* **SubscriptionsModuleTest**: user validation, delete logic, summary, sort
-
----
-
-## 10. System Testing & Coverage
+## 9. System Testing & Coverage
 System testing validates the complete NextPay application through end-to-end CLI scenarios and finite state machine modeling. We achieved 97 JUnit tests with zero failures, covering full user workflows (Login → Add → List → Update → Delete → Export), CLI navigation paths, and data persistence verification. Node coverage ensures all application states and transitions are tested through comprehensive FSM analysis.
 
 We performed **system testing** across the full CLI application, driving end-to-end scenarios via the UI module and verifying persistence in SQLite. 97 JUnit tests ran with zero failures, covering:
@@ -659,7 +639,7 @@ We performed **system testing** across the full CLI application, driving end-to-
 
 ---
 
-### 10.1 Finite State Machine & Node Coverage
+### 9.1 Finite State Machine & Node Coverage
 
 We verified **node coverage** of the key application states via a finite-state machine (FSM). Each numbered transition maps to a UI action:
 
@@ -700,21 +680,29 @@ Every state and transition was exercised by at least one test, ensuring complete
 
 ---
 
-### 10.2 Test & Coverage Summary
-- **Total tests**: 93 JUnit tests across `UITest`, `db_moduleTest`, `subscriptions_moduleTest`, and `AppTest`.
-- **Code Coverage via Test Runner for Java (VsCode Extension)**:
-  - `db_module.java`: **85.98%**
-  - `subscriptions_module.java`: **91.67%**
-  - `UIModule.java`: **89.02%**
-  - `Subscription.java`: **58.93%**
-  - `User.java`: **0.00%** (only simple getters/setters)
-  - `App.java`: **58.93%**
+### 9.2 Test & Coverage Summary
 
-Most core logic methods exceed 85% coverage; model classes have lower coverage due to trivial getters/setters and untested `toString()`.
+**Total Tests:** 93 JUnit tests across all modules with zero failures.
+
+| Test Class | Target Module | Coverage | Key Testing Areas |
+|------------|---------------|----------|-------------------|
+| `UITest` | `UIModule.java` | **89.02%** | CLI navigation, menu handling, user input validation, login flows |
+| `db_moduleTest` | `db_module.java` | **85.98%** | Database operations, JDBC connections, CRUD operations, SQL queries |
+| `subscriptions_moduleTest` | `subscriptions_module.java` | **91.67%** | Business logic, subscription validation, user ownership checks |
+| `AppTest` | `App.java` | **58.93%** | Application entry point, module wiring (limited coverage by design) |
+| N/A | `Subscription.java` | **58.93%** | Model class getters/setters, toString() methods |
+| N/A | `User.java` | **0.00%** | Simple getters/setters only (trivial methods) |
+
+**Coverage Notes:**
+- Core logic methods exceed 85% coverage across all main modules
+- Model classes have lower coverage due to trivial getters/setters and untested `toString()` methods
+- UI display methods are difficult to automate but navigation handlers are fully tested
+- App.java intentionally has lower coverage as it primarily wires modules together
+
 
 ---
 
-### 10.3 Limitations
+### 9.3 Limitations
 - **Model classes** (`Subscription`, `User`) have minimal testing (getters/setters, `toString()`)—low risk but lowers overall coverage.
 - **UI menus** and CLI prompts are difficult to fully automate; while we test navigation handlers, the `display*` methods are not directly asserted.
 - **Main entry point** (`App.java`): not covered by unit tests, as it simply wires modules and would require heavier integration tooling.
