@@ -309,6 +309,8 @@ Target Methods: db_module.isUserValid(String username, String password), subscri
 
 ### User Authentication Testing:
 
+**Target Methods**: `db_module.isUserValid(String username, String password)`, `subscriptions_module.isUserValid(User user)`,`UIModule.handleLogin(String username, String password)`
+
 #### Username field testing
 |Test Case|Input Value|Equivalence Class|Expected Result|Actual Result|
 |---|---|---|---|---|
