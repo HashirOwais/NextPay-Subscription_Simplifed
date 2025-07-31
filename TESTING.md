@@ -267,6 +267,8 @@ We pick values at, just below, and just above each boundary to exercise edge cas
 
 We partition each input into valid/invalid classes and select one representative test per class.
 
+### Add Subscription Testing
+
 **Target Methods:** `db_module.addSubscription()`, `db_module.updateSubscription()`, `subscriptions_module.addSubscription()`, `subscriptions_module.updateSubscription()`, `UIModule.handleAddSubscription()`, `UIModule.handleUpdateSubscription()`
 
 #### Cost Field Testing:
@@ -303,6 +305,51 @@ We partition each input into valid/invalid classes and select one representative
 |5|""|Invalid (empty)|Rejected|Rejected|
 
 **Classes:** Valid `monthly`, `yearly`, `one-time` | Invalid any other string
+Target Methods: db_module.isUserValid(String username, String password), subscriptions_module.validateUser(String username, String password), subscriptions_module.isUserValid(User user)
+
+### User Authentication Testing:
+
+#### Username field testing
+|Test Case|Input Value|Equivalence Class|Expected Result|Actual Result|
+|---|---|---|---|---|
+|1|""|Invalid (empty)|Rejected (false)|Rejected (false)|
+|2|"testuser"|Valid (existing user)|Accepted (true)|Accepted (true)|
+|3|"nonexistent"|Valid format (non-existing)|Rejected (false)|Rejected (false)|
+|4|null|Invalid (null)|Rejected (false)|Rejected (false)|
+|5|"user with spaces"|Valid format|Rejected (false)|Rejected (false)|
+
+**Classes:** Valid existing username | Invalid (empty/null/non-existing)
+
+
+#### Password Field Testing:
+| Test Case | Input Value     | Equivalence Class        | Expected Result  | Actual Result    |
+| --------- | --------------- | ------------------------ | ---------------- | ---------------- |
+| 1         | ""              | Invalid (empty)          | Rejected (false) | Rejected (false) |
+| 2         | "password123"   | Valid (correct password) | Accepted (true)  | Accepted (true)  |
+| 3         | "wrongpassword" | Valid format (incorrect) | Rejected (false) | Rejected (false) |
+| 4         | null            | Invalid (null)           | Rejected (false) | Rejected (false) |
+| 5         | "short"         | Valid format (too short) | Rejected (false) | Rejected (false) |
+
+**Classes:** Valid correct password | Invalid (empty/null/incorrect)
+
+#### Combined Authentication testing (Username and Password)
+
+|Test Case|Username|Password|Equivalence Class|Expected Result|Actual Result|
+|---|---|---|---|---|---|
+|1|"testuser"|"password123"|Valid (both correct)|Accepted (true)|Accepted (true)|
+|2|"testuser"|"wrongpass"|Invalid (wrong password)|Rejected (false)|Rejected (false)|
+|3|"wronguser"|"password123"|Invalid (wrong username)|Rejected (false)|Rejected (false)|
+|4|""|"password123"|Invalid (empty username)|Rejected (false)|Rejected (false)|
+|5|"testuser"|""|Invalid (empty password)|Rejected (false)|Rejected (false)|
+|6|""|""|Invalid (both empty)|Rejected (false)|Rejected (false)|
+|7|null|null|Invalid (both null)|Rejected (false)|Rejected (false)|
+
+**Classes**
+- Valid: Both username and password match predefined record.
+- Invalid: Any combination where username doesnt exist, password is wrong or either field is empty/null.
+
+
+
 
 ---
 
