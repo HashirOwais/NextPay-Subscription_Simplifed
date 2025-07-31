@@ -278,6 +278,10 @@ We pick values at, just below, and just above each boundary to exercise edge cas
 
 **Boundaries:** Min = 1, Min+ = 2, Max– = 5, Max = 6
 
+
+
+
+
 ---
 
 ### 4.2 Equivalence Class Testing
