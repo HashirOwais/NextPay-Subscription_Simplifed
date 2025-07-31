@@ -54,7 +54,7 @@ flowchart TD
 
 
 
-#### 📌 Prime Paths (PPC)
+####  Prime Paths (PPC)
 
 | ID  | Prime Path                                                            | Description                        |
 |-----|----------------------------------------------------------------------|------------------------------------|
@@ -65,7 +65,7 @@ flowchart TD
 
 ---
 
-#### ✅ Actual JUnit Test Cases
+####  Actual JUnit Test Cases
 
 | ID   | Path | Description                    | Test Method Name                                       | Expected Outcome           |
 |------|------|--------------------------------|--------------------------------------------------------|----------------------------|
@@ -127,7 +127,7 @@ flowchart TD
 
 ---
 
-#### 📌 DU Paths: Definition–Use Chains
+####  DU Paths: Definition–Use Chains
 
 | ID   | DU Path          | Description                            |
 |------|------------------|----------------------------------------|
@@ -138,7 +138,7 @@ flowchart TD
 
 ---
 
-#### ✅ Actual JUnit Test Cases for Data‑Flow
+####  Actual JUnit Test Cases for Data‑Flow
 
 | ID   | DU Path(s)      | Description              | Test Method Name                                          | Expected Result             |
 |------|------------------|--------------------------|-----------------------------------------------------------|-----------------------------|
