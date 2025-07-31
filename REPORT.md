@@ -523,13 +523,7 @@ While the final solution meets the current needs of individual subscription mana
 
 ---
 
-## 7. References
-
-Use **IEEE style** citations. Only include items that are cited in the report.
-
----
-
-## 8. Appendix
+## 7. Appendix
 
 ### UI Module Diagram
 <div align="center">
