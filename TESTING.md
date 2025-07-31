@@ -346,7 +346,7 @@ Target Methods: db_module.isUserValid(String username, String password), subscri
 
 **Classes**
 - Valid: Both username and password match predefined record.
-- Invalid: Any combination where username doesnt exist, password is wrong or either field is empty/null.
+- Invalid: Any combination where username doesnt exist, password is wrong or either field is empty
 
 
 
