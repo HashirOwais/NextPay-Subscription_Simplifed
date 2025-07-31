@@ -354,10 +354,18 @@ Target Methods: db_module.isUserValid(String username, String password), subscri
 ---
 
 ### 4.3 Decision Table Testing 
-Our objective is to verify db_module.addSubscription(Subscription s) under every meaningful combination of its validation checks.
-The procedure strictly follows the lecture algorithm (identify → enumerate → map → prune → derive tests) .
+Our objective is to verify db_module.addSubscription(Subscription s) and subscriptions_module.handleDeleteSubscription(int userId,int subId)  under every meaningful combination of its validation checks. <br>
 
-#### 4.3.1 Condition & Action Stubs
+We use the lecture’s algorithmic steps: identify → enumerate → map → prune → derive tests.
+
+- Identify: List all condition and action stubs.
+- Enumerate: Expand the full set of rules (truth table).
+- Prune: Collapse duplicates or irrelevant cases.
+- Derive: Turn each unique rule into a concrete JUnit/UITest.
+
+#### 4.3.1 Decision Tables - addSubscription 
+
+#### 4.3.1.1 Condition & Action Stubs
 
 | ID     | Condition stub                              |
 | ------ | ------------------------------------------- |
@@ -375,7 +383,7 @@ The procedure strictly follows the lecture algorithm (identify → enumerate →
 
 
 
-#### 4.3.2 Full Decision Table (8 Rules)
+#### 4.3.1.2 Full Decision Table (8 Rules)
 
 | Rule | C₁ | C₂ | C₃ | A₁ | A₂ | A₃ | A₄ |
 | ---- | -- | -- | -- | -- | -- | -- | -- |
@@ -391,7 +399,7 @@ The procedure strictly follows the lecture algorithm (identify → enumerate →
 
 “–” means “don’t-care” (condition value irrelevant for that rule).
 
-#### 4.3.3 Rule Reduction
+#### 4.3.1.3 Rule Reduction
 Because rules R5–R8 trigger the same action as R1–R3, they are merged, leaving the minimal decision table below:
 
 | Rule   | C₁ | C₂ | C₃ | Result                       |
@@ -402,7 +410,7 @@ Because rules R5–R8 trigger the same action as R1–R3, they are merged, leavi
 | **R4** | T  | T  | T  | `true` — success             |
 
 
-#### 4.3.4 Derived Test Cases
+#### 4.3.1.4 Derived Test Cases
 
 | TC  | Rule | Representative input (`name`, `cost`, `cycle`) | JUnit method                                                | Expected           |
 | --- | ---- | ---------------------------------------------- | ----------------------------------------------------------- | ------------------ |
@@ -412,8 +420,51 @@ Because rules R5–R8 trigger the same action as R1–R3, they are merged, leavi
 | DT4 | R4   | `("Spotify", 8.99, "monthly")`                 | `addSubscription_ValidSubscription_True`                    | `true` & row in DB |
 
 
-
 **Coverage Claim** – The four test cases satisfy **Each-Rule** and **Each-Action** coverage; they also achieve **pair-wise (2-way) combination** because any two conditions toggle across the set.
+
+#### 4.3.2 Decision Tables - handleDeleteSubscription
+This routine first checks that the requested subscription exists and is owned by the caller; only then does it delegate to db_module.deleteSubscription().
+
+
+#### 4.3.2.1 Condition & Action Stubs
+
+| ID     | Condition stub (predicate)  | Description                       |
+| ------ | --------------------------- | --------------------------------- |
+| **C₁** | `subscriptionExists(subId)` | row with `subId` is present in DB |
+| **C₂** | `isOwner(userId, subId)`    | row belongs to calling user       |
+
+
+#### 4.3.2.2 Full Decision Table (4 raw rules)
+
+| Rule | C₁    | C₂    | A₁    | A₂    |
+| ---- | ----- | ----- | ----- | ----- |
+| R1   | **F** | –     | **X** |       |
+| R2   | **T** | **F** | **X** |       |
+| R3   | **T** | **T** |       | **X** |
+| R4   | **F** | **F** | **X** |       |
+
+“–” means “don’t-care” (condition value irrelevant for that rule).
+
+
+#### 4.3.2.3 Rule Reduction
+Because rule R4 trigger the same action as R1, they are merged, leaving the minimal decision table below:
+
+| Rule   | C₁ | C₂ | Result                                                   |
+| ------ | -- | -- | -------------------------------------------------------- |
+| **R1** | F  | –  | `false` — subscription not found                         |
+| **R2** | T  | F  | `false` — caller not owner                               |
+| **R3** | T  | T  | Boolean from `db.deleteSubscription()` (normally `true`) |
+
+#### 4.3.2.4 Derived Test Cases
+
+| TC           | Covers Rule | Scenario                                  | JUnit / UI test                                               | Expected             |
+| ------------ | ----------- | ----------------------------------------- | ------------------------------------------------------------- | -------------------- |
+| **DT-DEL-1** | R1          | `subId` not in DB                         | `UITest.testDeleteSubscription_NonExistentSubscription_False` | `false`              |
+| **DT-DEL-2** | R2          | `subId` exists but owned by another user  | `UITest.testDeleteSubscription_NotOwnedByUser_False`          | `false`              |
+| **DT-DEL-3** | R3          | `subId` exists **and** is owned by caller | `UITest.testDeleteSubscription_ValidDeletion_True`            | `true` & row removed |
+
+
+**Coverage Claim** – The three test cases satisfy **Each-Rule** and **Each-Action** coverage; they also achieve **pair-wise (2-way) combination** because any two conditions toggle across the set.
 
 ---
 
