@@ -469,8 +469,8 @@ The following Gantt chart outlines all major tasks, their dependencies, slack ti
 ## 6. Conclusion and Future Work
 
 ### Conclusion
-The NextPay subscription tracking application successfully achieved all primary design functions and objectives while satisifying the comprehensive testing requirements of ENSE 375. Our team brought there minds together to develope a fully functional Java Based CLI Application that addresses the core problem of subscription management thorough systematic software development and rigorous testing practices such as Test Driven Development (TDD). The key achievements include:
-- Efficently adding, updating, deleting user subscriptions with completed CRUD fucntionality.
+The NextPay subscription tracking application successfully achieved all primary design functions and objectives while satisfying the comprehensive testing requirements of ENSE 375. Our team brought their minds together to develop a fully functional Java Based CLI Application that addresses the core problem of subscription management thorough systematic software development and rigorous testing practices such as Test Driven Development (TDD). The key achievements include:
+- Efficiently adding, updating, deleting user subscriptions with completed CRUD functionality.
 - Managing user accounts.
 - Sorting subscriptions by billing dates in ascending or descending order.
 - Calculating and displaying subscription costs that occur monthly or yearly with comprehensive summaries.
