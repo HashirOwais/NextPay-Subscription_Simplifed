@@ -27,8 +27,8 @@ flowchart TD
 
 **Prime Paths**
 
-- **P1**: Start → Validate(OK) → Insert → SetID → ReturnTrue → End
-- **P2**: Start → Validate(Fail) → ReturnFalse → End
+- **P1**: [Start → Validate(OK) → Insert → SetID → ReturnTrue → End]
+- **P2**: [Start → Validate(Fail) → ReturnFalse → End]
 
 **Test Cases**
 
@@ -210,13 +210,49 @@ Validation testing ensures NextPay meets user requirements through five systemat
 
 We pick values at, just below, and just above each boundary to exercise edge cases.
 
-| Field           | Boundaries                                  | Test Inputs                                             | Expected Result                               |
-| --------------- | ------------------------------------------- | ------------------------------------------------------- | --------------------------------------------- |
-| **Cost**        | Min = 0<br>Min+ = 0.01<br>Max– = 9999.99<br>Max = 10000 | `-0.01`<br>`0`<br>`0.01`<br>`9999.99`<br>`10000`         | Reject if < 0 OR reject if > 10000; accept otherwise               |
-| **Name length** | Min = 1<br>Min+ = 2<br>Max– = 99<br>Max = 100           | `""` (empty)<br>`"A"`<br>`100`-char string<br>`101`-char string | Reject if length < 1 or > 100                |
+#### Cost Field Testing:
+
+|Test Case|Input Value|Expected Result|Actual Result|
+|---|---|---|---|
+|1|-0.01|Rejected|Rejected|
+|2|0|Accepted|Accepted|
+|3|0.01|Accepted|Accepted|
+|4|9999.99|Accepted|Accepted|
+|5|10000|Accepted|Accepted|
+|6|10000.01|Rejected|Rejected|
+
+**Boundaries:** Min = 0, Min+ = 0.01, Max– = 9999.99, Max = 10000
 
 > **Example:**  
 > Calling `db_module.updateSubscription(s)` with `s.getCost() = -5.00` returns `false`.
+
+#### Name Length Testing:
+
+|Test Case|Name Length|Expected Result|Actual Result|
+|---|---|---|---|
+|1|0 (empty)|Rejected|Rejected|
+|2|1|Accepted|Accepted|
+|3|2|Accepted|Accepted|
+|4|50|Accepted|Accepted|
+|5|99|Accepted|Accepted|
+|6|100|Accepted|Accepted|
+|7|101|Rejected|Rejected|
+
+**Boundaries:** Min = 1, Min+ = 2, Max– = 99, Max = 100
+
+#### Menu Choice Testing:
+
+|Test Case|Menu Choice|Expected Result|Actual Result|
+|---|---|---|---|
+|1|0|Rejected (-1)|Rejected (-1)|
+|2|1|Accepted (1)|Accepted (1)|
+|3|2|Accepted (2)|Accepted (2)|
+|4|5|Accepted (5)|Accepted (5)|
+|5|6|Accepted (0)|Accepted (0)|
+|6|7|Rejected (-1)|Rejected (-1)|
+|7|99|Rejected (-1)|Rejected (-1)|
+
+**Boundaries:** Min = 1, Min+ = 2, Max– = 5, Max = 6
 
 ---
 
@@ -233,6 +269,41 @@ We partition each input into valid/invalid classes and select one representative
 
 > **Example:**  
 > `db_module.updateSubscription(s)` rejects when `s.getSubscriptionName()` is empty.
+
+#### Cost Field Testing:
+
+|Test Case|Input Value|Equivalence Class|Expected Result|Actual Result|
+|---|---|---|---|---|
+|1|-5.00|Invalid (< 0)|Rejected|Rejected|
+|2|0.00|Valid (= 0)|Accepted|Accepted|
+|3|10.99|Valid (> 0)|Accepted|Accepted|
+|4|9999.99|Valid (high)|Accepted|Accepted|
+
+**Classes:** Valid ≥ 0 (including free) | Invalid < 0
+
+
+#### Name Field Testing:
+
+|Test Case|Input Value|Equivalence Class|Expected Result|Actual Result|
+|---|---|---|---|---|
+|1|""|Invalid (empty)|Rejected|Rejected|
+|2|"A"|Valid (1 char)|Accepted|Accepted|
+|3|"Netflix"|Valid (normal)|Accepted|Accepted|
+|4|101-char|Invalid (> 100)|Rejected|Rejected|
+
+**Classes:** Valid 1–100 characters | Invalid empty or > 100 characters
+
+#### Cycle Type Testing:
+
+|Test Case|Input Value|Equivalence Class|Expected Result|Actual Result|
+|---|---|---|---|---|
+|1|"monthly"|Valid (standard)|Accepted|Accepted|
+|2|"yearly"|Valid (standard)|Accepted|Accepted|
+|3|"one-time"|Valid (standard)|Accepted|Accepted|
+|4|"weekly"|Invalid (other)|Rejected|Rejected|
+|5|""|Invalid (empty)|Rejected|Rejected|
+
+**Classes:** Valid `monthly`, `yearly`, `one-time` | Invalid any other string
 
 ---
 
