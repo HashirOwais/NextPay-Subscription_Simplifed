@@ -165,50 +165,64 @@ flowchart TD
 
 
 ## 3. Integration Testing
-Integration testing validates the interaction between our three core modules (UI, Subscriptions, and Database) through end-to-end CLI workflows. We test complete user scenarios spanning multiple modules, ensuring data flows correctly from user input through business logic to database persistence. Our approach uses sequential operations (add→view→delete) to validate that changes in one module are correctly reflected in dependent modules, ensuring the application functions as a cohesive system.
 
-* **Modules**: UI Module ↔ Subscriptions Module ↔ Database Module
-* **Scenario**: add → view → delete subscription via CLI commands
+Integration testing validates the interaction between our three core modules (UI, Subscriptions, and Database) through end-to-end CLI workflows. We test complete user scenarios spanning multiple modules, ensuring data flows correctly from user input through business logic to database persistence. Our approach uses sequential operations (`add` → `view` → `delete`) to validate that changes in one module are correctly reflected in dependent modules.
+
+- **Modules**: UI Module ↔ Subscriptions Module ↔ Database Module  
+- **Scenario**: add → view → delete subscription via CLI commands
 
 ---
 
 ### 3.1 Test Cases
 
-| ID   | Action           | Steps                                   | Expected Outcome                |
-| ---- | ---------------- | --------------------------------------- | ------------------------------- |
-| INT1 | Add then view    | 1. ui.add("Netflix",...)<br>2. ui.list  | Entry appears in DB and console |
-| INT2 | Delete after add | 1. Add subscription<br>2. ui.delete(id) | Removed from DB; confirmation   |
+| ID   | Action           | Steps                                                                                   | Expected Outcome                |
+| ---- | ---------------- | --------------------------------------------------------------------------------------- | ------------------------------- |
+| INT1 | Add → View       | 1. `ui.handleAddSubscription(userId)`<br>2. `ui.handleViewSubscriptions(userId, 1)`      | Entry appears in DB and console |
+| INT2 | Add → Delete     | 1. `ui.handleAddSubscription(userId)`<br>2. `ui.handleDeleteSubscription(userId, subId)` | Removed from DB; confirmation   |
 
-#### 3.1.1 Test Case Diagrams
+---
 
-```mermaid
-flowchart TD
-  Start --> Add[Add Subscription]
-  Add --> View[List Subscriptions]
-  View --> Verify1[Console & DB Check]
-  Verify1 --> End
-```
+### 3.1.1 Sequence Diagrams
 
 ```mermaid
 flowchart TD
-  Start --> Add[Add Subscription]
-  Add --> Delete[Delete Subscription]
-  Delete --> Verify2[Console & DB Check]
-  Verify2 --> End
+  Start --> A["UIModule.handleAddSubscription"]
+  A --> B["subscriptions_module.addSubscription"]
+  B --> C["db_module.addSubscription (INSERT)"]
+  C --> D["Return true"]
+  D --> E["UIModule.handleViewSubscriptions(viewAll)"]
+  E --> F["subscriptions_module.getAllSubscriptionsForUser"]
+  F --> G["db_module.viewSubscription (SELECT)"]
+  G --> H["Console prints list"]
+  H --> End
+
+
+```
+```mermaid
+flowchart TD
+  Start --> A[UIModule.handleAddSubscription]
+  A --> B[subscriptions_module.addSubscription]
+  B --> C[db_module.addSubscription ⇒ INSERT]
+  C --> D[return true]
+  D --> E[UIModule.handleDeleteSubscription]
+  E --> F[subscriptions_module.handleDeleteSubscription]
+  F --> G[db_module.deleteSubscription ⇒ DELETE]
+  G --> H[return true + console “deleted”]
+  H --> End
 ```
 
-| ID   | Action           | Steps                                         | Expected Outcome                |
-|------|------------------|-----------------------------------------------|---------------------------------|
-| INT1 | Add then view    | 1. `ui.add("Netflix",...)`<br>2. `ui.list`    | Entry appears in DB and console |
-| INT2 | Delete after add | 1. Add subscription<br>2. `ui.delete(id)`     | Removed from DB; confirmation   |
+---
+
+### 3.1.2 Integration-Test Summary Table
+
+| Path ID   | Test Requirement                                        | Test Case Method                                                                                                            | Expected Outcome                                                                                                                                         | Actual Result              |
+| --------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| **INT-1** | Add “Netflix” → View all subscriptions (viewChoice = 1) | `UITest.testHandleAddSubscription_SimulateValidPath()`<br>`UITest.testViewAllSubscriptions_WithSubscriptions_ReturnsTrue()` | • `handleAddSubscription` returns `true`<br>• `handleViewSubscriptions(1)` returns `true` and prints the new entry<br>• DB contains the new row          | ✅ Pass (row added & shown) |
+| **INT-2** | Add “Netflix” → Delete that subscription                | `UITest.testHandleAddSubscription_SimulateValidPath()`<br>`UITest.testDeleteSubscription_ValidDeletion_True()`              | • `handleAddSubscription` returns `true`<br>• `handleDeleteSubscription(..., subId)` returns `true`<br>• DB row is removed and console confirms deletion | ✅ Pass (row removed)       |
+
+---
 
 
-#### 3.1.2 Integration-Test Summary Table
-
-| Path ID   | Test Requirement (Scenario)                                                                     | Integration Test Case Name                  | Expected Outcome                                                                                      | **Actual Result**                               |
-| --------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| **INT-1** | **Add → View** – user adds “Netflix”, then lists subs → entry must appear in console **and** DB | `IntegrationTest_AddThenView_ReturnsTrue`   | • method chain returns `true` <br>• row printed to console <br>• row present in `Subscriptions` table | ✅ All three conditions observed during last run |
-| **INT-2** | **Delete after Add** – create sub, then delete → row must disappear from both console and DB    | `IntegrationTest_AddThenDelete_ReturnsTrue` | • method chain returns `true` <br>• “deleted” confirmation shown <br>• row no longer in DB            | ✅ Row removed; confirmation displayed           |
 
 
 ---
