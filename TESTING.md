@@ -332,6 +332,9 @@ Name Length Testing<br>
 
 Boundaries: Min = 1, Min+ = 2, Max– = 99, Max = 100
 
+### Boundary Value Analysis Summary Table (handleMainMenuSelection)
+
+
 Menu Choice Testing <br>
 **Target Methods**: UIModule.handleMainMenuSelection(), UIModule.handleStartSelection()
 
