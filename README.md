@@ -3,6 +3,11 @@
 Welcome!  This README walks you through cloning, building, testing, and running **NextPay** from the command line with Maven.
 
 ---
+## Project Presentation Video
+
+[![NextPay Presentation on YouTube](https://img.shields.io/badge/NextPay%20Presentation-YouTube-red?logo=youtube)](https://youtu.be/3TKLsTIUJV8)
+
+---
 ## Project Report & Test Documentation
 
 Full design rationale, testing artefacts (path, data‑flow, BVA, etc.), and team documentation live in **REPORT.md**.
